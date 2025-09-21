@@ -57,17 +57,41 @@ export const PUT = async (req: NextRequest) => {
       customerAccessToken: accessToken,
     })
 
-    const { customer, customerUserErrors } = updateData.customerUpdate
+    // Correctly access customerUpdate from updateData.data
+    const customerUpdateResult = updateData.data?.customerUpdate; // Use optional chaining for safety
+
+    // Check if customerUpdateResult is missing
+    if (!customerUpdateResult) {
+      console.error('Shopify customerUpdate returned an unexpected empty or null response:', updateData);
+      return Response.json(
+        { error: 'Failed to update account: Unexpected response from Shopify.' },
+        { status: 500 }
+      );
+    }
+
+    // Now, safely access customer and customerUserErrors from customerUpdateResult
+    const customer = customerUpdateResult.customer;
+    const customerUserErrors = customerUpdateResult.customerUserErrors;
 
     if (customerUserErrors?.length > 0) {
       return Response.json(
         { error: customerUserErrors[0].message },
         { status: 400 }
-      )
+      );
+    }
+
+    // If customer is null even without user errors, it's still an issue
+    if (!customer) {
+        console.error('Shopify customerUpdate returned null customer with no user errors:', updateData);
+        return Response.json(
+            { error: 'Failed to update account: Customer object is null or missing.' },
+            { status: 500 }
+        );
     }
 
     return Response.json({ customer: customer })
   } catch (error: unknown) {
+    console.error('Error updating customer account:', error);
     return Response.json(
       { error: (error as Error).message || 'Failed to update account' },
       { status: 500 }

@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Fetches user data if a session exists
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me')
+      const response = await fetch('/api/auth/me', { cache: 'no-store' })
       if (response.ok) {
         const { user } = await response.json()
         setUser(user)
