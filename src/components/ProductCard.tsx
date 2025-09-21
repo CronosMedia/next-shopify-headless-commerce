@@ -29,9 +29,10 @@ type ProductNode = {
 
 type ProductCardProps = {
   product: ProductNode
+  isLCP?: boolean // New prop for LCP images
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, isLCP }: ProductCardProps) {
   const { addToCart, loading } = useCart()
   const { openQuickView } = useUI()
 
@@ -69,6 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               width={600}
               height={600}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              {...(isLCP && { priority: true })}
             />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">
