@@ -360,6 +360,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const buyerIdentity: CartBuyerIdentityInput = {
           deliveryAddressPreferences: [
             {
+              deliveryAddress: {
                 address1: address.address1,
                 address2: address.address2 ?? undefined,
                 city: address.city,
@@ -370,6 +371,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 phone: address.phone,
                 province: address.province,
                 zip: address.zip,
+              },
             },
           ],
         }
