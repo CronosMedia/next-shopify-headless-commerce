@@ -261,13 +261,11 @@ function SettingsTab() {
 
 function ProfileTab({ user }: { user: User }) {
   const { updateUser } = useAuth()
-  const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     firstName: user.firstName || '',
     lastName: user.lastName || '',
-    email: user.email || '',
     phone: user.phone || '',
   })
 
@@ -278,21 +276,8 @@ function ProfileTab({ user }: { user: User }) {
     const apiError = await updateUser(formData)
     if (apiError) {
       setError(apiError.error.message)
-    } else {
-      setIsEditing(false)
     }
     setIsSubmitting(false)
-  }
-
-  const handleCancel = () => {
-    setIsEditing(false)
-    setError(null)
-    setFormData({
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      email: user.email || '',
-      phone: user.phone || '',
-    })
   }
 
   return (
@@ -300,37 +285,22 @@ function ProfileTab({ user }: { user: User }) {
       <form onSubmit={handleUpdate}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-foreground">
-            Informații Profil
+            Detaliile mele
           </h2>
-          {!isEditing ? (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 text-primary hover:underline"
+        </div>
+
+        {/* New explanatory paragraph moved here */}
+        <div className="space-y-2 mb-6"> {/* Added mb-6 for spacing */}
+          <p className="text-muted-foreground">
+            Pentru a actualiza prenumele, numele de familie sau numărul de telefon, te rugăm să editezi una dintre adresele tale salvate în secțiunea{' '}
+            <Link
+              href="/account?tab=addresses"
+              className="text-primary hover:underline"
             >
-              <Edit size={16} />
-              <span>Editează</span>
-            </button>
-          ) : (
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-              >
-                <X size={16} />
-                <span>Anulează</span>
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex items-center gap-2 text-primary hover:underline disabled:opacity-50 disabled:no-underline"
-              >
-                <Save size={16} />
-                <span>{isSubmitting ? 'Se salvează...' : 'Salvează'}</span>
-              </button>
-            </div>
-          )}
+              Adrese
+            </Link>
+            .
+          </p>
         </div>
 
         {error && (
@@ -339,66 +309,60 @@ function ProfileTab({ user }: { user: User }) {
           </div>
         )}
 
-        {isEditing ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InputField
-              placeholder="Prenume"
-              value={formData.firstName}
-              onChange={(val) => setFormData({ ...formData, firstName: val })}
-            />
-            <InputField
-              placeholder="Nume"
-              value={formData.lastName}
-              onChange={(val) => setFormData({ ...formData, lastName: val })}
-            />
-            <InputField
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(val) => setFormData({ ...formData, email: val })}
-              className="md:col-span-2"
-            />
-            <InputField
-              placeholder="Telefon (ex. +40 712 345 678)"
-              value={formData.phone}
-              onChange={(val) => setFormData({ ...formData, phone: val })}
-              className="md:col-span-2"
-            />
+        {/* This entire isEditing block is removed as per user request */}
+        {/* The content below is the non-editing view, which is now always displayed */}
+        <div className="space-y-8">
+          {/* Main Card: Prenume, Nume, Telefon */}
+          <div className="bg-card p-6 border border-gray-300 rounded-none">
+            <div className="space-y-4 divide-y divide-gray-300">
+              <div className="pt-4 first:pt-0">
+                <p className="text-lg font-bold text-foreground">Prenume</p>
+                <p className="text-base text-muted-foreground mt-1">
+                  {user.firstName || '-'}
+                </p>
+              </div>
+              <div className="pt-4">
+                <p className="text-lg font-bold text-foreground">Nume</p>
+                <p className="text-base text-muted-foreground mt-1">
+                  {user.lastName || '-'}
+                </p>
+              </div>
+              <div className="pt-4">
+                <p className="text-lg font-bold text-foreground">Telefon</p>
+                <p className="text-base text-muted-foreground mt-1">
+                  {user.phone || '-'}
+                </p>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4">
+
+          {/* Information Section */}
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-foreground">
+              Detalii cont
+            </h3>
+            <p className="text-muted-foreground">
+              Pentru actualizarea adresei de email și parolei, mergi la
+              secțiunea{' '}
+              <Link
+                href="/account?tab=settings"
+                className="text-primary hover:underline"
+              >
+                Securitate și setări
+              </Link>
+            </p>
+          </div>
+
+          {/* Second Card: Email */}
+          <div className="bg-card p-6 border border-gray-300 rounded-none">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground">
-                Prenume
-              </label>
-              <p className="mt-1 text-foreground font-medium">
-                {user.firstName || '-'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground">
-                Nume
-              </label>
-              <p className="mt-1 text-foreground font-medium">
-                {user.lastName || '-'}
-              </p>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-muted-foreground">
-                Email
-              </label>
-              <p className="mt-1 text-foreground font-medium">{user.email}</p>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-muted-foreground">
-                Telefon
-              </label>
-              <p className="mt-1 text-foreground font-medium">
-                {user.phone || '-'}
+              <p className="text-lg font-bold text-foreground">Email</p>
+              <p className="text-base text-muted-foreground mt-1">
+                {user.email || '-'}
               </p>
             </div>
           </div>
-        )}
+        </div>
       </form>
     </div>
   )

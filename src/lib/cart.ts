@@ -259,7 +259,11 @@ async function shopifyRequest(query: string, variables: Record<string, unknown>)
       const message = Array.isArray(errors)
         ? errors.map((e: any) => e.message).join(', ')
         : (errors as any).message || 'An unknown GraphQL error occurred.';
-      throw new Error(message);
+      if (errors.graphQLErrors && Array.isArray(errors.graphQLErrors)) {
+        const graphQLErrorsMessages = errors.graphQLErrors.map((e: any) => e.message).join(', ');
+        throw new Error(`GraphQL Client: ${graphQLErrorsMessages}. Original error: ${message}`);
+      }
+      throw new Error(`GraphQL Client: ${message}`);
     }
 
     if (!data) {
@@ -279,13 +283,20 @@ async function shopifyRequest(query: string, variables: Record<string, unknown>)
 
     return result;
   } catch (error: any) {
+    // Check for GraphQL errors from the storefront-api-client
+    if (error.graphQLErrors && Array.isArray(error.graphQLErrors)) {
+      const errorMessages = error.graphQLErrors.map((e: any) => e.message).join(', ');
+      throw new Error(`GraphQL Client: ${errorMessages}`);
+    }
+    // Fallback to network errors (if any)
     if (error.networkError?.result?.errors) {
       const errors = error.networkError.result.errors;
       const errorMessages = Array.isArray(errors)
         ? errors.map((e: any) => e.message).join(', ')
-        : (errors as any).message || 'An unknown GraphQL error occurred.';
-      throw new Error(errorMessages);
+        : (errors as any).message || 'An unknown network error occurred.';
+      throw new Error(`Network Error: ${errorMessages}`);
     }
+    // Re-throw if it's another type of error
     throw error;
   }
 }

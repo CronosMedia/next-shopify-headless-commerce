@@ -46,15 +46,7 @@ export async function GET(request: NextRequest) {
       { productId }
     )
 
-    if (!data || !data.productRecommendations) {
-      console.error('Invalid response structure:', data)
-      return Response.json(
-        { error: 'Invalid response from Shopify API for recommendations' },
-        { status: 500 }
-      )
-    }
-
-    const products = data.productRecommendations || []
+    const products = data?.productRecommendations || []
     return Response.json({ products })
   } catch (error: unknown) {
     console.error('Shopify API error:', error)

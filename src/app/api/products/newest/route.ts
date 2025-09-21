@@ -34,22 +34,16 @@ const NEWEST_PRODUCTS_QUERY = `#graphql
 
 export async function GET() {
   try {
-    const data: { products: ProductConnection } = await shopifyClient.request(NEWEST_PRODUCTS_QUERY, {
+    const response = await shopifyClient.request(NEWEST_PRODUCTS_QUERY, { // Renamed data to response
       first: 12,
     })
 
-    console.log('Shopify API response:', JSON.stringify(data, null, 2))
+    const data = response.data; // Access the nested data property
 
-    if (!data || !data.products) {
-      console.error('Invalid response structure:', data)
-      return Response.json(
-        { error: 'Invalid response from Shopify API' },
-        { status: 500 }
-      )
+    let products: any[] = [];
+    if (data && data.products && data.products.edges) {
+      products = data.products.edges;
     }
-
-    const products =
-      data.products.edges?.map((edge) => edge.node) || []
     return Response.json({ products })
   } catch (error: unknown) {
     console.error('Shopify API error:', error)

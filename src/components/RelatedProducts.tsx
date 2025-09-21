@@ -53,6 +53,9 @@ export default function RelatedProducts() {
               finalProducts = recommendedProducts.filter(
                 (p) => !cartProductIds.has(p.id)
               )
+            } else {
+              // Handle error gracefully, e.g., log to console without crashing
+              console.error('Failed to fetch recommendations:', response.status, response.statusText);
             }
           }
         }
@@ -62,11 +65,14 @@ export default function RelatedProducts() {
           const response = await fetch('/api/products/newest')
           if (response.ok) {
             const data = await response.json()
-            const newestProducts: ProductNode[] = data.products || []
+            const newestProducts: ProductNode[] = data.products?.map((edge: any) => edge.node) || []
             // Filtrează și produsele noi
             finalProducts = newestProducts.filter(
               (p) => !cartProductIds.has(p.id)
             )
+          } else {
+            // Handle error gracefully, e.g., log to console without crashing
+            console.error('Failed to fetch newest products:', response.status, response.statusText);
           }
         }
 

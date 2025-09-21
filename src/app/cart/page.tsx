@@ -237,13 +237,14 @@ export default function CartPage() {
                             line.merchandise.product.featuredImage?.altText ||
                             line.merchandise.title
                           }
-                          width={96}
-                          height={96}
-                          className="object-contain"
+                          width={100} // Added width
+                          height={100} // Added height
+                          priority={true} // Added priority
+                          className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                          <ShoppingCart className="text-gray-400" size={24} />
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          No Image
                         </div>
                       )}
                     </Link>

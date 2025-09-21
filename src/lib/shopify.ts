@@ -60,11 +60,11 @@ export type Cart = {
           address2?: string
           city?: string
           company?: string
-          country?: string
+          countryCode?: string
           firstName?: string
           lastName?: string
           phone?: string
-          province?: string
+          provinceCode?: string
           zip?: string
         }
         deliveryOptions: Array<{
@@ -126,24 +126,21 @@ export type GraphQLResponse<T> = {
   errors?: any
 }
 
+const client = createStorefrontApiClient({ // Create client once
+  storeDomain,
+  apiVersion,
+  publicAccessToken: accessToken,
+});
+
 export const shopifyClient = {
-  ...createStorefrontApiClient({
-    storeDomain,
-    apiVersion,
-    publicAccessToken: accessToken,
-  }),
+  ...client, // Spread the client properties
   request: async <T extends Record<string, unknown>>(
     query: string,
     variables?: Record<string, unknown>
   ): Promise<GraphQLResponse<T>> => {
-    const client = createStorefrontApiClient({
-      storeDomain,
-      apiVersion,
-      publicAccessToken: accessToken,
-    })
-    const response = await client.request(query, { variables })
-    return response as GraphQLResponse<T>
+    const response = await client.request(query, { variables }); // Use the single client instance
+    return response as GraphQLResponse<T>;
   },
-}
+};
 
 export type ShopifyClient = typeof shopifyClient
