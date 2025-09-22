@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams, type Router } from 'next/navigation' // Added useRouter and useSearchParams, and Router type
 import {
   User as UserIcon,
   Package,
@@ -31,9 +32,19 @@ import { romanianCounties } from '@/lib/geo-data'
 
 // Main component for the account page
 export default function AccountPage() {
-  const [activeTab, setActiveTab] = useState('profile')
-  const { user, loading, logout } = useAuth()
-  const { cart } = useCart()
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const { user, loading, logout } = useAuth();
+  const { cart } = useCart();
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams, activeTab]);
 
   if (loading) return <LoadingSpinner />
   if (!user) return <AuthForm />
@@ -47,6 +58,7 @@ export default function AccountPage() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           onLogout={() => logout(cart?.id)}
+          router={router}
         />
         <MainContent activeTab={activeTab} user={user} />
       </div>
@@ -170,7 +182,7 @@ function AuthForm() {
   )
 }
 
-function Sidebar({ activeTab, setActiveTab, onLogout }: { activeTab: string, setActiveTab: (tab: string) => void, onLogout: () => void }) {
+function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: string, setActiveTab: (tab: string) => void, onLogout: () => void, router: Router }) {
   const accountManagementItems = [
     { id: 'profile', label: 'Detalii personale', icon: UserIcon },
     { id: 'orders', label: 'Istoric comenzi', icon: Package },
@@ -186,7 +198,10 @@ function Sidebar({ activeTab, setActiveTab, onLogout }: { activeTab: string, set
         {accountManagementItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {
+              setActiveTab(item.id);
+              router.push(`/account?tab=${item.id}`);
+            }}
             className={`w-full flex items-center gap-3 text-left transition-colors relative cursor-pointer ${
               activeTab === item.id
                 ? 'py-3 pl-4 text-foreground hover:bg-secondary'
@@ -295,7 +310,7 @@ function ProfileTab({ user }: { user: User }) {
             Pentru a actualiza prenumele, numele de familie sau numărul de telefon, te rugăm să editezi una dintre adresele tale salvate în secțiunea{' '}
             <Link
               href="/account?tab=addresses"
-              className="text-primary hover:underline"
+              className="font-bold text-[var(--link-green)] text-base leading-6 underline hover:text-[var(--link-green-hover)]"
             >
               Adrese
             </Link>
@@ -346,7 +361,7 @@ function ProfileTab({ user }: { user: User }) {
               secțiunea{' '}
               <Link
                 href="/account?tab=settings"
-                className="text-primary hover:underline"
+                className="font-bold text-[var(--link-green)] text-base leading-6 underline hover:text-[var(--link-green-hover)]"
               >
                 Securitate și setări
               </Link>

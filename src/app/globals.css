@@ -10,6 +10,8 @@
   --secondary: #f3f4f6; /* Light gray for input backgrounds and cards */
   --muted: #e5e7eb; /* Border color */
   --muted-foreground: #6b7280; /* Gray for placeholders and muted text */
+  --link-green: oklch(0.424 0.199 265.638);
+  --link-green-hover: oklch(0.35 0.22 265.638); /* A darker shade for hover */
 }
 
 @theme inline {
