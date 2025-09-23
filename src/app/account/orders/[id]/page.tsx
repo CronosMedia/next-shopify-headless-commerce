@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/components/AuthProvider'
 
 // Type updated to use product featuredImage
@@ -87,7 +87,11 @@ export default function OrderDetailsPage() {
 
         setOrder(data.order)
       } catch (err: unknown) {
-        setError(err.message)
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError('An unknown error occurred.')
+        }
       } finally {
         setLoading(false)
       }
@@ -123,7 +127,7 @@ export default function OrderDetailsPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
-        <p className="text-muted-foreground">Loading order details...</p>
+        <p className="text-muted-foreground">Se încarcă detaliile comenzii...</p>
       </div>
     )
   }
@@ -135,10 +139,10 @@ export default function OrderDetailsPage() {
           <p>{error}</p>
         </div>
         <Link
-          href="/account"
+          href="/account?tab=orders"
           className="mt-4 inline-block text-primary hover:underline"
         >
-          &larr; Back to My Account
+          &larr; Înapoi la contul meu
         </Link>
       </div>
     )
@@ -147,53 +151,89 @@ export default function OrderDetailsPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
-        <p className="text-muted-foreground">Order not found.</p>
+        <p className="text-muted-foreground">Comanda nu a fost găsită.</p>
         <Link
-          href="/account"
+          href="/account?tab=orders"
           className="mt-4 inline-block text-primary hover:underline"
         >
-          &larr; Back to My Account
+          &larr; Înapoi la contul meu
         </Link>
       </div>
     )
   }
 
+  const formattedDate = new Intl.DateTimeFormat('ro-RO', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date(order.processedAt));
+  const capitalizedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Link
-        href="/account"
-        className="flex items-center gap-2 text-primary hover:underline mb-6"
+        href="/account?tab=orders"
+        className="flex items-center font-barlow no-underline hover:underline uppercase mb-6"
+        style={{
+            fontFamily: 'Barlow, Arial, Helvetica, sans-serif',
+            fontWeight: 600,
+            color: 'rgb(51, 51, 51)',
+            fontSize: '15px',
+            lineHeight: '15px'
+        }}
       >
-        <ArrowLeft size={16} />
-        Back to My Account
+        <ChevronLeft size={20} className="mr-1" />
+        Înapoi la Istoric Comenzi
       </Link>
 
-      <div className="bg-background rounded-lg shadow p-6 mb-6">
+      <div className="bg-card p-6 border border-gray-300 rounded-none mb-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-muted pb-4 mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Order {order.name}
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Placed on {new Date(order.processedAt).toLocaleDateString()}
-            </p>
-          </div>
-          <div className="mt-4 md:mt-0">
+        <div className="flex items-center flex-grow">
+                  <div className="font-barlow text-2xl text-gray-800" style={{color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400}}>
+                    {capitalizedDate}
+                  </div>
+                  <div className="border-l border-gray-300 h-12 mx-4"></div>
+                  <div className="flex-grow">
+                    <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                      Comanda nr:{' '}
+                      <span style={{fontWeight: 600}}>{order.name}</span>
+                    </p>
+                    <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                      Total:{' '}
+                      <span style={{fontWeight: 600}}>
+                        {order.totalPriceSet.shopMoney.amount} LEI
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex justify-end">
+                  <div className="mt-4 md:mt-0">
             {cancellationState === 'idle' && (
               <button
                 onClick={handleRequestCancellation}
                 className="bg-secondary text-foreground px-4 py-2 rounded-lg hover:bg-muted transition-colors text-sm"
               >
-                Request Cancellation
+                Cerere de anulare
               </button>
             )}
-            {/* ... other cancellation states */}
+            {cancellationState === 'sending' && (
+                 <p className="text-sm text-muted-foreground">Se trimite cererea...</p>
+            )}
+             {cancellationState === 'sent' && (
+                  <p className="text-sm text-green-600">Cerere trimisă.</p>
+             )}
+              {cancellationState === 'error' && (
+                <p className="text-sm text-red-600">Eroare la trimiterea cererii.</p>
+              )}
           </div>
+          </div>
+                </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-2">
-              Shipping Address
+              Adresa de livrare
             </h2>
             {order.shippingAddress ? (
               <div className="text-muted-foreground text-sm">
@@ -213,16 +253,16 @@ export default function OrderDetailsPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">
-                No shipping address provided.
+                Nu a fost furnizată nicio adresă de expediere.
               </p>
             )}
           </div>
           <div className="text-left md:text-right">
             <h2 className="text-lg font-semibold text-foreground mb-2">
-              Order Status
+              Status Comandă
             </h2>
             <p className="text-sm">
-              <span className="font-medium">Payment:</span>{' '}
+              <span className="font-medium">Plată:</span>{' '}
               <span
                 className={`font-semibold ${
                   order.displayFinancialStatus === 'PAID'
@@ -234,7 +274,7 @@ export default function OrderDetailsPage() {
               </span>
             </p>
             <p className="text-sm">
-              <span className="font-medium">Fulfillment:</span>{' '}
+              <span className="font-medium">Livrare:</span>{' '}
               <span
                 className={`font-semibold ${
                   order.displayFulfillmentStatus === 'FULFILLED'
@@ -249,9 +289,9 @@ export default function OrderDetailsPage() {
         </div>
       </div>
 
-      <div className="bg-background rounded-lg shadow p-6">
+      <div className="bg-card p-6 border border-gray-300 rounded-none">
         <h2 className="text-xl font-semibold text-foreground mb-4">
-          Items in this Order
+          Articole în această comandă
         </h2>
         <div className="space-y-4">
           {order.lineItems.nodes.map((item) => {
@@ -288,7 +328,7 @@ export default function OrderDetailsPage() {
                     <p className="font-medium text-foreground">{item.title}</p>
                   )}
                   <p className="text-sm text-muted-foreground">
-                    Qty: {item.quantity}
+                    Cantitate: {item.quantity}
                   </p>
                 </div>
                 <div className="text-right">
@@ -296,9 +336,7 @@ export default function OrderDetailsPage() {
                     {(() => {
                       const unit = parseFloat(item.variant?.price || '0')
                       const total = unit * item.quantity
-                      const currency =
-                        order.totalPriceSet.shopMoney.currencyCode
-                      return `${total} ${currency}`
+                      return `${total.toFixed(2)} LEI`
                     })()}
                   </p>
                 </div>
@@ -310,29 +348,25 @@ export default function OrderDetailsPage() {
           <p className="text-muted-foreground">
             Subtotal:{' '}
             <span className="font-medium text-foreground">
-              {order.subtotalPriceSet.shopMoney.amount}{' '}
-              {order.subtotalPriceSet.shopMoney.currencyCode}
+              {order.subtotalPriceSet.shopMoney.amount} LEI
             </span>
           </p>
           <p className="text-muted-foreground">
-            Shipping:{' '}
+            Livrare:{' '}
             <span className="font-medium text-foreground">
-              {order.totalShippingPriceSet.shopMoney.amount}{' '}
-              {order.totalShippingPriceSet.shopMoney.currencyCode}
+              {order.totalShippingPriceSet.shopMoney.amount} LEI
             </span>
           </p>
           <p className="text-muted-foreground">
-            Taxes:{' '}
+            Taxe:{' '}
             <span className="font-medium text-foreground">
-              {order.totalTaxSet.shopMoney.amount}{' '}
-              {order.totalTaxSet.shopMoney.currencyCode}
+              {order.totalTaxSet.shopMoney.amount} LEI
             </span>
           </p>
           <p className="text-lg font-bold text-foreground">
             Total:{' '}
             <span className="font-bold">
-              {order.totalPriceSet.shopMoney.amount}{' '}
-              {order.totalPriceSet.shopMoney.currencyCode}
+              {order.totalPriceSet.shopMoney.amount} LEI
             </span>
           </p>
         </div>

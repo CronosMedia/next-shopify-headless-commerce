@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams, type Router } from 'next/navigation' // Added useRouter and useSearchParams, and Router type
+import { useRouter, useSearchParams } from 'next/navigation' // Added useRouter and useSearchParams, and Router type
 import {
   User as UserIcon,
   Package,
@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Settings, // Added for Security & Settings
   HelpCircle, // Added for Help Center
+  Check, // Added for checked icon
 } from 'lucide-react'
 import {
   useAuth,
@@ -29,6 +30,7 @@ import {
 } from '@/components/AuthProvider'
 import { useCart } from '@/components/CartProvider'
 import { romanianCounties } from '@/lib/geo-data'
+import ConfirmationModal from '@/components/ConfirmationModal'
 
 // Main component for the account page
 export default function AccountPage() {
@@ -182,7 +184,7 @@ function AuthForm() {
   )
 }
 
-function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: string, setActiveTab: (tab: string) => void, onLogout: () => void, router: Router }) {
+function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: string, setActiveTab: (tab: string) => void, onLogout: () => void, router: ReturnType<typeof useRouter> }) {
   const accountManagementItems = [
     { id: 'profile', label: 'Detalii personale', icon: UserIcon },
     { id: 'orders', label: 'Istoric comenzi', icon: Package },
@@ -254,28 +256,180 @@ function MainContent({ activeTab, user }: { activeTab: string; user: User }) {
         {renderedActiveTab === 'orders' && <OrdersTab />}
         {renderedActiveTab === 'addresses' && <AddressesTab user={user} />}
         {renderedActiveTab === 'payment' && <PaymentTab />}
-        {renderedActiveTab === 'settings' && <SettingsTab />}
+        {renderedActiveTab === 'settings' && <SettingsTab user={user} />}
       </div>
     </div>
   );
 }
 
-function SettingsTab() {
+function SettingsTab({ user }: { user: User }) {
+  const { refetchUser } = useAuth();
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [email, setEmail] = useState(user.email);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const handleEmailChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    try {
+      const response = await fetch('/api/account/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'A apărut o eroare.');
+      }
+      setSuccess('Adresa de email a fost schimbată cu succes.');
+      setIsEditingEmail(false);
+      refetchUser();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    if (password !== confirmPassword) {
+      setError('Parolele nu se potrivesc.');
+      return;
+    }
+    try {
+      const response = await fetch('/api/account/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'A apărut o eroare.');
+      }
+      setPassword('');
+      setConfirmPassword('');
+      setSuccess('Parola a fost schimbată cu succes.');
+      setIsEditingPassword(false);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
-    <div className="bg-background rounded-lg shadow p-6">
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
       <h2 className="text-xl font-semibold mb-6 text-foreground">
         Securitate și Setări
       </h2>
-      <p className="text-muted-foreground">
-        Aici vei putea gestiona setările de securitate și alte preferințe ale contului tău.
-        (Funcționalitate în dezvoltare)
-      </p>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-4">
+          {success}
+        </div>
+      )}
+      <div className="space-y-8">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Adresă de email</h3>
+          {isEditingEmail ? (
+            <form onSubmit={handleEmailChange} className="space-y-4 mt-4">
+              <InputField
+                placeholder="Adresă de email nouă"
+                value={email}
+                onChange={setEmail}
+                type="email"
+                required
+              />
+              <div className="flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingEmail(false)}
+                  className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                >
+                  Anulează
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+                >
+                  Salvează
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-muted-foreground">{user.email}</p>
+              <button
+                onClick={() => setIsEditingEmail(true)}
+                className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+              >
+                <Edit size={20} /> Editează
+              </button>
+            </div>
+          )}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Parolă</h3>
+          {isEditingPassword ? (
+            <form onSubmit={handlePasswordChange} className="space-y-4 mt-4">
+              <InputField
+                placeholder="Parolă nouă"
+                value={password}
+                onChange={setPassword}
+                type="password"
+                required
+              />
+              <InputField
+                placeholder="Confirmă parola nouă"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                type="password"
+                required
+              />
+              <div className="flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingPassword(false)}
+                  className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                >
+                  Anulează
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+                >
+                  Salvează
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-muted-foreground">••••••••</p>
+              <button
+                onClick={() => setIsEditingPassword(true)}
+                className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+              >
+                <Edit size={20} /> Editează
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
 
 function ProfileTab({ user }: { user: User }) {
   const { updateUser } = useAuth()
+  const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -291,43 +445,72 @@ function ProfileTab({ user }: { user: User }) {
     const apiError = await updateUser(formData)
     if (apiError) {
       setError(apiError.error.message)
+    } else {
+      setIsEditing(false)
     }
     setIsSubmitting(false)
   }
 
   return (
-    <div className="bg-background rounded-lg shadow p-6">
-      <form onSubmit={handleUpdate}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-foreground">
-            Detaliile mele
-          </h2>
-        </div>
-
-        {/* New explanatory paragraph moved here */}
-        <div className="space-y-2 mb-6"> {/* Added mb-6 for spacing */}
-          <p className="text-muted-foreground">
-            Pentru a actualiza prenumele, numele de familie sau numărul de telefon, te rugăm să editezi una dintre adresele tale salvate în secțiunea{' '}
-            <Link
-              href="/account?tab=addresses"
-              className="font-bold text-[var(--link-green)] text-base leading-6 underline hover:text-[var(--link-green-hover)]"
-            >
-              Adrese
-            </Link>
-            .
-          </p>
-        </div>
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
-            {error}
-          </div>
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-foreground">
+          Detaliile mele
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+          >
+            <Edit size={20} /> Editează
+          </button>
         )}
+      </div>
 
-        {/* This entire isEditing block is removed as per user request */}
-        {/* The content below is the non-editing view, which is now always displayed */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
+          {error}
+        </div>
+      )}
+
+      {isEditing ? (
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <InputField
+            placeholder="Prenume"
+            value={formData.firstName}
+            onChange={(val) => setFormData({ ...formData, firstName: val })}
+            required
+          />
+          <InputField
+            placeholder="Nume"
+            value={formData.lastName}
+            onChange={(val) => setFormData({ ...formData, lastName: val })}
+            required
+          />
+          <InputField
+            placeholder="Telefon"
+            value={formData.phone}
+            onChange={(val) => setFormData({ ...formData, phone: val })}
+          />
+          <div className="flex justify-end gap-4 mt-4">
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+            >
+              Anulează
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? 'Se salvează...' : 'Salvează'}
+            </button>
+          </div>
+        </form>
+      ) : (
         <div className="space-y-8">
-          {/* Main Card: Prenume, Nume, Telefon */}
           <div className="bg-card p-6 border border-gray-300 rounded-none">
             <div className="space-y-4 divide-y divide-gray-300">
               <div className="pt-4 first:pt-0">
@@ -351,7 +534,6 @@ function ProfileTab({ user }: { user: User }) {
             </div>
           </div>
 
-          {/* Information Section */}
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-foreground">
               Detalii cont
@@ -368,7 +550,6 @@ function ProfileTab({ user }: { user: User }) {
             </p>
           </div>
 
-          {/* Second Card: Email */}
           <div className="bg-card p-6 border border-gray-300 rounded-none">
             <div>
               <p className="text-lg font-bold text-foreground">Email</p>
@@ -378,7 +559,7 @@ function ProfileTab({ user }: { user: User }) {
             </div>
           </div>
         </div>
-      </form>
+      )}
     </div>
   )
 }
@@ -387,6 +568,8 @@ function OrdersTab() {
   const { fetchOrders } = useAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -398,52 +581,101 @@ function OrdersTab() {
     loadOrders()
   }, [fetchOrders])
 
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+
   if (isLoading)
     return <p className="text-muted-foreground">Se încarcă comenzile...</p>
 
   return (
-    <div className="bg-background rounded-lg shadow p-6">
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
       <h2 className="text-xl font-semibold mb-6 text-foreground">
         Istoric Comenzi
       </h2>
       {orders.length === 0 ? (
         <p className="text-muted-foreground">Nu ai nicio comandă.</p>
       ) : (
-        <div className="space-y-4">
-          {orders.map((order) => {
-            const orderId = order.id.split('/').pop()
-            return (
-              <Link key={order.id} href={`/account/orders/${orderId}`}>
-                <div className="border border-muted rounded-lg p-4 hover:bg-secondary transition-colors cursor-pointer flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Comanda #{order.orderNumber}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Plasată pe{' '}
-                      {new Date(order.processedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-foreground">
-                      {order.totalPrice.amount} {order.totalPrice.currencyCode}
-                    </p>
-                    <p
-                      className={`text-sm font-semibold ${
-                        order.fulfillmentStatus === 'FULFILLED'
-                          ? 'text-green-600'
-                          : 'text-yellow-600'
-                      }`}
+        <>
+          <div className="space-y-4">
+            {currentOrders.map((order) => {
+              const orderId = order.id.split('/').pop();
+              const date = new Date(order.processedAt);
+              const formattedDate = new Intl.DateTimeFormat('ro-RO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }).format(date);
+              const capitalizedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+
+              return (
+                <div
+                  key={order.id}
+                  className="bg-card p-6 border border-gray-300 rounded-none"
+                >
+                  <div className="flex items-center">
+                    <div className="font-barlow text-2xl text-gray-800" style={{color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400}}>
+                      {capitalizedDate}
+                    </div>
+                    <div className="border-l border-gray-300 h-12 mx-4"></div>
+                    <div className="flex-grow">
+                      <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                        Comanda nr:{' '}
+                        <span style={{fontWeight: 600}}>{order.orderNumber}</span>
+                      </p>
+                      <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                        Total:{' '}
+                        <span style={{fontWeight: 600}}>
+                          {order.totalPrice.amount} LEI
+                        </span>
+                      </p>
+                    </div>
+                    <Link
+                      href={`/account/orders/${orderId}`}
+                      className="flex items-center font-barlow no-underline hover:underline uppercase"
+                      style={{
+                        fontFamily: 'Barlow, Arial, Helvetica, sans-serif',
+                        fontWeight: 600,
+                        color: 'rgb(51, 51, 51)',
+                        fontSize: '15px',
+                        lineHeight: '15px'
+                      }}
                     >
-                      {order.fulfillmentStatus}
-                    </p>
+                      Vezi detaliile comenzii
+                      <ChevronRight size={20} className="ml-1" />
+                    </Link>
                   </div>
-                  <ChevronRight className="text-muted-foreground" size={20} />
                 </div>
-              </Link>
-            )
-          })}
-        </div>
+              );
+            })}
+          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6">
+              {
+                Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`mx-1 px-3 py-1 rounded-md ${
+                      currentPage === index + 1
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))
+              }
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -454,6 +686,10 @@ function AddressesTab({ user }: { user: User }) {
     useAuth()
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+
 
   const addresses = useMemo(
     () => user.addresses.edges.map((e) => e.node),
@@ -470,9 +706,24 @@ function AddressesTab({ user }: { user: User }) {
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Sigur doriți să ștergeți această adresă?')) {
-      await deleteAddress(id)
+  const openDeleteModal = (id: string) => {
+    if (id === user.defaultAddress?.id) {
+      setIsInfoModalOpen(true);
+    } else {
+      setAddressToDelete(id);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setAddressToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (addressToDelete) {
+      await deleteAddress(addressToDelete);
+      closeDeleteModal();
     }
   }
 
@@ -486,21 +737,8 @@ function AddressesTab({ user }: { user: User }) {
   }
 
   return (
-    <div className="bg-background rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-foreground">
-          Adrese Salvate
-        </h2>
-        <button
-          onClick={handleAddNew}
-          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:brightness-110 transition-all"
-        >
-          <PlusCircle size={16} />
-          <span>Adaugă Adresă Nouă</span>
-        </button>
-      </div>
-
-      {isFormOpen && (
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
+      {isFormOpen ? (
         <AddressForm
           user={user}
           address={editingAddress}
@@ -511,74 +749,109 @@ function AddressesTab({ user }: { user: User }) {
               : addAddress
           }
         />
-      )}
-
-      <div className="space-y-4">
-        {addresses.length === 0 ? (
-          <p className="text-muted-foreground">Nu ai nicio adresă salvată.</p>
-        ) : (
-          addresses.map((address: Address) => (
-            <div
-              key={address.id}
-              className="border border-muted rounded-lg p-4 flex items-start justify-between"
+      ) : (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-foreground">
+              Adrese Salvate
+            </h2>
+            <button
+              onClick={handleAddNew}
+              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
             >
-              <div>
-                <p className="font-medium flex items-center gap-2 text-foreground">
-                  {address.company || 'Adresă'}
-                  {user.defaultAddress?.id === address.id && (
-                    <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full flex items-center gap-1">
-                      <Star size={12} /> Implicită
-                    </span>
-                  )}
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {address.firstName} {address.lastName}
-                  <br />
-                  {address.address1}
-                  <br />
-                  {address.address2 && (
-                    <span>
-                      {address.address2}
-                      <br />
-                    </span>
-                  )}
-                  {address.city}, {address.province} {address.zip}
-                  <br />
-                  {address.country}
-                  {address.phone && (
-                    <>
-                      <br />
-                      <span className="font-medium">Tel:</span> {address.phone}
-                    </>
-                  )}
-                </p>
-              </div>
-              <div className="flex gap-2 items-center">
-                {user.defaultAddress?.id !== address.id && (
-                  <button
-                    onClick={() => handleSetDefault(address.id)}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Setează ca implicită
-                  </button>
-                )}
-                <button
-                  onClick={() => handleEdit(address)}
-                  className="text-primary hover:brightness-125"
+              <PlusCircle size={20} />
+              <span>Adaugă Adresă Nouă</span>
+            </button>
+          </div>
+          <div className="space-y-4">
+            {addresses.length === 0 ? (
+              <p className="text-muted-foreground">Nu ai nicio adresă salvată.</p>
+            ) : (
+              addresses.map((address: Address) => (
+                <div
+                  key={address.id}
+                  className={`border p-4 flex flex-col ${
+                    user.defaultAddress?.id === address.id ? 'border-gray-500 border-2' : 'border-gray-300'
+                  }`}
                 >
-                  <Edit size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(address.id)}
-                  className="text-red-600 hover:text-red-500"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium flex items-center gap-2 text-foreground">
+                        {address.company || 'Adresă'}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {address.firstName} {address.lastName}
+                        <br />
+                        {address.address1}
+                        <br />
+                        {address.address2 && (
+                          <span>
+                            {address.address2}
+                            <br />
+                          </span>
+                        )}
+                        {address.city}, {address.province} {address.zip}
+                        <br />
+                        {address.country}
+                        {address.phone && (
+                          <>
+                            <br />
+                            <span className="font-medium">Tel:</span> {address.phone}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-center mt-4">
+                    {user.defaultAddress?.id === address.id ? (
+                      <button
+                        disabled
+                        className="flex items-center gap-2 bg-white text-green-600 px-6 py-3 rounded-none border-2 border-green-600 text-lg"
+                      >
+                        <Check size={20} />
+                        Adresă preferată
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleSetDefault(address.id)}
+                        className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                      >
+                        Setează ca preferată
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleEdit(address)}
+                      className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                    >
+                      <Edit size={20} /> Editează
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(address.id)}
+                      className="flex items-center gap-2 bg-red-500 text-white px-6 py-3 rounded-none border-2 border-red-600 hover:bg-red-600 text-lg cursor-pointer"
+                    >
+                      <Trash2 size={20} /> Șterge
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        title="Confirmă ștergerea"
+        message="Ești sigur că vrei să ștergi această adresă?"
+      />
+      <ConfirmationModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+        title="Acțiune nepermisă"
+        message="Nu poți șterge adresa preferată. Te rugăm să setezi o altă adresă ca preferată înainte de a o șterge pe aceasta."
+        type="info"
+      />
     </div>
   )
 }
@@ -696,13 +969,10 @@ function AddressForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mb-8 p-4 border border-muted rounded-lg bg-secondary/50 space-y-4"
-    >
-      <h3 className="text-lg font-semibold text-foreground">
+    <>
+      <h2 className="text-2xl font-semibold text-foreground mb-4">
         {address ? 'Editează Adresa' : 'Adaugă Adresă Nouă'}
-      </h3>
+      </h2>
 
       {errors.form && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative flex items-center gap-2">
@@ -711,139 +981,139 @@ function AddressForm({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField
-          placeholder="Numele adresei (ex. Acasă, Birou)"
-          value={formData.company || ''}
-          onChange={(val) => setFormData({ ...formData, company: val })}
-          error={errors.company}
-          className="md:col-span-2"
-        />
-        <InputField
-          placeholder="Prenume"
-          value={formData.firstName}
-          onChange={(val) => setFormData({ ...formData, firstName: val })}
-          error={errors.firstName}
-          required
-        />
-        <InputField
-          placeholder="Nume"
-          value={formData.lastName}
-          onChange={(val) => setFormData({ ...formData, lastName: val })}
-          error={errors.lastName}
-          required
-        />
-        <InputField
-          placeholder="Telefon"
-          value={formData.phone || ''}
-          onChange={(val) => setFormData({ ...formData, phone: val })}
-          error={errors.phone}
-          className="md:col-span-2"
-        />
-        <InputField
-          placeholder="Stradă"
-          value={formData.street}
-          onChange={(val) => setFormData({ ...formData, street: val })}
-          error={errors.street}
-          required
-        />
-        <InputField
-          placeholder="Număr"
-          value={formData.streetNo}
-          onChange={(val) => setFormData({ ...formData, streetNo: val })}
-          error={errors.streetNo}
-          required
-        />
-        <InputField
-          placeholder="Bloc (Opțional)"
-          value={formData.building}
-          onChange={(val) => setFormData({ ...formData, building: val })}
-          error={errors.building}
-        />
-        <InputField
-          placeholder="Scară (Opțional)"
-          value={formData.staircase}
-          onChange={(val) => setFormData({ ...formData, staircase: val })}
-          error={errors.staircase}
-        />
-        <InputField
-          placeholder="Etaj (Opțional)"
-          value={formData.floor}
-          onChange={(val) => setFormData({ ...formData, floor: val })}
-          error={errors.floor}
-        />
-        <InputField
-          placeholder="Apartament (Opțional)"
-          value={formData.apartment}
-          onChange={(val) => setFormData({ ...formData, apartment: val })}
-          error={errors.apartment}
-        />
-        <InputField
-          placeholder="Localitate"
-          value={formData.city}
-          onChange={(val) => setFormData({ ...formData, city: val })}
-          error={errors.city}
-          required
-        />
-        <div className="md:col-span-1">
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
-            Județ <span className="text-red-500">*</span>
-          </label>
-          <select
-            value={formData.province}
-            onChange={(e) =>
-              setFormData({ ...formData, province: e.target.value })
-            }
-            className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary ${
-              errors.province ? 'border-red-500' : 'border-muted'
-            }`}
-          >
-            <option value="" disabled>
-              Selectează un județ
-            </option>
-            {romanianCounties.map((county) => (
-              <option key={county.code} value={county.code}>
-                {county.name}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            placeholder="Numele adresei (ex. Acasă, Birou)"
+            value={formData.company || ''}
+            onChange={(val) => setFormData({ ...formData, company: val })}
+            error={errors.company}
+            className="md:col-span-2"
+          />
+          <InputField
+            placeholder="Prenume"
+            value={formData.firstName}
+            onChange={(val) => setFormData({ ...formData, firstName: val })}
+            error={errors.firstName}
+            required
+          />
+          <InputField
+            placeholder="Nume"
+            value={formData.lastName}
+            onChange={(val) => setFormData({ ...formData, lastName: val })}
+            error={errors.lastName}
+            required
+          />
+          <InputField
+            placeholder="Telefon"
+            value={formData.phone || ''}
+            onChange={(val) => setFormData({ ...formData, phone: val })}
+            error={errors.phone}
+            className="md:col-span-2"
+          />
+          <InputField
+            placeholder="Stradă"
+            value={formData.street}
+            onChange={(val) => setFormData({ ...formData, street: val })}
+            error={errors.street}
+            required
+          />
+          <InputField
+            placeholder="Număr"
+            value={formData.streetNo}
+            onChange={(val) => setFormData({ ...formData, streetNo: val })}
+            error={errors.streetNo}
+            required
+          />
+          <InputField
+            placeholder="Bloc (Opțional)"
+            value={formData.building}
+            onChange={(val) => setFormData({ ...formData, building: val })}
+            error={errors.building}
+          />
+          <InputField
+            placeholder="Scară (Opțional)"
+            value={formData.staircase}
+            onChange={(val) => setFormData({ ...formData, staircase: val })}
+            error={errors.staircase}
+          />
+          <InputField
+            placeholder="Etaj (Opțional)"
+            value={formData.floor}
+            onChange={(val) => setFormData({ ...formData, floor: val })}
+            error={errors.floor}
+          />
+          <InputField
+            placeholder="Apartament (Opțional)"
+            value={formData.apartment}
+            onChange={(val) => setFormData({ ...formData, apartment: val })}
+            error={errors.apartment}
+          />
+          <InputField
+            placeholder="Localitate"
+            value={formData.city}
+            onChange={(val) => setFormData({ ...formData, city: val })}
+            error={errors.city}
+            required
+          />
+          <div className="md:col-span-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
+              Județ <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.province}
+              onChange={(e) =>
+                setFormData({ ...formData, province: e.target.value })
+              }
+              className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            >
+              <option value="" disabled>
+                Selectează un județ
               </option>
-            ))}
-          </select>
-          {errors.province && (
-            <p className="text-sm text-red-600 mt-1">{errors.province}</p>
-          )}
+              {romanianCounties.map((county) => (
+                <option key={county.code} value={county.code}>
+                  {county.name}
+                </option>
+              ))}
+            </select>
+            {errors.province && (
+              <p className="text-sm text-red-600 mt-1">{errors.province}</p>
+            )}
+          </div>
+          <InputField
+            placeholder="Cod Poștal"
+            value={formData.zip}
+            onChange={(val) => setFormData({ ...formData, zip: val })}
+            error={errors.zip}
+            required
+          />
+          <InputField
+            placeholder="Țară"
+            value={formData.country}
+            onChange={(val) => setFormData({ ...formData, country: val })}
+            error={errors.country}
+            disabled
+            required
+          />
         </div>
-        <InputField
-          placeholder="Cod Poștal"
-          value={formData.zip}
-          onChange={(val) => setFormData({ ...formData, zip: val })}
-          error={errors.zip}
-          required
-        />
-        <InputField
-          placeholder="Țară"
-          value={formData.country}
-          onChange={(val) => setFormData({ ...formData, country: val })}
-          error={errors.country}
-          disabled
-          required
-        />
-      </div>
-      <div className="flex justify-end gap-4">
-        <button
-          type="button"
-          onClick={onClose}
-          className="px-4 py-2 rounded-lg text-muted-foreground hover:bg-secondary"
-        >
-          Anulează
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
-        >
-          {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
-        </button>
-      </div>
-    </form>
+        <div className="flex justify-end gap-4 mt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+          >
+            Anulează
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+          >
+            {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
+          </button>
+        </div>
+      </form>
+    </>
   )
 }
 
@@ -877,7 +1147,7 @@ function InputField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:bg-secondary ${
+        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:bg-secondary ${
           error ? 'border-red-500' : 'border-muted'
         }`}
       />
@@ -888,12 +1158,12 @@ function InputField({
 
 function PaymentTab() {
   return (
-    <div className="bg-background rounded-lg shadow p-6">
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
       <h2 className="text-xl font-semibold mb-6 text-foreground">
         Metode de plată
       </h2>
-      <div className="bg-blue-100 border border-blue-200 text-blue-800 rounded-lg p-4">
-        <p className="font-medium">Gestionează metodele de plată la checkout</p>
+      <div>
+        <p className="font-medium">Gestionează metodele de plată la finalizarea comenzii</p>
         <p className="text-sm mt-1">
           Pentru securitatea ta, metodele de plată pot fi adăugate, modificate
           sau șterse în timpul procesului de finalizare a comenzii.

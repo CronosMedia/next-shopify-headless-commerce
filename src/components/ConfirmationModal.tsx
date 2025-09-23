@@ -1,44 +1,65 @@
-import React from 'react'
+'use client'
+
+import { X } from 'lucide-react'
 
 interface ConfirmationModalProps {
   isOpen: boolean
   onClose: () => void
-  onConfirm: () => void
+  onConfirm?: () => void
+  title: string
   message: string
-  title?: string
+  type?: 'confirmation' | 'info'
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+export default function ConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
+  title,
   message,
-  title = 'Confirmare',
-}) => {
+  type = 'confirmation',
+}: ConfirmationModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-        <h3 className="text-xl font-bold mb-4 text-gray-900">{title}</h3>
-        <p className="text-gray-700 mb-6">{message}</p>
-        <div className="flex justify-end gap-3">
+    <div className="fixed inset-0 bg-black/80 z-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-none w-full max-w-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">{title}</h2>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            className="text-gray-500 hover:text-gray-700"
           >
-            Anulează
+            <X size={24} />
           </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Confirmă
-          </button>
+        </div>
+        <p className="mb-6">{message}</p>
+        <div className="flex justify-end gap-4">
+          {type === 'confirmation' ? (
+            <>
+              <button
+                onClick={onClose}
+                className="bg-gray-200 text-gray-800 px-6 py-3 rounded-none border-2 border-gray-300 text-lg cursor-pointer hover:bg-gray-300"
+              >
+                Anulează
+              </button>
+              <button
+                onClick={onConfirm}
+                className="bg-red-500 text-white px-6 py-3 rounded-none border-2 border-red-600 hover:bg-red-600 text-lg cursor-pointer"
+              >
+                Șterge
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onClose}
+              className="bg-gray-200 text-gray-800 px-6 py-3 rounded-none border-2 border-gray-300 text-lg cursor-pointer hover:bg-gray-300"
+            >
+              Închide
+            </button>
+          )}
         </div>
       </div>
     </div>
   )
 }
-
-export default ConfirmationModal

@@ -1,39 +1,66 @@
-hook.js:608 Image with src "https://cdn.shopify.com/s/files/1/0988/0967/6040/files/Main_0a4e9096-021a-4c1e-8750-24b233166a12.jpg?v=1757493252" was detected as the Largest Contentful Paint (LCP). Please add the "priority" property if this image is above the fold.
-Read more: https://nextjs.org/docs/api-reference/next/image#priority
-overrideMethod @ hook.js:608
-hook.js:608 Failed to update delivery address: Error: GraphQL Client: Variable $buyerIdentity of type CartBuyerIdentityInput! was provided invalid value for deliveryAddressPreferences.0.address1 (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.address2 (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.city (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.company (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.country (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.firstName (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.lastName (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.phone (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.province (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.zip (Field is not defined on DeliveryAddressInput). Original error: GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.
-at shopifyRequest (C:\Users\catal\OneDrive\Desktop\Web-Dev\next-commerce\src\lib\cart.ts:264:15)
-at async cartBuyerIdentityUpdate (C:\Users\catal\OneDrive\Desktop\Web-Dev\next-commerce\src\lib\cart.ts:354:18)
-at async CartProvider.useCallback[updateDeliveryAddress] (C:\Users\catal\OneDrive\Desktop\Web-Dev\next-commerce\src\components\CartProvider.tsx:376:25)
-at async CartProvider.useMemo[value] (C:\Users\catal\OneDrive\Desktop\Web-Dev\next-commerce\src\components\CartProvider.tsx:447:22)
-at async onAddressSelect (C:\Users\catal\OneDrive\Desktop\Web-Dev\next-commerce\src\app\cart\page.tsx:522:13)
-overrideMethod @ hook.js:608
+tot nu merge. tine cont, te rog ca folosim storefront api de la shopify. uite ce zice consola serverului:
 
-## Error Type
+> next-commerce@0.1.0 dev
+> next dev
 
-Console Error
+▲ Next.js 15.5.3
 
-## Error Message
+- Local: http://localhost:3000
+- Network: http://192.168.1.131:3000
+- Environments: .env.local
 
-GraphQL Client: Variable $buyerIdentity of type CartBuyerIdentityInput! was provided invalid value for deliveryAddressPreferences.0.address1 (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.address2 (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.city (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.company (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.country (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.firstName (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.lastName (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.phone (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.province (Field is not defined on DeliveryAddressInput), deliveryAddressPreferences.0.zip (Field is not defined on DeliveryAddressInput). Original error: GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.
-
-    at shopifyRequest (src\lib\cart.ts:264:15)
-    at async cartBuyerIdentityUpdate (src\lib\cart.ts:354:18)
-    at async CartProvider.useCallback[updateDeliveryAddress] (src\components\CartProvider.tsx:376:25)
-    at async CartProvider.useMemo[value] (src\components\CartProvider.tsx:447:22)
-    at async onAddressSelect (src\app\cart\page.tsx:522:13)
-
-## Code Frame
-
-262 | if (errors.graphQLErrors && Array.isArray(errors.graphQLErrors)) {
-263 | const graphQLErrorsMessages = errors.graphQLErrors.map((e: any) => e.message).join(', ');
-
-> 264 | throw new Error(`GraphQL Client: ${graphQLErrorsMessages}. Original error: ${message}`);
-
-      |               ^
-
-265 | }
-266 | throw new Error(`GraphQL Client: ${message}`);
-267 | }
-
-Next.js version: 15.5.3 (Webpack)
+✓ Starting...
+✓ Ready in 3s
+○ Compiling /account ...
+✓ Compiled /account in 2.4s (818 modules)
+GET /account?tab=settings 200 in 3083ms
+○ Compiling /api/auth/me ...
+✓ Compiled /api/auth/me in 1192ms (828 modules)
+GET /api/collections 200 in 1529ms
+GET /api/collections 200 in 50ms
+GET /api/auth/me 200 in 1740ms
+GET /account?tab=settings 200 in 502ms
+✓ Compiled /api/account/update in 486ms (842 modules)
+Sending to Shopify API: {
+customerAccessToken: 'de592fbb4f720946afcc05dfb1d6e336',
+customer: { email: 'catalin.so.are@hotmail.com' }
+}
+Shopify Customer Update Errors: Unexpected response from Shopify API {
+data: { customerUpdate: { customer: [Object], customerUserErrors: [] } },
+headers: Headers {
+date: 'Tue, 23 Sep 2025 07:32:05 GMT',
+'content-type': 'application/json; charset=utf-8',
+'transfer-encoding': 'chunked',
+connection: 'keep-alive',
+'x-sorting-hat-podid': '263',
+'x-sorting-hat-shopid': '98809676040',
+'x-storefront-renderer-rendered': '1',
+'x-shopify-api-version-warning': 'https://shopify.dev/concepts/about-apis/versioning',
+'shopify-complexity-score': '1440',
+'set-cookie': '\_shopify_essential=:AZl1fJ-RAAEAFnaCZqCq5X9l3WKlLLuI4LlfbysbbR2-jpEQVpJuqthr5ECwiUn_j00DlxhHXx4eD8k4Xo3ukqOSZHTtY5FBrBsDqmaBkLaqgl9mkx9KmRuEgQHP3Ccu0Ea1YZfFcuGgG91ZIX6J3nUg8x8n:; Max-Age=31536000; Path=/; HttpOnly; Secure; Priority=High; SameSite=Lax',
+'x-frame-options': 'DENY',
+'content-security-policy': "block-all-mixed-content; frame-ancestors 'none'; upgrade-insecure-requests;",
+'access-control-allow-origin': '\*',
+'x-shopify-api-version': '2024-10',
+'x-shopid': '98809676040',
+'x-shardid': '263',
+vary: 'Accept,accept-encoding',
+'content-language': 'en',
+'powered-by': 'Shopify',
+'server-timing': 'processing;dur=147, db;dur=17, fetch;dur=106, asn;desc="8708", edge;desc="OTP", country;desc="RO", servedBy;desc="4cd7", graphql;desc="storefront/mutation/customerUpdate", gqlSelectionNames;desc="sfr/customerUpdate", requestID;desc="c49a7430-55cb-4886-be97-88753af4109f-1758612725", \_y;desc="6de30b98-31dd-4311-8c3d-c55f8496cf62", \_s;desc="715e0082-8afa-4e68-9277-095cbbcfa3c2", cfRequestDuration;dur=223.999977',
+'content-encoding': 'gzip',
+'x-dc': 'gcp-europe-west1,gcp-europe-west1,gcp-europe-west1',
+'x-request-id': 'c49a7430-55cb-4886-be97-88753af4109f-1758612725',
+'alt-svc': 'h3=":443"; ma=86400',
+'cf-cache-status': 'DYNAMIC',
+'report-to': '{"endpoints":[{"url":"https:\\/\\/a.nel.cloudflare.com\\/report\\/v4?s=19K67Y%2F8FdcuQMlPXm0iMX6QXeDUXSWKBUvMEbAvj%2BeYNQu8QPJCkGtmZDRKII7Nn5jq8XpeZWztc8VFeFZzS%2FezRaLEOZFsPd9Wvk7VPE2rgHrYMUp6TayJRCXrByAznowPWseclaXz8SR%2BCQ%3D%3D"}],"group":"cf-nel","max_age":604800}',
+nel: '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}',
+'x-xss-protection': '1; mode=block',
+'x-content-type-options': 'nosniff',
+'x-permitted-cross-domain-policies': 'none',
+'x-download-options': 'noopen',
+server: 'cloudflare',
+'cf-ray': '9838589e2d59e4b3-OTP'
+}
+}
+PUT /api/account/update 500 in 975ms

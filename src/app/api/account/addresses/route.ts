@@ -47,8 +47,9 @@ export const GET = async (req: NextRequest) => {
       defaultAddress,
     })
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch addresses';
     return Response.json(
-      { error: error.message || 'Failed to fetch addresses' },
+      { error: errorMessage },
       { status: 500 }
     )
   }
@@ -89,8 +90,9 @@ export const POST = async (req: NextRequest) => {
 
     return Response.json({ address: customerAddress })
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create address';
     return Response.json(
-      { error: error.message || 'Failed to create address' },
+      { error: errorMessage },
       { status: 500 }
     )
   }
@@ -134,8 +136,9 @@ export const PUT = async (req: NextRequest) => {
 
     return Response.json({ address: customerAddress })
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update address';
     return Response.json(
-      { error: error.message || 'Failed to update address' },
+      { error: errorMessage },
       { status: 500 }
     )
   }
@@ -179,8 +182,9 @@ export const DELETE = async (req: NextRequest) => {
 
     return Response.json({ deletedAddressId: deletedCustomerAddressId })
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete address';
     return Response.json(
-      { error: error.message || 'Failed to delete address' },
+      { error: errorMessage },
       { status: 500 }
     )
   }
@@ -226,8 +230,9 @@ export const PATCH = async (req: NextRequest) => {
 
     return Response.json({ customer })
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to set default address';
     return Response.json(
-      { error: error.message || 'Failed to set default address' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

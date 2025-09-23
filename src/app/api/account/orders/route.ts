@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest) => {
       return Response.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    const { customer } = await shopifyClient.request<{ customer: Customer }>(
+    const { data: { customer } } = await shopifyClient.request<{ customer: Customer }>(
       GET_CUSTOMER_ORDERS_QUERY,
       {
         customerAccessToken: accessToken,

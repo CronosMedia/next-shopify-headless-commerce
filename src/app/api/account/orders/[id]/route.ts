@@ -35,12 +35,21 @@ export const GET = async (req: NextRequest) => {
     const id = pathname.split('/').pop()
     const orderId = `gid://shopify/Order/${id}`
 
-    const { node: order }: { node: Order } = await client.request(
+    const response = await client.request(
       GET_ORDER_DETAILS_QUERY,
       {
         variables: { orderId },
       }
-    )
+    );
+
+    if (!response.data || !response.data.node) {
+      return Response.json(
+        { error: { message: 'Order not found or invalid response' } },
+        { status: 404 }
+      );
+    }
+
+    const order: Order = response.data.node as Order;
 
     if (!order) {
       return Response.json(

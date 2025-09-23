@@ -145,8 +145,9 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json({ order })
   } catch (error: unknown) {
     console.error('Proxy route error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch order details';
     return NextResponse.json(
-      { error: { message: error.message || 'Failed to fetch order details' } },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
