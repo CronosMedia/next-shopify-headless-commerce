@@ -301,10 +301,10 @@ async function shopifyRequest(query: string, variables: Record<string, unknown>)
   }
 }
 
-export async function cartGet(cartId: string): Promise<Cart> {
+export async function cartGet(cartId: string): Promise<Cart | null> {
   const result = await shopifyRequest(CART_QUERY, { id: cartId });
-  if (!result) {
-    throw new Error('Cart not found');
+  if (!result || !result.id) {
+    return null;
   }
   return result;
 }

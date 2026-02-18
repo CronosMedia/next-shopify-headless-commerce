@@ -115,7 +115,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setSelectedDeliveryOption(dg.selectedDeliveryOption)
     if (dg?.deliveryAddress) {
       const addr = dg.deliveryAddress
-      
+
       // Convert province code to name
       const provinceCode = addr.province;
       const county = romanianCounties.find(c => c.code === provinceCode);
@@ -124,13 +124,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Convert country code to name
       let countryName = addr.country;
       if (countryName && countryName.toUpperCase() === 'RO') {
-          countryName = 'Romania';
+        countryName = 'Romania';
       }
 
       setSelectedDeliveryAddress({
-        id: `${addr.firstName ?? ''}-${addr.lastName ?? ''}-${
-          addr.address1 ?? ''
-        }`,
+        id: `${addr.firstName ?? ''}-${addr.lastName ?? ''}-${addr.address1 ?? ''
+          }`,
         firstName: addr.firstName || '',
         lastName: addr.lastName || '',
         company: addr.company || undefined,
@@ -169,7 +168,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       try {
         const fetched = await cartGet(cartId)
-        syncFromCart(fetched ?? null)
+        if (fetched) syncFromCart(fetched)
         return fetched
       } finally {
         setLoading(false)

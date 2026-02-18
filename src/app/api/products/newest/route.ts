@@ -32,17 +32,47 @@ const NEWEST_PRODUCTS_QUERY = `#graphql
   }
 `
 
+// Define the expected response type
+type NewestProductsResponse = {
+  products: {
+    edges: Array<{
+      node: {
+        id: string
+        handle: string
+        title: string
+        featuredImage: {
+          url: string
+          altText: string
+          width: number
+          height: number
+        } | null
+        priceRange: {
+          minVariantPrice: { amount: string; currencyCode: string }
+        }
+        variants: {
+          edges: Array<{
+            node: {
+              id: string
+              availableForSale: boolean
+            }
+          }>
+        }
+      }
+    }>
+  }
+}
+
 export async function GET() {
   try {
-    const response = await shopifyClient.request(NEWEST_PRODUCTS_QUERY, { // Renamed data to response
+    const response = await shopifyClient.request<NewestProductsResponse>(NEWEST_PRODUCTS_QUERY, { // Pass type argument
       first: 12,
     })
 
-    const data = response.data; // Access the nested data property
+    const data = response.data;
 
     let products: any[] = [];
     if (data && data.products && data.products.edges) {
-      products = data.products.edges;
+      products = data.products.edges.map((edge) => edge.node);
     }
     return Response.json({ products })
   } catch (error: unknown) {

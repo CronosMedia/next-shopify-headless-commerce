@@ -8,7 +8,10 @@ import BuyBox from './BuyBox'
 import Tabs from './Tabs'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import RelatedProducts from '@/components/RelatedProducts'
-import MobileStickyBuyBox from '@/components/MobileStickyBuyBox'
+import StickyBuyBox from '@/components/StickyBuyBox'
+import RecentlyViewed from '@/components/RecentlyViewed'
+import { useRecentlyViewed } from '@/lib/useRecentlyViewed'
+import { useEffect } from 'react'
 
 // Import Lightbox component (will create next)
 import Lightbox from './Lightbox'
@@ -58,10 +61,46 @@ export default function ProductView({
     href: `/products/${product.handle}`,
   })
 
+  const { addProduct } = useRecentlyViewed()
+  const [isStickyVisible, setIsStickyVisible] = useState(false)
+
   const firstVariant = variants[0]
   const price = firstVariant?.price?.amount || '0'
   const currency = firstVariant?.price?.currencyCode || 'USD'
   const availableForSale = firstVariant?.availableForSale || false
+
+  useEffect(() => {
+    if (product) {
+      addProduct({
+        id: product.id,
+        handle: product.handle,
+        title: product.title,
+        featuredImage: product.featuredImage || images[0] || null,
+        price,
+        currencyCode: currency
+      })
+    }
+  }, [product.id])
+
+  // Intersection Observer to toggle sticky header
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Toggle visibility: true when BuyBox is NOT intersecting (scrolled past), false otherwise
+        // Actually we want it visible when we scroll PAST the buy button.
+        // Let's attach ref to the BuyBox container.
+        setIsStickyVisible(!entry.isIntersecting && entry.boundingClientRect.top < 0)
+      },
+      { threshold: 0 }
+    )
+
+    const buyBoxElement = document.getElementById('main-buy-box')
+    if (buyBoxElement) {
+      observer.observe(buyBoxElement)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <>
@@ -82,31 +121,39 @@ export default function ProductView({
                 setMainImage(clickedImage)
               }
             }}
-            onMainImageClick={openLightbox} // New prop for Gallery
+            onMainImageClick={openLightbox}
           />
-          <BuyBox
-            title={product.title}
-            options={product.options}
-            variants={variants}
-            onVariantChange={handleVariantChange}
-          />
+          <div id="main-buy-box">
+            <BuyBox
+              title={product.title}
+              options={product.options}
+              variants={variants}
+              onVariantChange={handleVariantChange}
+            />
+          </div>
         </div>
 
-        <div className="max-w-4xl">
+        <div id="overview" className="max-w-4xl scroll-mt-24">
           <Tabs descriptionHtml={product.descriptionHtml} />
         </div>
       </main>
 
-      {/* <RelatedProducts products={relatedProducts} /> */}
+      <div id="recommended" className="scroll-mt-24">
+        <RelatedProducts currentProductId={product.id} />
+      </div>
 
-      <MobileStickyBuyBox
+      <RecentlyViewed currentProductId={product.id} />
+
+      <StickyBuyBox
         product={{
           title: product.title,
           price: Number(price).toFixed(2),
           currency,
           availableForSale,
+          featuredImage: product.featuredImage || images[0] || null
         }}
         variantId={firstVariant?.id}
+        isVisible={isStickyVisible}
       />
 
       {/* Lightbox component */}

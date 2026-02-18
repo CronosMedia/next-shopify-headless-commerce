@@ -64,6 +64,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const { address }: { address: MailingAddress } = await req.json()
+    console.log('Creating address for customer:', { address })
 
     const response = await shopifyClient.request<{ customerAddressCreate: CustomerAddressCreatePayload }>(
       CUSTOMER_ADDRESS_CREATE_MUTATION,
@@ -74,14 +75,17 @@ export const POST = async (req: NextRequest) => {
     )
 
     if (response.errors) {
+      console.error('Shopify request errors:', response.errors)
       const message =
         response.errors[0]?.message || 'An error occurred creating the address.'
-      return Response.json({ error: { message } }, { status: 400 })
+      return Response.json({ error: message }, { status: 400 })
     }
 
     const { customerAddress, customerUserErrors } =
       response.data.customerAddressCreate
+
     if (customerUserErrors?.length > 0) {
+      console.error('Shopify customer user errors:', customerUserErrors)
       return Response.json(
         { error: customerUserErrors[0].message },
         { status: 400 }
@@ -90,6 +94,7 @@ export const POST = async (req: NextRequest) => {
 
     return Response.json({ address: customerAddress })
   } catch (error: unknown) {
+    console.error('Unhandled error in address creation:', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to create address';
     return Response.json(
       { error: errorMessage },

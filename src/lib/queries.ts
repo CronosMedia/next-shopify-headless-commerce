@@ -30,6 +30,73 @@ export const PRODUCTS_QUERY = `#graphql
   }
 `
 
+export const COLLECTIONS_QUERY = `#graphql
+  query Collections($first: Int = 12) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          handle
+          title
+          description
+          image {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+`
+
+export const COLLECTION_PRODUCT_QUERY = `#graphql
+  query CollectionProductQuery($handle: String!, $first: Int = 12, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $filters: [ProductFilter!]) {
+    collection(handle: $handle) {
+      id
+      title
+      products(first: $first, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
+        edges {
+          node {
+            id
+            handle
+            title
+            vendor
+            productType
+            tags
+            featuredImage {
+              url
+              altText
+              width
+              height
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            availableForSale
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`
+
 export const PRODUCT_BY_HANDLE_QUERY = `#graphql
   query ProductByHandle($handle: String!) {
     product(handle: $handle) {
@@ -284,6 +351,21 @@ export const GET_CUSTOMER_ORDERS_QUERY = `#graphql
               amount
               currencyCode
             }
+            successfulFulfillments(first: 5) {
+              trackingCompany
+              trackingInfo {
+                number
+                url
+              }
+            }
+            lineItems(first: 5) {
+              edges {
+                node {
+                  title
+                  quantity
+                }
+              }
+            }
           }
         }
       }
@@ -292,65 +374,79 @@ export const GET_CUSTOMER_ORDERS_QUERY = `#graphql
 `
 
 export const GET_ORDER_DETAILS_QUERY = `#graphql
-  query getOrderDetails($orderId: ID!) {
-    node(id: $orderId) {
-      ... on Order {
-        id
-        name
-        orderNumber
-        processedAt
-        financialStatus
-        fulfillmentStatus
-        shippingAddress {
-          id
-          firstName
-          lastName
-          name
-          company
-          address1
-          address2
-          city
-          province
-          zip
-          country
-          phone
-        }
-        subtotalPriceV2 {
-          amount
-          currencyCode
-        }
-        totalShippingPriceV2 {
-          amount
-          currencyCode
-        }
-        totalTaxV2 {
-          amount
-          currencyCode
-        }
-        totalPriceV2 {
-          amount
-          currencyCode
-        }
-        lineItems(first: 50) {
-          edges {
-            node {
-              title
-              quantity
-              variant {
-                image {
-                  url
-                  altText
-                  width
-                  height
-                }
-                price {
-                  amount
-                  currencyCode
-                }
+  query getOrderDetails($customerAccessToken: String!, $first: Int = 20) {
+    customer(customerAccessToken: $customerAccessToken) {
+      orders(first: $first, sortKey: PROCESSED_AT, reverse: true) {
+        edges {
+          node {
+            id
+            name
+            orderNumber
+            processedAt
+            financialStatus
+            fulfillmentStatus
+            totalPrice {
+              amount
+              currencyCode
+            }
+            shippingAddress {
+              id
+              firstName
+              lastName
+              name
+              company
+              address1
+              address2
+              city
+              province
+              zip
+              country
+              phone
+            }
+            subtotalPrice {
+              amount
+              currencyCode
+            }
+            totalShippingPrice {
+              amount
+              currencyCode
+            }
+            totalTax {
+              amount
+              currencyCode
+            }
+            successfulFulfillments(first: 5) {
+              trackingCompany
+              trackingInfo {
+                number
+                url
               }
-              discountedTotalPrice {
-                amount
-                currencyCode
+            }
+            lineItems(first: 50) {
+              edges {
+                node {
+                  title
+                  quantity
+                  variant {
+                    price {
+                      amount
+                      currencyCode
+                    }
+                    image {
+                      url
+                      altText
+                      width
+                      height
+                    }
+                    product {
+                      handle
+                    }
+                  }
+                  discountedTotalPrice {
+                    amount
+                    currencyCode
+                  }
+                }
               }
             }
           }

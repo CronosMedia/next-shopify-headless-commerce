@@ -26,6 +26,29 @@ const SEARCH_PRODUCTS_QUERY = `#graphql
   }
 `
 
+
+type SearchProductsResponse = {
+  products: {
+    edges: Array<{
+      node: {
+        id: string
+        handle: string
+        title: string
+        description: string
+        featuredImage: {
+          url: string
+          altText: string
+          width: number
+          height: number
+        } | null
+        priceRange: {
+          minVariantPrice: { amount: string; currencyCode: string }
+        }
+      }
+    }>
+  }
+}
+
 export const GET = async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url)
@@ -38,13 +61,15 @@ export const GET = async (req: NextRequest) => {
       )
     }
 
-    const data: { products: ProductConnection } = await shopifyClient.request(SEARCH_PRODUCTS_QUERY, {
+    const response = await shopifyClient.request<SearchProductsResponse>(SEARCH_PRODUCTS_QUERY, {
       query,
       first: 20, // Fetch up to 20 results
     })
 
+    const data = response.data
+
     return NextResponse.json({
-      products: data.products.edges.map((edge) => edge.node),
+      products: data?.products?.edges.map((edge: any) => edge.node) || [],
     })
   } catch (error: unknown) {
     console.error('Search API error:', error)

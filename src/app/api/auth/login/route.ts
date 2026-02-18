@@ -9,13 +9,14 @@ import {
   CustomerAccessTokenCreatePayload,
   Customer,
 } from '@/lib/shopify/generated/graphql'
+import { GraphQLResponse } from '@/lib/shopify'
 
 export const POST = async (req: NextRequest) => {
   try {
     const { email, password, cartId } = await req.json()
 
     // 1. Authenticate customer and get access token
-    const tokenResponse: { data: { customerAccessTokenCreate: CustomerAccessTokenCreatePayload } } = await shopifyClient.request(
+    const tokenResponse = (await shopifyClient.request(
       CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
       {
         input: {
@@ -23,7 +24,7 @@ export const POST = async (req: NextRequest) => {
           password,
         },
       }
-    )
+    )) as GraphQLResponse<{ customerAccessTokenCreate: CustomerAccessTokenCreatePayload }>
 
     if (tokenResponse.errors) {
       const message =
@@ -58,9 +59,9 @@ export const POST = async (req: NextRequest) => {
     }
 
     // 3. Fetch the full customer object to return to the client
-    const customerResponse: { data: { customer: Customer } } = await shopifyClient.request(GET_CUSTOMER_QUERY, {
+    const customerResponse = (await shopifyClient.request(GET_CUSTOMER_QUERY, {
       customerAccessToken: accessToken,
-    })
+    })) as GraphQLResponse<{ customer: Customer }>
 
     if (customerResponse.errors) {
       const message =

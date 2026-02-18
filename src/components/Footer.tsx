@@ -27,8 +27,8 @@ export default function Footer() {
               <span className="font-bold text-xl">next-commerce</span>
             </div>
             <p className="text-gray-300 text-sm">
-              Your trusted source for premium health and wellness products.
-              Quality guaranteed, delivered fast.
+              Sursa ta de încredere pentru produse premium de sănătate și wellness.
+              Calitate garantată, livrare rapidă.
             </p>
             <div className="flex gap-4">
               <a
@@ -54,81 +54,81 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Quick Links</h3>
+            <h3 className="font-semibold text-lg">Link-uri Rapide</h3>
             <div className="space-y-2">
               <Link
                 href="/"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Home
+                Acasă
               </Link>
               <Link
                 href="/collections"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Categories
+                Categorii
               </Link>
               <Link
-                href="/deals"
+                href="/oferte"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Deals
+                Oferte
               </Link>
               <Link
-                href="/new"
+                href="/noutati"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                New Arrivals
+                Noutăți
               </Link>
               <Link
-                href="/about"
+                href="/despre-noi"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                About Us
+                Despre Noi
               </Link>
             </div>
           </div>
 
           {/* Customer Service */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Customer Service</h3>
+            <h3 className="font-semibold text-lg">Serviciu Clienți</h3>
             <div className="space-y-2">
               <Link
                 href="/contact"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Contact Us
+                Contact
               </Link>
               <Link
-                href="/shipping"
+                href="/livrare-gratuita"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Shipping Info
+                Informații Livrare
               </Link>
               <Link
-                href="/returns"
+                href="/politica-retur"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Returns & Exchanges
+                Politica de Retur
               </Link>
               <Link
-                href="/faq"
+                href="/intrebari-frecvente"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                FAQ
+                Întrebări Frecvente
               </Link>
               <Link
-                href="/size-guide"
+                href="/ghid-marimi"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
-                Size Guide
+                Ghid Mărimi
               </Link>
             </div>
           </div>
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Contact Info</h3>
+            <h3 className="font-semibold text-lg">Contact</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Mail size={16} className="text-green-400" />
@@ -138,12 +138,12 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Phone size={16} className="text-green-400" />
-                <span className="text-gray-300 text-sm">+1 (555) 123-4567</span>
+                <span className="text-gray-300 text-sm">+40 700 000 000</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin size={16} className="text-green-400" />
                 <span className="text-gray-300 text-sm">
-                  123 Commerce St, City, State 12345
+                  Strada Comerțului Nr. 123, București
                 </span>
               </div>
             </div>
@@ -155,19 +155,19 @@ export default function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-8">
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <Truck size={16} className="text-green-400" />
-              <span>Free Shipping</span>
+              <span>Livrare Gratuită</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <Shield size={16} className="text-green-400" />
-              <span>Secure Payment</span>
+              <span>Plată Securizată</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <Clock size={16} className="text-green-400" />
-              <span>24/7 Support</span>
+              <span>Suport 24/7</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <CreditCard size={16} className="text-green-400" />
-              <span>Easy Returns</span>
+              <span>Retur Simplu</span>
             </div>
           </div>
         </div>
@@ -182,22 +182,22 @@ export default function Footer() {
             </div>
             <div className="flex gap-6 text-sm">
               <Link
-                href="/privacy"
+                href="/politica-confidentialitate"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Privacy Policy
+                Politica de Confidențialitate
               </Link>
               <Link
-                href="/terms"
+                href="/termeni-si-conditii"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Terms of Service
+                Termeni și Condiții
               </Link>
               <Link
-                href="/cookies"
+                href="/politica-cookie"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Cookie Policy
+                Politica Cookie
               </Link>
             </div>
           </div>

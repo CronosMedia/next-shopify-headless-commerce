@@ -12,6 +12,7 @@ import {
   Heart, // Import Heart for Wishlist
 } from 'lucide-react'
 import { useCart } from './CartProvider'
+import { useWishlist } from './WishlistProvider'
 import MegaMenu from './MegaMenu'
 import Cart from './Cart'
 
@@ -36,6 +37,7 @@ export default function MainHeader() {
   const [liveSearchResults, setLiveSearchResults] = useState<Product[]>([])
   const [liveSearchLoading, setLiveSearchLoading] = useState(false)
   const { cart } = useCart()
+  const { count: wishlistCount } = useWishlist()
   const count = cart?.totalQuantity || 0
   const router = useRouter()
 
@@ -206,12 +208,17 @@ export default function MainHeader() {
             {/* Wishlist */}
             <Link
               href="/wishlist"
-              className="hidden sm:flex flex-col items-center text-gray-700 hover:text-black"
+              className="hidden sm:flex flex-col items-center text-gray-700 hover:text-black relative"
             >
               <Heart size={24} />
               <span className="text-[15px] font-normal leading-normal font-barlow">
                 Wishlist
               </span>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}

@@ -42,3 +42,12 @@ export const romanianCounties = [
   { name: 'Vâlcea', code: 'VL' },
   { name: 'Vrancea', code: 'VN' },
 ];
+
+export const bucharestSectors = [
+  { name: 'Sector 1', code: 'B1' },
+  { name: 'Sector 2', code: 'B2' },
+  { name: 'Sector 3', code: 'B3' },
+  { name: 'Sector 4', code: 'B4' },
+  { name: 'Sector 5', code: 'B5' },
+  { name: 'Sector 6', code: 'B6' },
+];

@@ -33,6 +33,13 @@ export type Order = {
   financialStatus: string
   fulfillmentStatus: string
   totalPrice: { amount: string; currencyCode: string }
+  successfulFulfillments?: Array<{
+    trackingCompany: string
+    trackingInfo: Array<{
+      number: string
+      url: string
+    }>
+  }>
   lineItems: { edges: { node: { title: string; quantity: number } }[] }
 }
 
@@ -202,32 +209,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch('/api/account/proxy/orders')
       if (response.ok) {
         const data = await response.json()
-        // The Admin API returns { orders: [...] }
         if (data.orders) {
-          // Transform the data from Admin API format to Storefront API format
-          const transformedOrders: Order[] = data.orders.map(
-            (adminOrder: any) => ({
-              id: `gid://shopify/Order/${adminOrder.id}`, // Construct a GID
-              orderNumber: adminOrder.order_number,
-              processedAt: adminOrder.processed_at,
-              financialStatus: adminOrder.financial_status,
-              fulfillmentStatus: adminOrder.fulfillment_status || 'UNFULFILLED',
-              totalPrice: {
-                amount: adminOrder.current_total_price, // Use current_total_price for accuracy
-                currencyCode: adminOrder.currency,
-              },
-              // Note: lineItems structure is simplified and might need more fields if the detail page uses them
-              lineItems: {
-                edges: adminOrder.line_items.map((item: any) => ({
-                  node: {
-                    title: item.title,
-                    quantity: item.quantity,
-                  },
-                })),
-              },
-            })
-          )
-          return transformedOrders
+          return data.orders
         }
         return []
       }

@@ -1,0 +1,1141 @@
+[2026-02-17T14:23:51.808Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:23:51.853Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:23:51.854Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:23:52.072Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:23:52.072Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:23:52.072Z] Orders found: 0
+[2026-02-17T14:23:52.072Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:23:52.072Z] Available IDs: 
+[2026-02-17T14:24:14.429Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:24:14.449Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:24:14.449Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:24:14.607Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:24:14.607Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:24:14.607Z] Orders found: 0
+[2026-02-17T14:24:14.608Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:24:14.608Z] Available IDs: 
+[2026-02-17T14:24:51.496Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:24:51.499Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:24:51.499Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:24:51.663Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:24:51.663Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:24:51.663Z] Orders found: 0
+[2026-02-17T14:24:51.663Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:24:51.663Z] Available IDs: 
+[2026-02-17T14:25:17.296Z] GET /api/account/proxy/orders/Z2lkOi8vc2hvcGlmeS9PcmRlci84MjY0MjMxMzU0NjMy
+[2026-02-17T14:25:17.298Z] Fetching order details for GID: gid://shopify/Order/Z2lkOi8vc2hvcGlmeS9PcmRlci84MjY0MjMxMzU0NjMy
+[2026-02-17T14:25:17.298Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:25:17.549Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:25:17.549Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:25:17.549Z] Orders found: 0
+[2026-02-17T14:25:17.549Z] Error: Order gid://shopify/Order/Z2lkOi8vc2hvcGlmeS9PcmRlci84MjY0MjMxMzU0NjMy not found in the fetched list of 0 orders
+[2026-02-17T14:25:17.549Z] Available IDs: 
+[2026-02-17T14:25:17.672Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:25:17.673Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:25:17.673Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:25:17.836Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:25:17.843Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:25:17.843Z] Orders found: 1
+[2026-02-17T14:25:17.843Z] Mapping storefront order to frontend format...
+[2026-02-17T14:25:17.844Z] Successfully mapped order
+[2026-02-17T14:25:31.369Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:25:31.370Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:25:31.371Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:25:31.531Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:25:31.531Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:25:31.531Z] Orders found: 1
+[2026-02-17T14:25:31.531Z] Mapping storefront order to frontend format...
+[2026-02-17T14:25:31.531Z] Successfully mapped order
+[2026-02-17T14:25:31.622Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:25:31.624Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:25:31.624Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:25:31.787Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:25:31.788Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:25:31.788Z] Orders found: 1
+[2026-02-17T14:25:31.788Z] Mapping storefront order to frontend format...
+[2026-02-17T14:25:31.788Z] Successfully mapped order
+[2026-02-17T14:26:00.725Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:26:00.728Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:26:00.729Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:26:00.933Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:26:00.934Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:26:00.934Z] Orders found: 0
+[2026-02-17T14:26:00.934Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:26:00.934Z] Available IDs: 
+[2026-02-17T14:26:18.679Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:26:18.682Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:26:18.682Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:26:18.863Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:26:18.863Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:26:18.863Z] Orders found: 0
+[2026-02-17T14:26:18.863Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:26:18.863Z] Available IDs: 
+[2026-02-17T14:26:56.775Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:26:56.776Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:26:56.776Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:26:56.928Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:26:56.928Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:26:56.928Z] Orders found: 0
+[2026-02-17T14:26:56.928Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:26:56.928Z] Available IDs: 
+[2026-02-17T14:27:41.510Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:27:41.523Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:27:41.523Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:27:41.698Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:27:41.699Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:27:41.699Z] Orders found: 0
+[2026-02-17T14:27:41.699Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:27:41.700Z] Available IDs: 
+[2026-02-17T14:30:02.402Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:02.404Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:02.562Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:02.565Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:02.567Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:02.567Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:03.058Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:30:03.058Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:03.058Z] Orders found: 0
+[2026-02-17T14:30:03.060Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:30:03.060Z] Available IDs: 
+[2026-02-17T14:30:03.072Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:30:03.072Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:03.072Z] Orders found: 1
+[2026-02-17T14:30:03.072Z] Mapping storefront order to frontend format...
+[2026-02-17T14:30:03.072Z] Successfully mapped order
+[2026-02-17T14:30:03.297Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:03.309Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:03.314Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:03.481Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:30:03.481Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:03.481Z] Orders found: 0
+[2026-02-17T14:30:03.481Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:30:03.481Z] Available IDs: 
+[2026-02-17T14:30:03.624Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:03.626Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:03.626Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:03.790Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:30:03.790Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:03.790Z] Orders found: 0
+[2026-02-17T14:30:03.790Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:30:03.790Z] Available IDs: 
+[2026-02-17T14:30:34.036Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:34.092Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:34.092Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:34.277Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:30:34.277Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:34.277Z] Orders found: 0
+[2026-02-17T14:30:34.277Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:30:34.277Z] Available IDs: 
+[2026-02-17T14:30:56.933Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:30:56.940Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:30:56.940Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:30:57.105Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:30:57.105Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:30:57.105Z] Orders found: 0
+[2026-02-17T14:30:57.105Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:30:57.105Z] Available IDs: 
+[2026-02-17T14:31:50.043Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:31:50.051Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:31:50.051Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:31:50.302Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:31:50.302Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:31:50.302Z] Orders found: 0
+[2026-02-17T14:31:50.302Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:31:50.302Z] Available IDs: 
+[2026-02-17T14:33:44.413Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:33:44.473Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:33:44.481Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:33:44.626Z] Shopify Data: {"customer":{"orders":{"edges":[]}}}
+[2026-02-17T14:33:44.626Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:33:44.626Z] Orders found: 0
+[2026-02-17T14:33:44.626Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:33:44.626Z] Available IDs: 
+[2026-02-17T14:37:01.064Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:37:01.070Z] Error: No access token found in cookies
+[2026-02-17T14:37:16.499Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:37:16.539Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:37:16.545Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:37:16.708Z] Shopify Data: {"customer":null}
+[2026-02-17T14:37:16.708Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:37:16.708Z] Orders found: 0
+[2026-02-17T14:37:16.708Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:37:16.708Z] Available IDs: 
+[2026-02-17T14:39:07.191Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:39:07.195Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:39:07.195Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:39:07.354Z] Shopify Data: {"customer":null}
+[2026-02-17T14:39:07.355Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:39:07.356Z] Orders found: 0
+[2026-02-17T14:39:07.356Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:39:07.356Z] Available IDs: 
+[2026-02-17T14:39:37.048Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:39:37.084Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:39:37.084Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:39:37.294Z] Shopify Data: {"customer":null}
+[2026-02-17T14:39:37.294Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:39:37.294Z] Orders found: 0
+[2026-02-17T14:39:37.294Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:39:37.294Z] Available IDs: 
+[2026-02-17T14:40:28.240Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:40:28.242Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:40:28.243Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:40:28.433Z] Shopify Data: {"customer":null}
+[2026-02-17T14:40:28.433Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:40:28.433Z] Orders found: 0
+[2026-02-17T14:40:28.433Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:40:28.433Z] Available IDs: 
+[2026-02-17T14:42:29.365Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:42:29.371Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:42:29.372Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:42:29.551Z] Shopify Data: {"customer":null}
+[2026-02-17T14:42:29.551Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:42:29.551Z] Orders found: 0
+[2026-02-17T14:42:29.551Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:42:29.551Z] Available IDs: 
+[2026-02-17T14:42:56.638Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:42:56.643Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:42:56.644Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:42:56.822Z] Shopify Data: {"customer":null}
+[2026-02-17T14:42:56.822Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:42:56.822Z] Orders found: 0
+[2026-02-17T14:42:56.822Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:42:56.822Z] Available IDs: 
+[2026-02-17T14:43:42.766Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:43:42.810Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:43:42.811Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:43:43.120Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:43:43.121Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:43:43.121Z] Orders found: 1
+[2026-02-17T14:43:43.121Z] Mapping storefront order to frontend format...
+[2026-02-17T14:43:43.122Z] Successfully mapped order
+[2026-02-17T14:44:03.863Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:44:03.897Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:44:03.900Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:44:04.452Z] Shopify Data: {"customer":null}
+[2026-02-17T14:44:04.452Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:44:04.452Z] Orders found: 0
+[2026-02-17T14:44:04.452Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:44:04.452Z] Available IDs: 
+[2026-02-17T14:46:29.441Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:46:29.446Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:46:29.447Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:46:29.465Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:46:29.504Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:46:29.504Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:46:30.554Z] Shopify Data: {"customer":null}
+[2026-02-17T14:46:30.554Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:46:30.554Z] Orders found: 0
+[2026-02-17T14:46:30.554Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:46:30.554Z] Available IDs: 
+[2026-02-17T14:46:30.567Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:46:30.567Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:46:30.567Z] Orders found: 1
+[2026-02-17T14:46:30.567Z] Mapping storefront order to frontend format...
+[2026-02-17T14:46:30.567Z] Successfully mapped order
+[2026-02-17T14:46:30.687Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:46:30.693Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:46:30.694Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:46:30.882Z] Shopify Data: {"customer":null}
+[2026-02-17T14:46:30.882Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:46:30.882Z] Orders found: 0
+[2026-02-17T14:46:30.882Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:46:30.882Z] Available IDs: 
+[2026-02-17T14:46:52.550Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:46:52.611Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:46:52.616Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:46:52.878Z] Shopify Data: {"customer":null}
+[2026-02-17T14:46:52.880Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:46:52.881Z] Orders found: 0
+[2026-02-17T14:46:52.881Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:46:52.881Z] Available IDs: 
+[2026-02-17T14:47:32.852Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:47:32.902Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:47:32.902Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:47:33.277Z] Shopify Data: {"customer":null}
+[2026-02-17T14:47:33.277Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:47:33.277Z] Orders found: 0
+[2026-02-17T14:47:33.278Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:47:33.278Z] Available IDs: 
+[2026-02-17T14:48:02.043Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:48:02.060Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:48:02.060Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:48:02.271Z] Shopify Data: {"customer":null}
+[2026-02-17T14:48:02.272Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:48:02.272Z] Orders found: 0
+[2026-02-17T14:48:02.272Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:48:02.272Z] Available IDs: 
+[2026-02-17T14:48:13.460Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:48:13.469Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:48:13.471Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:48:13.672Z] Shopify Data: {"customer":null}
+[2026-02-17T14:48:13.675Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:48:13.675Z] Orders found: 0
+[2026-02-17T14:48:13.675Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:48:13.675Z] Available IDs: 
+[2026-02-17T14:48:22.943Z] GET /api/account/proxy/orders/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632
+[2026-02-17T14:48:22.946Z] Fetching order details for GID: gid://shopify/Order/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632
+[2026-02-17T14:48:22.946Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:48:23.151Z] Shopify Data: {"customer":null}
+[2026-02-17T14:48:23.151Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:48:23.151Z] Orders found: 0
+[2026-02-17T14:48:23.151Z] Error: Order gid://shopify/Order/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:48:23.151Z] Available IDs: 
+[2026-02-17T14:49:02.491Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:49:02.499Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:49:02.499Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:49:02.963Z] Shopify Data: {"customer":null}
+[2026-02-17T14:49:02.963Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:49:02.963Z] Orders found: 0
+[2026-02-17T14:49:02.963Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:49:02.963Z] Available IDs: 
+[2026-02-17T14:50:45.812Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:50:45.869Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:50:45.873Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:50:46.288Z] Shopify Data: {"customer":null}
+[2026-02-17T14:50:46.289Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:50:46.289Z] Orders found: 0
+[2026-02-17T14:50:46.289Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:50:46.289Z] Available IDs: 
+[2026-02-17T14:51:27.248Z] GET /api/account/proxy/orders/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632
+[2026-02-17T14:51:27.258Z] Fetching order details for GID: gid://shopify/Order/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632
+[2026-02-17T14:51:27.258Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:51:27.414Z] Shopify Data: {"customer":null}
+[2026-02-17T14:51:27.414Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:51:27.414Z] Orders found: 0
+[2026-02-17T14:51:27.414Z] Error: Order gid://shopify/Order/gid%3A%2F%2Fshopify%2FOrder%2F8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:51:27.414Z] Available IDs: 
+[2026-02-17T14:52:21.897Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:52:21.932Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T14:52:21.933Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:52:22.171Z] Shopify Data: {"customer":null}
+[2026-02-17T14:52:22.171Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:52:22.171Z] Orders found: 0
+[2026-02-17T14:52:22.171Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T14:52:22.171Z] Available IDs: 
+[2026-02-17T14:53:12.814Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:53:12.881Z] Error: No access token found in cookies
+[2026-02-17T14:53:19.678Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:53:19.679Z] Error: No access token found in cookies
+[2026-02-17T14:53:30.323Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:53:30.327Z] Error: No access token found in cookies
+[2026-02-17T14:54:05.811Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T14:54:05.819Z] Error: No access token found in cookies
+[2026-02-17T14:57:52.463Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T14:57:52.469Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T14:57:52.476Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:57:52.739Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:57:52.739Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:57:52.740Z] Orders found: 1
+[2026-02-17T14:57:52.740Z] Mapping storefront order to frontend format...
+[2026-02-17T14:57:52.740Z] Successfully mapped order
+[2026-02-17T14:57:52.824Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T14:57:52.825Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T14:57:52.825Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:57:53.027Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:57:53.027Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:57:53.027Z] Orders found: 1
+[2026-02-17T14:57:53.027Z] Mapping storefront order to frontend format...
+[2026-02-17T14:57:53.027Z] Successfully mapped order
+[2026-02-17T14:58:31.424Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T14:58:31.448Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T14:58:31.457Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:58:31.714Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:58:31.714Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:58:31.714Z] Orders found: 1
+[2026-02-17T14:58:31.715Z] Mapping storefront order to frontend format...
+[2026-02-17T14:58:31.715Z] Successfully mapped order
+[2026-02-17T14:59:33.059Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T14:59:33.062Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T14:59:33.062Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:59:33.444Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:59:33.445Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:59:33.445Z] Orders found: 1
+[2026-02-17T14:59:33.446Z] Mapping storefront order to frontend format...
+[2026-02-17T14:59:33.446Z] Successfully mapped order
+[2026-02-17T14:59:33.531Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T14:59:33.534Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T14:59:33.534Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T14:59:33.723Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T14:59:33.724Z] Customer: undefined (ID: undefined)
+[2026-02-17T14:59:33.724Z] Orders found: 1
+[2026-02-17T14:59:33.724Z] Mapping storefront order to frontend format...
+[2026-02-17T14:59:33.725Z] Successfully mapped order
+[2026-02-17T15:02:18.861Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:02:18.868Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:02:18.873Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:02:19.150Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:02:19.151Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:02:19.151Z] Orders found: 1
+[2026-02-17T15:02:19.151Z] Mapping storefront order to frontend format...
+[2026-02-17T15:02:19.154Z] Successfully mapped order
+[2026-02-17T15:02:19.313Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:02:19.318Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:02:19.318Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:02:19.540Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:02:19.541Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:02:19.541Z] Orders found: 1
+[2026-02-17T15:02:19.541Z] Mapping storefront order to frontend format...
+[2026-02-17T15:02:19.541Z] Successfully mapped order
+[2026-02-17T15:02:54.689Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:02:54.692Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:02:54.698Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:02:54.895Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:02:54.895Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:02:54.895Z] Orders found: 1
+[2026-02-17T15:02:54.896Z] Mapping storefront order to frontend format...
+[2026-02-17T15:02:54.896Z] Successfully mapped order
+[2026-02-17T15:06:56.671Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:06:56.741Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:06:56.742Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:06:57.014Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:06:57.014Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:06:57.014Z] Orders found: 1
+[2026-02-17T15:06:57.014Z] Mapping storefront order to frontend format...
+[2026-02-17T15:06:57.014Z] Successfully mapped order
+[2026-02-17T15:08:49.785Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:08:50.265Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:08:50.265Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:08:50.550Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:08:50.551Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:08:50.551Z] Orders found: 1
+[2026-02-17T15:08:50.551Z] Mapping storefront order to frontend format...
+[2026-02-17T15:08:50.551Z] Successfully mapped order
+[2026-02-17T15:09:14.773Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:09:14.779Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:09:14.779Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:09:15.047Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:09:15.047Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:09:15.047Z] Orders found: 1
+[2026-02-17T15:09:15.047Z] Mapping storefront order to frontend format...
+[2026-02-17T15:09:15.047Z] Successfully mapped order
+[2026-02-17T15:09:36.902Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:09:36.903Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:09:36.903Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:09:37.118Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:09:37.118Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:09:37.118Z] Orders found: 1
+[2026-02-17T15:09:37.118Z] Mapping storefront order to frontend format...
+[2026-02-17T15:09:37.118Z] Successfully mapped order
+[2026-02-17T15:10:42.668Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:10:42.671Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:10:42.671Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:10:42.880Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264432189704?key=a17eba6e5a7711b6cd2cf502345a6968","name":"#1007","orderNumber":1007,"processedAt":"2026-02-17T14:52:11Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"70.5","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724599542024?model_name=Address","firstName":"Test","lastName":"User","name":"Test User","company":null,"address1":"Strada Exemplu 1","address2":null,"city":"Bucuresti","province":"Buzău","zip":"123456","country":"Romania","phone":"0700000000"},"subtotalPrice":{"amount":"70.5","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":3,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"70.5","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:10:42.880Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:10:42.880Z] Orders found: 1
+[2026-02-17T15:10:42.880Z] Mapping storefront order to frontend format...
+[2026-02-17T15:10:42.880Z] Successfully mapped order
+[2026-02-17T15:19:39.228Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:19:39.230Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:19:39.234Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:19:39.449Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:19:39.449Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:19:39.449Z] Orders found: 1
+[2026-02-17T15:19:39.449Z] Mapping storefront order to frontend format...
+[2026-02-17T15:19:39.449Z] Successfully mapped order
+[2026-02-17T15:19:39.479Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:19:39.481Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:19:39.481Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:19:39.686Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:19:39.689Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:19:39.689Z] Orders found: 1
+[2026-02-17T15:19:39.689Z] Mapping storefront order to frontend format...
+[2026-02-17T15:19:39.689Z] Successfully mapped order
+[2026-02-17T15:19:59.752Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:19:59.754Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:19:59.755Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:19:59.956Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:19:59.956Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:19:59.956Z] Orders found: 1
+[2026-02-17T15:19:59.956Z] Mapping storefront order to frontend format...
+[2026-02-17T15:19:59.957Z] Successfully mapped order
+[2026-02-17T15:28:54.085Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:28:54.200Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:28:54.201Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:28:54.436Z] Shopify Data: {"customer":null}
+[2026-02-17T15:28:54.436Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:28:54.436Z] Orders found: 0
+[2026-02-17T15:28:54.436Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T15:28:54.436Z] Available IDs: 
+[2026-02-17T15:30:02.025Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:30:02.028Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:30:02.029Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:30:02.165Z] Shopify Data: {"customer":null}
+[2026-02-17T15:30:02.165Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:30:02.166Z] Orders found: 0
+[2026-02-17T15:30:02.166Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:30:02.166Z] Available IDs: 
+[2026-02-17T15:30:14.729Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:30:14.730Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:30:14.730Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:30:14.897Z] Shopify Data: {"customer":null}
+[2026-02-17T15:30:14.898Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:30:14.898Z] Orders found: 0
+[2026-02-17T15:30:14.898Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:30:14.898Z] Available IDs: 
+[2026-02-17T15:31:18.792Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:31:18.815Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:31:18.815Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:31:19.036Z] Shopify Data: {"customer":null}
+[2026-02-17T15:31:19.037Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:31:19.038Z] Orders found: 0
+[2026-02-17T15:31:19.038Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:31:19.038Z] Available IDs: 
+[2026-02-17T15:31:29.685Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:31:29.687Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:31:29.687Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:31:29.840Z] Shopify Data: {"customer":null}
+[2026-02-17T15:31:29.840Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:31:29.840Z] Orders found: 0
+[2026-02-17T15:31:29.840Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:31:29.840Z] Available IDs: 
+[2026-02-17T15:31:46.380Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:31:46.390Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:31:46.396Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:31:46.524Z] Shopify Data: {"customer":null}
+[2026-02-17T15:31:46.524Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:31:46.524Z] Orders found: 0
+[2026-02-17T15:31:46.524Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:31:46.524Z] Available IDs: 
+[2026-02-17T15:31:48.351Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:31:48.353Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:31:48.353Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:31:48.550Z] Shopify Data: {"customer":null}
+[2026-02-17T15:31:48.551Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:31:48.551Z] Orders found: 0
+[2026-02-17T15:31:48.551Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:31:48.551Z] Available IDs: 
+[2026-02-17T15:31:58.825Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:31:58.830Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:31:58.834Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:31:59.052Z] Shopify Data: {"customer":null}
+[2026-02-17T15:31:59.052Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:31:59.052Z] Orders found: 0
+[2026-02-17T15:31:59.052Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:31:59.052Z] Available IDs: 
+[2026-02-17T15:32:13.154Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:32:13.161Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:32:13.163Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:32:13.361Z] Shopify Data: {"customer":null}
+[2026-02-17T15:32:13.361Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:32:13.361Z] Orders found: 0
+[2026-02-17T15:32:13.361Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:32:13.361Z] Available IDs: 
+[2026-02-17T15:32:28.549Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:32:28.552Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:32:28.552Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:32:28.711Z] Shopify Data: {"customer":null}
+[2026-02-17T15:32:28.711Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:32:28.711Z] Orders found: 0
+[2026-02-17T15:32:28.711Z] Error: Order gid://shopify/Order/8264231354632 not found in the fetched list of 0 orders
+[2026-02-17T15:32:28.711Z] Available IDs: 
+[2026-02-17T15:32:40.484Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:32:40.486Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:32:40.486Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:32:40.639Z] Shopify Data: {"customer":null}
+[2026-02-17T15:32:40.639Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:32:40.639Z] Orders found: 0
+[2026-02-17T15:32:40.639Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:32:40.639Z] Available IDs: 
+[2026-02-17T15:32:57.170Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:32:57.202Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:32:57.217Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:32:57.454Z] Shopify Data: {"customer":null}
+[2026-02-17T15:32:57.454Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:32:57.454Z] Orders found: 0
+[2026-02-17T15:32:57.454Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:32:57.454Z] Available IDs: 
+[2026-02-17T15:33:03.022Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:33:03.026Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:33:03.027Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:33:03.197Z] Shopify Data: {"customer":null}
+[2026-02-17T15:33:03.200Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:33:03.200Z] Orders found: 0
+[2026-02-17T15:33:03.200Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:33:03.200Z] Available IDs: 
+[2026-02-17T15:33:40.672Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:33:40.688Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:33:40.688Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:33:40.842Z] Shopify Data: {"customer":null}
+[2026-02-17T15:33:40.842Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:33:40.842Z] Orders found: 0
+[2026-02-17T15:33:40.842Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:33:40.842Z] Available IDs: 
+[2026-02-17T15:33:50.589Z] GET /api/account/proxy/orders/1007
+[2026-02-17T15:33:50.592Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T15:33:50.593Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:33:50.773Z] Shopify Data: {"customer":null}
+[2026-02-17T15:33:50.773Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:33:50.773Z] Orders found: 0
+[2026-02-17T15:33:50.773Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T15:33:50.773Z] Available IDs: 
+[2026-02-17T15:39:16.938Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:39:16.951Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:39:16.954Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:39:17.078Z] Shopify Data: {"customer":null}
+[2026-02-17T15:39:17.078Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:39:17.078Z] Orders found: 0
+[2026-02-17T15:39:17.078Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:39:17.078Z] Available IDs: 
+[2026-02-17T15:39:25.569Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:39:25.573Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:39:25.574Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:39:25.748Z] Shopify Data: {"customer":null}
+[2026-02-17T15:39:25.751Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:39:25.751Z] Orders found: 0
+[2026-02-17T15:39:25.751Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:39:25.751Z] Available IDs: 
+[2026-02-17T15:39:58.645Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:39:58.763Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:39:58.767Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:39:58.941Z] Shopify Data: {"customer":null}
+[2026-02-17T15:39:58.941Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:39:58.941Z] Orders found: 0
+[2026-02-17T15:39:58.941Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:39:58.941Z] Available IDs: 
+[2026-02-17T15:40:23.551Z] GET /api/account/proxy/orders/1007
+[2026-02-17T15:40:23.553Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T15:40:23.554Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:40:23.708Z] Shopify Data: {"customer":null}
+[2026-02-17T15:40:23.708Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:40:23.708Z] Orders found: 0
+[2026-02-17T15:40:23.708Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T15:40:23.708Z] Available IDs: 
+[2026-02-17T15:40:43.569Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:40:43.571Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:40:43.572Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:40:43.752Z] Shopify Data: {"customer":null}
+[2026-02-17T15:40:43.752Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:40:43.752Z] Orders found: 0
+[2026-02-17T15:40:43.752Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:40:43.752Z] Available IDs: 
+[2026-02-17T15:41:31.235Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:41:31.244Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:41:31.254Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:41:31.559Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:41:31.559Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:41:31.559Z] Orders found: 1
+[2026-02-17T15:41:31.559Z] Mapping storefront order to frontend format...
+[2026-02-17T15:41:31.559Z] Successfully mapped order
+[2026-02-17T15:41:31.722Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:41:31.724Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:41:31.725Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:41:31.956Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:41:31.956Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:41:31.956Z] Orders found: 1
+[2026-02-17T15:41:31.956Z] Mapping storefront order to frontend format...
+[2026-02-17T15:41:31.956Z] Successfully mapped order
+[2026-02-17T15:41:39.009Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:41:39.016Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:41:39.018Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:41:39.208Z] Shopify Data: {"customer":null}
+[2026-02-17T15:41:39.208Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:41:39.208Z] Orders found: 0
+[2026-02-17T15:41:39.208Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:41:39.208Z] Available IDs: 
+[2026-02-17T15:42:04.944Z] GET /api/account/proxy/orders/123456789
+[2026-02-17T15:42:04.961Z] Fetching order details for GID: gid://shopify/Order/123456789
+[2026-02-17T15:42:04.962Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:42:05.191Z] Shopify Data: {"customer":null}
+[2026-02-17T15:42:05.192Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:42:05.192Z] Orders found: 0
+[2026-02-17T15:42:05.193Z] Error: Order gid://shopify/Order/123456789 not found in the fetched list of 0 orders
+[2026-02-17T15:42:05.193Z] Available IDs: 
+[2026-02-17T15:42:12.862Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:42:12.864Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:42:12.864Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:42:13.032Z] Shopify Data: {"customer":null}
+[2026-02-17T15:42:13.032Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:42:13.032Z] Orders found: 0
+[2026-02-17T15:42:13.033Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:42:13.033Z] Available IDs: 
+[2026-02-17T15:42:20.597Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:42:20.599Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:42:20.600Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:42:20.826Z] Shopify Data: {"customer":null}
+[2026-02-17T15:42:20.826Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:42:20.826Z] Orders found: 0
+[2026-02-17T15:42:20.826Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:42:20.826Z] Available IDs: 
+[2026-02-17T15:42:27.565Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:42:27.569Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:42:27.570Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:42:27.773Z] Shopify Data: {"customer":null}
+[2026-02-17T15:42:27.774Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:42:27.774Z] Orders found: 0
+[2026-02-17T15:42:27.774Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:42:27.775Z] Available IDs: 
+[2026-02-17T15:42:39.460Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:42:39.482Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:42:39.482Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:42:39.703Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:42:39.703Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:42:39.703Z] Orders found: 1
+[2026-02-17T15:42:39.703Z] Mapping storefront order to frontend format...
+[2026-02-17T15:42:39.704Z] Successfully mapped order
+[2026-02-17T15:43:01.996Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:43:01.999Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:43:02.000Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:43:02.216Z] Shopify Data: {"customer":null}
+[2026-02-17T15:43:02.216Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:43:02.217Z] Orders found: 0
+[2026-02-17T15:43:02.217Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:43:02.218Z] Available IDs: 
+[2026-02-17T15:43:09.083Z] GET /api/account/proxy/orders/1007
+[2026-02-17T15:43:09.086Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T15:43:09.086Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:43:09.259Z] Shopify Data: {"customer":null}
+[2026-02-17T15:43:09.272Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:43:09.272Z] Orders found: 0
+[2026-02-17T15:43:09.272Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T15:43:09.272Z] Available IDs: 
+[2026-02-17T15:47:34.063Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:47:34.068Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:47:34.076Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:47:34.263Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:47:34.326Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:47:34.328Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:47:34.328Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:47:34.454Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:47:51.768Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:47:51.775Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:47:51.781Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:47:52.035Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:47:52.154Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:47:52.158Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:47:52.158Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:47:52.286Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:48:18.089Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:48:18.097Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:48:18.097Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:48:18.213Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:48:18.262Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:48:18.264Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:48:18.265Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:48:18.384Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'tags' doesn't exist on type 'Order'","locations":[{"line":13,"column":13}],"path":["query getOrderDetails","customer","orders","edges","node","tags"],"extensions":{"code":"undefinedField","typeName":"Order","fieldName":"tags"}}],"response":{}}
+[2026-02-17T15:50:21.449Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:50:21.587Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:50:21.589Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:50:22.420Z] Shopify Data: {"customer":null}
+[2026-02-17T15:50:22.422Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:50:22.422Z] Orders found: 0
+[2026-02-17T15:50:22.422Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:50:22.422Z] Available IDs: 
+[2026-02-17T15:50:26.417Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:50:26.421Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:50:26.421Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:50:26.694Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:50:26.694Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:50:26.694Z] Orders found: 1
+[2026-02-17T15:50:26.906Z] Mapping storefront order to frontend format...
+[2026-02-17T15:50:26.906Z] Successfully mapped order
+[2026-02-17T15:50:42.929Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:50:42.930Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:50:42.930Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:50:43.127Z] Shopify Data: {"customer":null}
+[2026-02-17T15:50:43.127Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:50:43.127Z] Orders found: 0
+[2026-02-17T15:50:43.127Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:50:43.127Z] Available IDs: 
+[2026-02-17T15:50:57.041Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:50:57.042Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:50:57.046Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:50:57.282Z] Shopify Data: {"customer":null}
+[2026-02-17T15:50:57.282Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:50:57.282Z] Orders found: 0
+[2026-02-17T15:50:57.282Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:50:57.282Z] Available IDs: 
+[2026-02-17T15:51:05.721Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:51:05.724Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:51:05.724Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:51:05.892Z] Shopify Data: {"customer":null}
+[2026-02-17T15:51:05.892Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:51:05.892Z] Orders found: 0
+[2026-02-17T15:51:05.892Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:51:05.892Z] Available IDs: 
+[2026-02-17T15:51:33.281Z] GET /api/account/proxy/orders/1007
+[2026-02-17T15:51:33.284Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T15:51:33.284Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:51:33.451Z] Shopify Data: {"customer":null}
+[2026-02-17T15:51:33.451Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:51:33.451Z] Orders found: 0
+[2026-02-17T15:51:33.452Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T15:51:33.452Z] Available IDs: 
+[2026-02-17T15:51:42.112Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:51:42.116Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:51:42.118Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:51:42.343Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:51:42.344Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:51:42.344Z] Orders found: 1
+[2026-02-17T15:51:42.498Z] Mapping storefront order to frontend format...
+[2026-02-17T15:51:42.499Z] Successfully mapped order
+[2026-02-17T15:52:04.245Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:52:04.249Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:52:04.249Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:52:04.402Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:52:04.402Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:52:04.402Z] Orders found: 1
+[2026-02-17T15:52:04.555Z] Mapping storefront order to frontend format...
+[2026-02-17T15:52:04.555Z] Successfully mapped order
+[2026-02-17T15:52:04.893Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:52:04.912Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:52:04.912Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:52:05.082Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:52:05.083Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:52:05.083Z] Orders found: 1
+[2026-02-17T15:52:05.255Z] Mapping storefront order to frontend format...
+[2026-02-17T15:52:05.255Z] Successfully mapped order
+[2026-02-17T15:53:09.406Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:53:09.408Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:53:09.408Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:53:09.587Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:53:09.588Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:53:09.588Z] Orders found: 1
+[2026-02-17T15:53:09.746Z] Mapping storefront order to frontend format...
+[2026-02-17T15:53:09.747Z] Successfully mapped order
+[2026-02-17T15:53:22.981Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:53:23.021Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:53:23.024Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:53:23.290Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:53:23.290Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:53:23.290Z] Orders found: 1
+[2026-02-17T15:53:23.466Z] Mapping storefront order to frontend format...
+[2026-02-17T15:53:23.469Z] Successfully mapped order
+[2026-02-17T15:53:23.646Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:53:23.650Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:53:23.650Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T15:53:23.795Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:53:23.795Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:53:23.795Z] Orders found: 1
+[2026-02-17T15:53:23.952Z] Mapping storefront order to frontend format...
+[2026-02-17T15:53:23.952Z] Successfully mapped order
+[2026-02-17T15:56:33.678Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:56:33.680Z] GET /api/account/proxy/orders/1007
+[2026-02-17T15:56:33.801Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:56:33.804Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:56:33.806Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T15:56:33.806Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:56:34.055Z] Shopify API Errors: [{"message":"Variable $customerAccessToken of type String! was provided invalid value","locations":[{"line":2,"column":25}],"extensions":{"value":null,"problems":[{"path":[],"explanation":"Expected value to not be null"}]}}]
+[2026-02-17T15:56:34.067Z] Shopify API Errors: [{"message":"Variable $customerAccessToken of type String! was provided invalid value","locations":[{"line":2,"column":25}],"extensions":{"value":null,"problems":[{"path":[],"explanation":"Expected value to not be null"}]}}]
+[2026-02-17T15:57:36.891Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:57:36.893Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:57:36.894Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:57:37.025Z] Shopify API Errors: [{"message":"Variable $customerAccessToken of type String! was provided invalid value","locations":[{"line":2,"column":25}],"extensions":{"value":null,"problems":[{"path":[],"explanation":"Expected value to not be null"}]}}]
+[2026-02-17T15:59:13.065Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:59:13.069Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:59:13.070Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:59:13.071Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:59:13.076Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:59:13.076Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:59:13.232Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:59:13.232Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:59:13.232Z] Orders found: 1
+[2026-02-17T15:59:13.244Z] Shopify Data: {"customer":null}
+[2026-02-17T15:59:13.244Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:59:13.244Z] Orders found: 0
+[2026-02-17T15:59:13.244Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:59:13.244Z] Available IDs: 
+[2026-02-17T15:59:13.386Z] Mapping storefront order to frontend format...
+[2026-02-17T15:59:13.387Z] Successfully mapped order
+[2026-02-17T15:59:27.749Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:59:27.782Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:59:27.786Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:59:28.107Z] Shopify Data: {"customer":null}
+[2026-02-17T15:59:28.107Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:59:28.107Z] Orders found: 0
+[2026-02-17T15:59:28.107Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:59:28.107Z] Available IDs: 
+[2026-02-17T15:59:44.533Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T15:59:44.553Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T15:59:44.554Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:59:45.123Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"ON_HOLD","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T15:59:45.124Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:59:45.124Z] Orders found: 1
+[2026-02-17T15:59:45.281Z] Mapping storefront order to frontend format...
+[2026-02-17T15:59:45.282Z] Successfully mapped order
+[2026-02-17T15:59:54.696Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T15:59:54.697Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T15:59:54.697Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T15:59:54.856Z] Shopify Data: {"customer":null}
+[2026-02-17T15:59:54.858Z] Customer: undefined (ID: undefined)
+[2026-02-17T15:59:54.858Z] Orders found: 0
+[2026-02-17T15:59:54.858Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T15:59:54.858Z] Available IDs: 
+[2026-02-17T16:00:06.564Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:00:06.566Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:00:06.566Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:00:06.733Z] Shopify Data: {"customer":null}
+[2026-02-17T16:00:06.733Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:00:06.733Z] Orders found: 0
+[2026-02-17T16:00:06.733Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:00:06.733Z] Available IDs: 
+[2026-02-17T16:00:15.449Z] GET /api/account/proxy/orders/1007
+[2026-02-17T16:00:15.450Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T16:00:15.450Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:00:15.612Z] Shopify Data: {"customer":null}
+[2026-02-17T16:00:15.612Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:00:15.612Z] Orders found: 0
+[2026-02-17T16:00:15.612Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T16:00:15.612Z] Available IDs: 
+[2026-02-17T16:00:31.026Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:00:31.035Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:00:31.035Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:00:31.202Z] Shopify Data: {"customer":null}
+[2026-02-17T16:00:31.202Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:00:31.202Z] Orders found: 0
+[2026-02-17T16:00:31.202Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:00:31.202Z] Available IDs: 
+[2026-02-17T16:00:41.455Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:00:41.461Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:00:41.464Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:00:41.713Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"ON_HOLD","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:00:41.713Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:00:41.713Z] Orders found: 1
+[2026-02-17T16:00:41.868Z] Mapping storefront order to frontend format...
+[2026-02-17T16:00:41.869Z] Successfully mapped order
+[2026-02-17T16:00:58.702Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:00:58.707Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:00:58.707Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:00:58.864Z] Shopify Data: {"customer":null}
+[2026-02-17T16:00:58.864Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:00:58.865Z] Orders found: 0
+[2026-02-17T16:00:58.865Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:00:58.865Z] Available IDs: 
+[2026-02-17T16:01:11.643Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:01:11.645Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:01:11.645Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:01:11.864Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"ON_HOLD","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:01:11.865Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:01:11.865Z] Orders found: 1
+[2026-02-17T16:01:12.021Z] Mapping storefront order to frontend format...
+[2026-02-17T16:01:12.022Z] Successfully mapped order
+[2026-02-17T16:01:31.549Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:01:31.551Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:01:31.551Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:01:31.726Z] Shopify Data: {"customer":null}
+[2026-02-17T16:01:31.727Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:01:31.727Z] Orders found: 0
+[2026-02-17T16:01:31.727Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:01:31.729Z] Available IDs: 
+[2026-02-17T16:01:37.189Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:01:37.191Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:01:37.191Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:01:37.375Z] Shopify Data: {"customer":null}
+[2026-02-17T16:01:37.375Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:01:37.375Z] Orders found: 0
+[2026-02-17T16:01:37.375Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:01:37.375Z] Available IDs: 
+[2026-02-17T16:02:09.048Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:02:09.115Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:02:09.120Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:02:09.286Z] Shopify Data: {"customer":null}
+[2026-02-17T16:02:09.287Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:02:09.288Z] Orders found: 0
+[2026-02-17T16:02:09.288Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:02:09.288Z] Available IDs: 
+[2026-02-17T16:02:26.398Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:02:26.410Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:02:26.410Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:02:26.622Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"UNFULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:02:26.622Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:02:26.622Z] Orders found: 1
+[2026-02-17T16:02:26.813Z] Mapping storefront order to frontend format...
+[2026-02-17T16:02:26.813Z] Successfully mapped order
+[2026-02-17T16:02:54.414Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:02:54.417Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:02:54.417Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:02:54.593Z] Shopify Data: {"customer":null}
+[2026-02-17T16:02:54.593Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:02:54.593Z] Orders found: 0
+[2026-02-17T16:02:54.593Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:02:54.593Z] Available IDs: 
+[2026-02-17T16:03:05.396Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:03:05.432Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:03:05.432Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:03:05.651Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:03:05.655Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:03:05.655Z] Orders found: 1
+[2026-02-17T16:03:05.805Z] Mapping storefront order to frontend format...
+[2026-02-17T16:03:05.805Z] Successfully mapped order
+[2026-02-17T16:03:15.342Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:03:15.347Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:03:15.347Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:03:15.513Z] Shopify Data: {"customer":null}
+[2026-02-17T16:03:15.513Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:03:15.513Z] Orders found: 0
+[2026-02-17T16:03:15.513Z] Error: Order gid://shopify/Order/8264432189704 not found in the fetched list of 0 orders
+[2026-02-17T16:03:15.513Z] Available IDs: 
+[2026-02-17T16:03:18.118Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:03:18.122Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:03:18.125Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:03:18.282Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:03:18.282Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:03:18.282Z] Orders found: 1
+[2026-02-17T16:03:18.433Z] Mapping storefront order to frontend format...
+[2026-02-17T16:03:18.434Z] Successfully mapped order
+[2026-02-17T16:03:18.506Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:03:18.508Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:03:18.509Z] Calling Shopify Storefront API (Fetch List, No Cache)...
+[2026-02-17T16:03:18.648Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:03:18.651Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:03:18.651Z] Orders found: 1
+[2026-02-17T16:03:18.815Z] Mapping storefront order to frontend format...
+[2026-02-17T16:03:18.816Z] Successfully mapped order
+[2026-02-17T16:05:53.910Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:05:53.958Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:05:53.959Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:05:54.805Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:06:14.492Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:06:14.501Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:06:14.504Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:06:14.691Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:06:26.686Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:06:26.700Z] GET /api/account/proxy/orders/8264432189704
+[2026-02-17T16:06:26.715Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:06:26.732Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:06:26.760Z] Fetching order details for GID: gid://shopify/Order/8264432189704
+[2026-02-17T16:06:26.761Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:06:27.202Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:06:27.216Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:06:32.842Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:06:32.853Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:06:32.853Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:06:32.991Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:06:33.027Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:06:33.030Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:06:33.030Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:06:33.150Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:07:10.106Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:07:10.111Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:07:10.113Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:07:10.521Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:07:28.182Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:07:28.185Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:07:28.186Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:07:28.941Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:10:44.756Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:10:44.760Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:10:44.761Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:10:44.892Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:11:27.963Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:11:27.967Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:11:27.968Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:11:28.110Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:11:28.166Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:11:28.168Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:11:28.168Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:11:28.293Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:11:52.164Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:11:52.166Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:11:52.167Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:11:52.342Z] Shopify API Errors: {"networkStatusCode":200,"message":"GraphQL Client: An error occurred while fetching from the API. Review 'graphQLErrors' for details.","graphQLErrors":[{"message":"Field 'edges' doesn't exist on type 'Fulfillment'","locations":[{"line":44,"column":15}],"path":["query getOrderDetails","customer","orders","edges","node","successfulFulfillments","edges"],"extensions":{"code":"undefinedField","typeName":"Fulfillment","fieldName":"edges"}}],"response":{}}
+[2026-02-17T16:12:29.229Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:12:29.231Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:12:29.233Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:12:29.440Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:12:29.441Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:12:29.441Z] Orders found: 1
+[2026-02-17T16:12:29.636Z] Mapping storefront order to frontend format...
+[2026-02-17T16:12:29.636Z] Successfully mapped order
+[2026-02-17T16:14:16.425Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:14:16.428Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:14:16.429Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:14:16.618Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:14:16.618Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:14:16.618Z] Orders found: 1
+[2026-02-17T16:14:16.776Z] Mapping storefront order to frontend format...
+[2026-02-17T16:14:16.776Z] Successful Fulfillments: [
+  {
+    "trackingCompany": "FedEx",
+    "trackingInfo": [
+      {
+        "number": "235655545665",
+        "url": "https://www.fedex.com/fedextrack/?trknbr=235655545665"
+      }
+    ]
+  }
+]
+[2026-02-17T16:14:16.776Z] Successfully mapped order
+[2026-02-17T16:15:15.615Z] GET /api/account/proxy/orders/1007
+[2026-02-17T16:15:15.618Z] Fetching order details for GID: gid://shopify/Order/1007
+[2026-02-17T16:15:15.618Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:15:15.780Z] Shopify Data: {"customer":null}
+[2026-02-17T16:15:15.780Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:15:15.780Z] Orders found: 0
+[2026-02-17T16:15:15.781Z] Error: Order gid://shopify/Order/1007 not found in the fetched list of 0 orders
+[2026-02-17T16:15:15.781Z] Available IDs: 
+[2026-02-17T16:16:34.984Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:16:34.990Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:16:34.990Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:16:35.180Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:16:35.180Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:16:35.180Z] Orders found: 1
+[2026-02-17T16:16:35.329Z] Mapping storefront order to frontend format...
+[2026-02-17T16:16:35.330Z] Successful Fulfillments: [
+  {
+    "trackingCompany": "FedEx",
+    "trackingInfo": [
+      {
+        "number": "235655545665",
+        "url": "https://www.fedex.com/fedextrack/?trknbr=235655545665"
+      }
+    ]
+  }
+]
+[2026-02-17T16:16:35.330Z] Successfully mapped order
+[2026-02-17T16:16:35.399Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:16:35.403Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:16:35.404Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:16:35.570Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:16:35.570Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:16:35.570Z] Orders found: 1
+[2026-02-17T16:16:35.731Z] Mapping storefront order to frontend format...
+[2026-02-17T16:16:35.731Z] Successful Fulfillments: [
+  {
+    "trackingCompany": "FedEx",
+    "trackingInfo": [
+      {
+        "number": "235655545665",
+        "url": "https://www.fedex.com/fedextrack/?trknbr=235655545665"
+      }
+    ]
+  }
+]
+[2026-02-17T16:16:35.731Z] Successfully mapped order
+[2026-02-17T16:18:05.342Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:18:05.346Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:18:05.356Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:18:05.555Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:18:05.555Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:18:05.555Z] Orders found: 1
+[2026-02-17T16:18:05.722Z] Mapping storefront order to frontend format...
+[2026-02-17T16:18:05.722Z] Successful Fulfillments: [
+  {
+    "trackingCompany": "FedEx",
+    "trackingInfo": [
+      {
+        "number": "235655545665",
+        "url": "https://www.fedex.com/fedextrack/?trknbr=235655545665"
+      }
+    ]
+  }
+]
+[2026-02-17T16:18:05.722Z] Successfully mapped order
+[2026-02-17T16:18:05.776Z] GET /api/account/proxy/orders/8264231354632
+[2026-02-17T16:18:05.777Z] Fetching order details for GID: gid://shopify/Order/8264231354632
+[2026-02-17T16:18:05.777Z] Calling Shopify Storefront API (Fetch List)...
+[2026-02-17T16:18:05.932Z] Shopify Data: {"customer":{"orders":{"edges":[{"node":{"id":"gid://shopify/Order/8264231354632?key=44de6abf949220647dfe2f1a354c5b43","name":"#1006","orderNumber":1006,"processedAt":"2026-02-17T13:33:03Z","financialStatus":"PAID","fulfillmentStatus":"FULFILLED","totalPrice":{"amount":"1618.9","currencyCode":"RON"},"shippingAddress":{"id":"gid://shopify/MailingAddress/23724233752840?model_name=Address","firstName":"Giani","lastName":"Orlando","name":"Giani Orlando","company":null,"address1":"Sector 1, Fierbinti, Nr. 22","address2":null,"city":"Bucuresti","province":"București","zip":"010051","country":"Romania","phone":null},"subtotalPrice":{"amount":"1618.9","currencyCode":"RON"},"totalShippingPrice":{"amount":"0.0","currencyCode":"RON"},"totalTax":{"amount":"0.0","currencyCode":"RON"},"successfulFulfillments":[{"trackingCompany":"FedEx","trackingInfo":[{"number":"235655545665","url":"https://www.fedex.com/fedextrack/?trknbr=235655545665"}]}],"lineItems":{"edges":[{"node":{"title":"Furazolidon la cutie cu 22 de pastile","quantity":2,"variant":{"price":{"amount":"23.5","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/SKK6927.jpg?v=1757705953","altText":null,"width":5033,"height":3355},"product":{"handle":"furazolidon-la-cutie-cu-22-de-pastile"}},"discountedTotalPrice":{"amount":"47.0","currencyCode":"RON"}}},{"node":{"title":"The Compare at Price Snowboard","quantity":2,"variant":{"price":{"amount":"785.95","currencyCode":"RON"},"image":{"url":"https://cdn.shopify.com/s/files/1/0988/0967/6040/files/snowboard_sky.png?v=1757493252","altText":"Top and bottom view of a snowboard. The top view shows pixelated clouds, with the top-most one being\n        the shape of the Shopify bag logo. The bottom view has a pixelated cloudy sky with blue, pink and purple\n        colours.","width":3097,"height":3908},"product":{"handle":"the-compare-at-price-snowboard"}},"discountedTotalPrice":{"amount":"1571.9","currencyCode":"RON"}}}]}}}]}}}
+[2026-02-17T16:18:05.932Z] Customer: undefined (ID: undefined)
+[2026-02-17T16:18:05.933Z] Orders found: 1
+[2026-02-17T16:18:06.104Z] Mapping storefront order to frontend format...
+[2026-02-17T16:18:06.104Z] Successful Fulfillments: [
+  {
+    "trackingCompany": "FedEx",
+    "trackingInfo": [
+      {
+        "number": "235655545665",
+        "url": "https://www.fedex.com/fedextrack/?trknbr=235655545665"
+      }
+    ]
+  }
+]
+[2026-02-17T16:18:06.104Z] Successfully mapped order

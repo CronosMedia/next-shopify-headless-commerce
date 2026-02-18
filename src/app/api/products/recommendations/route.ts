@@ -41,11 +41,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data: { productRecommendations: Product[] } = await shopifyClient.request(
+    const response = await shopifyClient.request(
       PRODUCT_RECOMMENDATIONS_QUERY,
       { productId }
     )
 
+    const data = response.data
     const products = data?.productRecommendations || []
     return Response.json({ products })
   } catch (error: unknown) {

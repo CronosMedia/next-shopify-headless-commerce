@@ -5,9 +5,11 @@ import './globals.css'
 import { CartProvider } from '@/components/CartProvider'
 import { UIProvider } from '@/components/UIProvider'
 import { AuthProvider } from '@/components/AuthProvider'
+import { WishlistProvider } from '@/components/WishlistProvider'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import QuickViewModal from '@/components/QuickViewModal'
+import SmoothScroll from '@/components/SmoothScroll'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -44,16 +46,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
       >
-        <AuthProvider>
-          <UIProvider>
-            <CartProvider>
-              <Header />
-              <main className="min-h-screen pt-24">{children}</main>
-              <QuickViewModal />
-              <Footer />
-            </CartProvider>
-          </UIProvider>
-        </AuthProvider>
+        <SmoothScroll>
+          <AuthProvider>
+            <UIProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <Header />
+                  <main className="min-h-screen pt-24">{children}</main>
+                  <QuickViewModal />
+                  <Footer />
+                </WishlistProvider>
+              </CartProvider>
+            </UIProvider>
+          </AuthProvider>
+        </SmoothScroll>
       </body>
     </html>
   )

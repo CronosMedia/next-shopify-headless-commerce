@@ -1,5 +1,7 @@
 'use client'
-import { useState } from 'react'
+
+import AccordionGroup, { AccordionItem } from '@/components/Accordion'
+import ReviewsSection from '@/components/ReviewsSection'
 
 export default function Tabs({
   descriptionHtml,
@@ -8,69 +10,89 @@ export default function Tabs({
   descriptionHtml: string
   details?: { label: string; value: string }[]
 }) {
-  const [tab, setTab] = useState<'description' | 'specifications' | 'shipping' | 'reviews'>('description')
   return (
-    <div className="space-y-3">
-      <div className="flex gap-6 border-b">
-        <button
-          className={`py-2 border-b-2 -mb-px ${
-            tab === 'description' ? 'border-black' : 'border-transparent'
-          }`}
-          onClick={() => setTab('description')}
-        >
-          Descriere
-        </button>
-        <button
-          className={`py-2 border-b-2 -mb-px ${
-            tab === 'specifications' ? 'border-black' : 'border-transparent'
-          }`}
-          onClick={() => setTab('specifications')}
-        >
-          Specificații
-        </button>
-        <button
-          className={`py-2 border-b-2 -mb-px ${
-            tab === 'shipping' ? 'border-black' : 'border-transparent'
-          }`}
-          onClick={() => setTab('shipping')}
-        >
-          Livrare și Retur
-        </button>
-        <button
-          className={`py-2 border-b-2 -mb-px ${
-            tab === 'reviews' ? 'border-black' : 'border-transparent'
-          }`}
-          onClick={() => setTab('reviews')}
-        >
-          Recenzii
-        </button>
-      </div>
-      {tab === 'description' ? (
-        <div
-          className="prose prose-sm"
-          dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-        />
-      ) : tab === 'specifications' ? (
-        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {details?.map((d) => (
-            <div key={d.label} className="flex gap-3">
-              <dt className="w-28 text-gray-600">{d.label}</dt>
-              <dd className="flex-1">{d.value}</dd>
+    <div className="space-y-12">
+      <div className="space-y-12">
+        {/* Mobile: Accordion Layout */}
+        <div className="md:hidden">
+          <AccordionGroup>
+            <AccordionItem title="Descriere" defaultOpen={true}>
+              <div
+                className="prose prose-sm max-w-none text-gray-600"
+                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+              />
+            </AccordionItem>
+
+            <AccordionItem title="Specificații">
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-4">
+                {details?.map((d) => (
+                  <div key={d.label} className="flex gap-2 text-sm border-b border-gray-100 pb-2 last:border-0">
+                    <dt className="w-32 font-medium text-gray-900 shrink-0">{d.label}</dt>
+                    <dd className="text-gray-600">{d.value}</dd>
+                  </div>
+                )) || <div className="text-sm text-gray-500">Nu există specificații disponibile.</div>}
+              </dl>
+            </AccordionItem>
+
+            <AccordionItem title="Livrare și Retur">
+              <div className="prose prose-sm max-w-none text-gray-600">
+                <h4 className="font-medium text-gray-900 mb-2">Livrare Rapidă</h4>
+                <p className="mb-4">Comenzile plasate până în ora 14:00 sunt procesate în aceeași zi. Livrarea standard durează 24-48 de ore lucrătoare oriunde în România.</p>
+
+                <h4 className="font-medium text-gray-900 mb-2">Retur Simplu</h4>
+                <p>Dacă produsul nu ți se potrivește, îl poți returna în termen de 30 de zile. Procesul este simplu și rapid, direct din contul tău de client.</p>
+              </div>
+            </AccordionItem>
+          </AccordionGroup>
+        </div>
+
+        {/* Desktop: Expanded Vertical Layout */}
+        <div className="hidden md:block space-y-16">
+          <section id="overview" className="scroll-mt-32">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Descriere</h3>
+            <div
+              className="prose max-w-none text-gray-600"
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
+          </section>
+
+          <section id="specifications" className="scroll-mt-32 pt-8 border-t border-gray-100">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Specificații</h3>
+            <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
+              {details?.map((d) => (
+                <div key={d.label} className="flex gap-2 text-sm border-b border-gray-100 pb-2">
+                  <dt className="w-40 font-medium text-gray-900 shrink-0">{d.label}</dt>
+                  <dd className="text-gray-600">{d.value}</dd>
+                </div>
+              )) || <div className="text-sm text-gray-500">Nu există specificații disponibile.</div>}
+            </dl>
+          </section>
+
+          <section className="pt-8 border-t border-gray-100">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Livrare și Returi</h3>
+            <div className="grid grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <span className="text-green-600">🚚</span> Livrare Rapidă
+                </h4>
+                <p className="text-sm text-gray-600">Comenzile plasate până în ora 14:00 sunt procesate în aceeași zi. Livrarea standard durează 24-48 de ore lucrătoare oriunde în România.</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <span className="text-green-600">↩️</span> Retur Simplu
+                </h4>
+                <p className="text-sm text-gray-600">Dacă produsul nu ți se potrivește, îl poți returna în termen de 30 de zile. Procesul este simplu și rapid.</p>
+              </div>
             </div>
-          )) || <div>Nu există specificații.</div>}
-        </dl>
-      ) : tab === 'shipping' ? (
-        <div className="prose prose-sm">
-          <h3>Livrare</h3>
-          <p>Comenzile sunt procesate în 1-2 zile lucrătoare. Livrarea standard durează 3-5 zile lucrătoare.</p>
-          <h3>Retururi</h3>
-          <p>Acceptăm retururi în termen de 30 de zile de la primirea comenzii, cu condiția ca produsele să fie în starea originală.</p>
+          </section>
         </div>
-      ) : tab === 'reviews' ? (
-        <div className="prose prose-sm">
-          <p>Momentan nu există recenzii pentru acest produs. Fii primul care lasă o recenzie!</p>
-        </div>
-      ) : null}
+      </div>
+
+      {/* Reviews Section Separated for Impact */}
+      <div id="reviews" className="scroll-mt-24">
+        <h3 className="text-lg font-medium text-gray-900 mb-6 border-b border-gray-200 pb-4">Recenzii și Întrebări</h3>
+        <ReviewsSection />
+      </div>
     </div>
   )
 }

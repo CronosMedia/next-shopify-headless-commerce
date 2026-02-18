@@ -102,12 +102,12 @@ function AuthForm() {
       const apiError = isLogin
         ? await login(formData.email, formData.password, cart?.id)
         : await register(
-            formData.email,
-            formData.password,
-            formData.firstName,
-            formData.lastName,
-            cart?.id
-          )
+          formData.email,
+          formData.password,
+          formData.firstName,
+          formData.lastName,
+          cart?.id
+        )
       if (apiError) {
         setError(apiError.error.message)
       }
@@ -164,8 +164,8 @@ function AuthForm() {
             {isSubmitting
               ? 'Vă rugăm așteptați...'
               : isLogin
-              ? 'Autentificare'
-              : 'Creează Cont'}
+                ? 'Autentificare'
+                : 'Creează Cont'}
           </button>
         </form>
         <div className="mt-4 text-center">
@@ -204,16 +204,14 @@ function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: str
               setActiveTab(item.id);
               router.push(`/account?tab=${item.id}`);
             }}
-            className={`w-full flex items-center gap-3 text-left transition-colors relative cursor-pointer ${
-              activeTab === item.id
-                ? 'py-3 pl-4 text-foreground hover:bg-secondary'
-                : 'text-foreground hover:bg-secondary pl-4 py-3'
-            }`}
+            className={`w-full flex items-center gap-3 text-left transition-colors relative cursor-pointer ${activeTab === item.id
+              ? 'py-3 pl-4 text-foreground hover:bg-secondary'
+              : 'text-foreground hover:bg-secondary pl-4 py-3'
+              }`}
           >
             <div
-              className={`absolute top-0 h-full w-2 bg-gray-700 -left-4 transform origin-left transition-all duration-300 ease-in-out ${
-                activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-              }`}
+              className={`absolute top-0 h-full w-2 bg-gray-700 -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+                }`}
             ></div>
             <item.icon size={20} className="ml-4" />
             <span>{item.label}</span>
@@ -621,21 +619,52 @@ function OrdersTab() {
                   className="bg-card p-6 border border-gray-300 rounded-none"
                 >
                   <div className="flex items-center">
-                    <div className="font-barlow text-2xl text-gray-800" style={{color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400}}>
+                    <div className="font-barlow text-2xl text-gray-800" style={{ color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400 }}>
                       {capitalizedDate}
                     </div>
                     <div className="border-l border-gray-300 h-12 mx-4"></div>
                     <div className="flex-grow">
-                      <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                      <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
                         Comanda nr:{' '}
-                        <span style={{fontWeight: 600}}>{order.orderNumber}</span>
+                        <span style={{ fontWeight: 600 }}>{order.orderNumber}</span>
                       </p>
-                      <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
+                      <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
                         Total:{' '}
-                        <span style={{fontWeight: 600}}>
+                        <span style={{ fontWeight: 600 }}>
                           {order.totalPrice.amount} LEI
                         </span>
                       </p>
+                      {order.successfulFulfillments && order.successfulFulfillments.length > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          <div className="mb-1">
+                            {order.fulfillmentStatus === 'FULFILLED' && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Expediat
+                              </span>
+                            )}
+                            {order.fulfillmentStatus === 'IN_PROGRESS' && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                În curs de livrare
+                              </span>
+                            )}
+                          </div>
+                          {order.successfulFulfillments.map((fulfillment, index) => (
+                            <div key={index} className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
+                              <span style={{ fontWeight: 600 }}>{fulfillment.trackingCompany}: </span>
+                              {fulfillment.trackingInfo && fulfillment.trackingInfo.length > 0 ? (
+                                <a
+                                  href={fulfillment.trackingInfo[0].url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:underline text-blue-600"
+                                >
+                                  {fulfillment.trackingInfo[0].number}
+                                </a>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <Link
                       href={`/account/orders/${orderId}`}
@@ -663,11 +692,10 @@ function OrdersTab() {
                   <button
                     key={index}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`mx-1 px-3 py-1 rounded-md ${
-                      currentPage === index + 1
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-secondary-foreground'
-                    }`}
+                    className={`mx-1 px-3 py-1 rounded-md ${currentPage === index + 1
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-secondary-foreground'
+                      }`}
                   >
                     {index + 1}
                   </button>
@@ -692,7 +720,7 @@ function AddressesTab({ user }: { user: User }) {
 
 
   const addresses = useMemo(
-    () => user.addresses.edges.map((e) => e.node),
+    () => user.addresses?.edges?.map((e: any) => e.node) || [],
     [user.addresses]
   )
 
@@ -770,9 +798,8 @@ function AddressesTab({ user }: { user: User }) {
               addresses.map((address: Address) => (
                 <div
                   key={address.id}
-                  className={`border p-4 flex flex-col ${
-                    user.defaultAddress?.id === address.id ? 'border-gray-500 border-2' : 'border-gray-300'
-                  }`}
+                  className={`border p-4 flex flex-col ${user.defaultAddress?.id === address.id ? 'border-gray-500 border-2' : 'border-gray-300'
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -1147,9 +1174,8 @@ function InputField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:bg-secondary ${
-          error ? 'border-red-500' : 'border-muted'
-        }`}
+        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:bg-secondary ${error ? 'border-red-500' : 'border-muted'
+          }`}
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>

@@ -3,15 +3,23 @@
 
 :root {
   /* Define the light theme color palette */
-  --background: #ffffff; /* White background */
-  --foreground: #111827; /* Soft black for text */
-  --primary: #006642; /* iHerb-like green for buttons and accents */
-  --primary-foreground: #ffffff; /* White text on primary buttons */
-  --secondary: #f3f4f6; /* Light gray for input backgrounds and cards */
-  --muted: #e5e7eb; /* Border color */
-  --muted-foreground: #6b7280; /* Gray for placeholders and muted text */
+  --background: #ffffff;
+  /* White background */
+  --foreground: #111827;
+  /* Soft black for text */
+  --primary: #006642;
+  /* iHerb-like green for buttons and accents */
+  --primary-foreground: #ffffff;
+  /* White text on primary buttons */
+  --secondary: #f3f4f6;
+  /* Light gray for input backgrounds and cards */
+  --muted: #e5e7eb;
+  /* Border color */
+  --muted-foreground: #6b7280;
+  /* Gray for placeholders and muted text */
   --link-green: oklch(0.424 0.199 265.638);
-  --link-green-hover: oklch(0.35 0.22 265.638); /* A darker shade for hover */
+  --link-green-hover: oklch(0.35 0.22 265.638);
+  /* A darker shade for hover */
 }
 
 @theme inline {
@@ -24,11 +32,28 @@
   --color-muted-foreground: var(--muted-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-barlow: var(--font-barlow); /* Add this line */
+  --font-barlow: var(--font-barlow);
+  /* Add this line */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-barlow), sans-serif; /* Use Barlow font variable */
+  font-family: var(--font-barlow), sans-serif;
+  /* Use Barlow font variable */
+}
+
+/* Argos-style Sticky Header Helpers */
+/* Argos-style Sticky Header Helpers */
+header {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+body.hide-navbar header {
+  transform: translateY(-100%);
+}
+
+body.hide-navbar main {
+  /* Optional: add padding if needed, but sticky header is overlay */
 }

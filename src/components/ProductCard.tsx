@@ -60,7 +60,7 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
     'mt-2 w-full px-4 py-2 text-base font-medium rounded-md transition-colors'
 
   return (
-    <div className="group relative bg-white rounded-lg hover:shadow-md transition-shadow flex flex-col">
+    <div className="group relative bg-white rounded-lg hover:shadow-md transition-shadow flex flex-col h-full">
       <Link href={`/products/${product.handle}`} className="block">
         <div className="aspect-square overflow-hidden rounded-t-lg">
           {product.featuredImage?.url ? (

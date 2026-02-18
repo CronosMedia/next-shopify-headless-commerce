@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { useCart } from '@/components/CartProvider'
 import { Minus, Plus, ShoppingCart, CreditCard } from 'lucide-react'
 import Swatch from './Swatch' // Import the new Swatch component
+import WishlistButton from '@/components/WishlistButton'
 
 type Option = { name: string; values: string[] }
 export type Variant = {
@@ -78,7 +79,7 @@ export default function BuyBox({
           <div>
             <h1 className="text-2xl font-semibold">{title}</h1>
             <div className="mt-2">
-              
+
             </div>
           </div>
         </div>
@@ -137,17 +138,18 @@ export default function BuyBox({
           )}
         </div>
 
-        <div className="flex items-center gap-3 mt-6">
-          <div className="flex items-center border rounded">
+        <div className="flex gap-3 mt-8 h-12">
+          {/* Quantity - Square Box Style */}
+          <div className="flex items-center border border-gray-200 rounded-lg bg-white shrink-0 h-full">
             <button
-              className="px-3 h-10"
+              className="px-3 h-full hover:bg-gray-50 hover:text-black text-gray-500 transition-colors"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               aria-label="Scade cantitatea"
             >
               <Minus size={16} />
             </button>
             <input
-              className="w-12 text-center h-10 outline-none"
+              className="w-10 text-center h-full outline-none font-medium text-gray-900 appearance-none m-0 bg-transparent"
               type="number"
               min={1}
               value={quantity}
@@ -156,40 +158,87 @@ export default function BuyBox({
               }
             />
             <button
-              className="px-3 h-10"
+              className="px-3 h-full hover:bg-gray-50 hover:text-black text-gray-500 transition-colors"
               onClick={() => setQuantity((q) => q + 1)}
               aria-label="Crește cantitatea"
             >
               <Plus size={16} />
             </button>
           </div>
+
+          {/* Add to Cart - Dominant Button */}
           <button
             disabled={!canAdd}
-            className={`h-10 px-5 rounded text-white flex items-center justify-center gap-2 ${
-              canAdd ? 'bg-black' : 'bg-gray-400 cursor-not-allowed'
-            }`}
+            className={`flex-1 h-full px-4 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${canAdd
+                ? 'bg-black hover:bg-gray-900 shadow-md hover:shadow-lg'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
             onClick={handleAddToCart}
           >
             {loading ? (
-              'Se adaugă…'
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
                 <ShoppingCart size={20} />
-                Adaugă în coș
+                <span>Adaugă în coș</span>
               </>
             )}
           </button>
+
+          {/* Wishlist - Icon Box */}
+          <div className="h-full">
+            <WishlistButton
+              item={{
+                id: selectedVariant.id,
+                handle: '',
+                title: title,
+                featuredImage: selectedVariant.image ? {
+                  url: selectedVariant.image.url,
+                  altText: selectedVariant.image.altText || undefined
+                } : null,
+                priceRange: {
+                  minVariantPrice: selectedVariant.price
+                }
+              }}
+              variant="icon"
+              className="h-full w-12 !p-0"
+            />
+          </div>
         </div>
 
-        {/* Payment & Shipping/Returns Info */}
-        <div className="mt-6 space-y-3 text-center">
-          <div className="flex items-center justify-center gap-4 text-gray-600">
-            <CreditCard size={24} />
-            <span className="text-sm">Plăți sigure</span>
+        {/* Payment & Trust Badges - Clean & Aligned Left */}
+        <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
+
+          {/* Simple Payment Indicator */}
+          <div className="flex items-center gap-2 text-gray-600">
+            <div className="p-1.5 bg-gray-50 rounded text-gray-500">
+              <CreditCard size={18} />
+            </div>
+            <span className="text-sm font-medium">Plată 100% securizată</span>
+            <span className="text-xs text-gray-400 ml-1">(SSL Encrypted)</span>
           </div>
-          <p className="text-sm text-gray-600">
-            Livrare gratuită la comenzi peste 200 LEI. Retururi gratuite în 30 de zile.
-          </p>
+
+          {/* Value Props - Simple List */}
+          <ul className="space-y-3 pt-2">
+            <li className="flex items-start gap-3 text-sm text-gray-600">
+              <div className="mt-0.5 text-green-600 shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Livrare rapidă (24-48h) prin curier rapid</span>
+            </li>
+            <li className="flex items-start gap-3 text-sm text-gray-600">
+              <div className="mt-0.5 text-green-600 shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Transport gratuit la comenzi peste 200 LEI</span>
+            </li>
+            <li className="flex items-start gap-3 text-sm text-gray-600">
+              <div className="mt-0.5 text-green-600 shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Garanție de retur în 30 de zile</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

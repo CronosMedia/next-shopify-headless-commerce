@@ -73,7 +73,7 @@ export default function CartPage() {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Coșul tău</h1> {/* Header */}
-        
+
         {/* Security Message */}
         <div className="mb-8 p-4 bg-green-50 rounded-lg text-green-800 text-sm flex items-center justify-center gap-2">
           <ShieldCheck size={20} />
@@ -337,10 +337,6 @@ export default function CartPage() {
           </div>
 
           <div className="bg-white rounded-lg p-6">
-            <h2 className="flex items-center gap-3 text-2xl font-bold text-gray-900 mb-6">
-              <Sparkles size={24} className="text-yellow-500" />
-              <span>Poate te gândeai și la...</span>
-            </h2>
             <RelatedProducts />
           </div>
         </div>
@@ -377,11 +373,10 @@ export default function CartPage() {
                 </h3>
                 <button
                   onClick={() => setIsAddressModalOpen(true)}
-                  className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
-                    selectedDeliveryAddress
+                  className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${selectedDeliveryAddress
                       ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                       : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
+                    }`}
                 >
                   <MapPin size={20} />
                   {selectedDeliveryAddress
@@ -481,11 +476,10 @@ export default function CartPage() {
             <div className="space-y-3">
               <Link
                 href={cart.checkoutUrl}
-                className={`w-full py-3 px-4 rounded-lg text-center block font-medium transition-all ${
-                  user && !selectedDeliveryAddress
+                className={`w-full py-3 px-4 rounded-lg text-center block font-medium transition-all ${user && !selectedDeliveryAddress
                     ? 'border border-gray-300 text-gray-400 cursor-not-allowed'
                     : 'bg-green-600 text-white hover:bg-green-700'
-                }`}
+                  }`}
                 onClick={(e) => {
                   if (user && !selectedDeliveryAddress) {
                     e.preventDefault()

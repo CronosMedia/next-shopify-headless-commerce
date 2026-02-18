@@ -1,59 +1,47 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { appendFileSync } from 'fs'
 
 export const GET = async () => {
   try {
-    // 1. Get the customer's Shopify ID from the cookie
+    // 1. Get the customer's Shopify Access Token from the cookie
     const cookieStore = await cookies()
-    const customerIdGid = cookieStore.get('customer-shopify-id')?.value
+    const accessToken = cookieStore.get('customer-access-token')?.value
 
-    if (!customerIdGid) {
+    if (!accessToken) {
       return NextResponse.json(
-        { error: 'Not authenticated. Customer ID missing.' },
+        { error: 'Not authenticated. Session missing.' },
         { status: 401 }
       )
     }
 
-    // 2. Get Shopify credentials from environment variables
-    const storeDomain = process.env.SHOPIFY_STORE_DOMAIN
-    const adminApiToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
-    const apiVersion = process.env.SHOPIFY_ADMIN_API_VERSION || '2024-07'
+    // 2. Import client and query
+    const { shopifyClient } = await import('@/lib/shopify')
+    const { GET_CUSTOMER_ORDERS_QUERY } = await import('@/lib/queries')
 
-    if (!storeDomain || !adminApiToken) {
-      throw new Error('Missing Shopify Admin API environment variables')
-    }
+    // 3. Fetch the orders from the Storefront API
+    const response = (await shopifyClient.request(GET_CUSTOMER_ORDERS_QUERY, {
+      customerAccessToken: accessToken,
+    })) as any
 
-    // 3. Extract the numeric ID from the GID
-    const numericCustomerId = customerIdGid.split('/').pop()
-    if (!numericCustomerId) {
-      throw new Error('Invalid customer ID format')
-    }
-
-    // 4. Construct the Admin API URL
-    const adminApiUrl = `https://${storeDomain}/admin/api/${apiVersion}/customers/${numericCustomerId}/orders.json`
-
-    // 5. Fetch the orders from the Admin API
-    const shopifyResponse = await fetch(adminApiUrl, {
-      method: 'GET',
-      headers: {
-        'X-Shopify-Access-Token': adminApiToken,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!shopifyResponse.ok) {
-      const errorBody = await shopifyResponse.json()
-      console.error('Shopify Admin API Error:', errorBody)
-      throw new Error(
-        `Failed to fetch orders from Shopify: ${shopifyResponse.statusText}`
+    if (response.errors) {
+      console.error('Storefront API Orders Error:', response.errors)
+      return NextResponse.json(
+        { error: { message: response.errors[0]?.message || 'Failed to fetch orders' } },
+        { status: 400 }
       )
     }
 
-    const data = await shopifyResponse.json()
+    const customer = response.data?.customer
+    const orders = customer?.orders?.edges?.map((edge: any) => edge.node) || []
 
-    // 6. Return the data to the client
-    return NextResponse.json(data)
-  } catch (error: unknown) {
+    console.log(`Orders Proxy: Successfully fetched ${orders.length} orders via Storefront API`);
+
+    // 4. Return the data to the client in the format AuthProvider expects
+    return NextResponse.json({ orders })
+  } catch (error: any) {
+    const logMsg = `[${new Date().toISOString()}] Orders Proxy Error: ${error.message}\nStack: ${error.stack}\n`;
+    try { appendFileSync('/tmp/orders-proxy.log', logMsg); } catch (e) { }
     console.error('Proxy route error:', error)
     return NextResponse.json(
       { error: { message: error.message || 'Failed to fetch orders' } },

@@ -9,21 +9,23 @@ import {
 import {
   CustomerCreatePayload,
   CustomerAccessTokenCreatePayload,
+  Customer,
 } from '@/lib/shopify/generated/graphql'
+import { GraphQLResponse } from '@/lib/shopify'
 
 export const POST = async (req: NextRequest) => {
   try {
     const { email, password, firstName, lastName, cartId } = await req.json()
 
     // 1. Create the customer in Shopify
-    const createData: { data: { customerCreate: CustomerCreatePayload } } = await shopifyClient.request(
+    const createData = (await shopifyClient.request(
       CUSTOMER_CREATE_MUTATION,
       {
         input: { email, password, firstName, lastName },
       }
-    )
+    )) as GraphQLResponse<{ customerCreate: CustomerCreatePayload }>
 
-    const { customer, customerUserErrors } = createData.customerCreate
+    const { customer, customerUserErrors } = createData.data.customerCreate
 
     if (customerUserErrors?.length > 0) {
       return Response.json(
@@ -40,15 +42,15 @@ export const POST = async (req: NextRequest) => {
     }
 
     // 2. Log in the new customer to get an access token
-    const tokenData: { data: { customerAccessTokenCreate: CustomerAccessTokenCreatePayload } } = await shopifyClient.request(
+    const tokenData = (await shopifyClient.request(
       CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
       {
         input: { email, password },
       }
-    )
+    )) as GraphQLResponse<{ customerAccessTokenCreate: CustomerAccessTokenCreatePayload }>
 
     const { customerAccessToken, customerUserErrors: tokenUserErrors } =
-      tokenData.customerAccessTokenCreate
+      tokenData.data.customerAccessTokenCreate
 
     if (tokenUserErrors?.length > 0) {
       return Response.json(
@@ -66,14 +68,22 @@ export const POST = async (req: NextRequest) => {
 
     const { accessToken, expiresAt } = customerAccessToken
 
-    // 3. If a cartId is provided, associate it with the new customer
+    // 3. Fetch the full customer object to return to the client (to include addresses etc)
+    const { GET_CUSTOMER_QUERY } = await import('@/lib/queries')
+    const customerResponse = (await shopifyClient.request(GET_CUSTOMER_QUERY, {
+      customerAccessToken: accessToken,
+    })) as GraphQLResponse<{ customer: Customer }>
+
+    const finalCustomer = customerResponse.data?.customer || tokenData.data.customerAccessTokenCreate.customerAccessToken
+
+    // 4. If a cartId is provided, associate it with the new customer
     if (cartId) {
       await cartBuyerIdentityUpdate(cartId, {
         customerAccessToken: accessToken,
       })
     }
 
-    // 4. Set the session cookie
+    // 5. Set the session cookie
     const cookieStore = await cookies()
     cookieStore.set('customer-access-token', accessToken, {
       httpOnly: true,
@@ -82,8 +92,18 @@ export const POST = async (req: NextRequest) => {
       expires: new Date(expiresAt),
     })
 
-    return Response.json({ user: customer })
-  } catch (error: unknown) {
+    if (finalCustomer?.id) {
+      cookieStore.set('customer-shopify-id', finalCustomer.id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        expires: new Date(expiresAt),
+      })
+    }
+
+    return Response.json({ user: finalCustomer })
+  } catch (error: any) {
+    console.error('Registration Route Error:', error)
     return Response.json(
       { error: { message: error.message || 'Registration failed' } },
       { status: 500 }

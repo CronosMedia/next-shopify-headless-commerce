@@ -10,6 +10,7 @@ import { useAuth } from '@/components/AuthProvider'
 type AdminOrder = {
   id: string
   name: string
+  tags: string[]
   legacyResourceId: string
   processedAt: string
   displayFinancialStatus: string
@@ -56,6 +57,13 @@ type AdminOrder = {
       } | null
     }[]
   }
+  fulfillment?: {
+    trackingCompany: string
+    trackingInfo?: {
+      number: string
+      url: string
+    }
+  } | null
 }
 
 export default function OrderDetailsPage() {
@@ -76,7 +84,8 @@ export default function OrderDetailsPage() {
     const fetchOrderDetails = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/account/proxy/orders/${id}`)
+        const searchParams = window.location.search;
+        const response = await fetch(`/api/account/proxy/orders/${id}${searchParams}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -109,6 +118,7 @@ export default function OrderDetailsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          orderId: order.id,
           orderName: order.name,
           customerEmail: user.email,
         }),
@@ -177,11 +187,11 @@ export default function OrderDetailsPage() {
         href="/account?tab=orders"
         className="flex items-center font-barlow no-underline hover:underline uppercase mb-6"
         style={{
-            fontFamily: 'Barlow, Arial, Helvetica, sans-serif',
-            fontWeight: 600,
-            color: 'rgb(51, 51, 51)',
-            fontSize: '15px',
-            lineHeight: '15px'
+          fontFamily: 'Barlow, Arial, Helvetica, sans-serif',
+          fontWeight: 600,
+          color: 'rgb(51, 51, 51)',
+          fontSize: '15px',
+          lineHeight: '15px'
         }}
       >
         <ChevronLeft size={20} className="mr-1" />
@@ -190,45 +200,57 @@ export default function OrderDetailsPage() {
 
       <div className="bg-card p-6 border border-gray-300 rounded-none mb-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-muted pb-4 mb-4">
-        <div className="flex items-center flex-grow">
-                  <div className="font-barlow text-2xl text-gray-800" style={{color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400}}>
-                    {capitalizedDate}
-                  </div>
-                  <div className="border-l border-gray-300 h-12 mx-4"></div>
-                  <div className="flex-grow">
-                    <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
-                      Comanda nr:{' '}
-                      <span style={{fontWeight: 600}}>{order.name}</span>
-                    </p>
-                    <p className="font-barlow" style={{color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400}}>
-                      Total:{' '}
-                      <span style={{fontWeight: 600}}>
-                        {order.totalPriceSet.shopMoney.amount} LEI
+          <div className="flex items-center flex-grow">
+            <div className="font-barlow text-2xl text-gray-800" style={{ color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400 }}>
+              {capitalizedDate}
+            </div>
+            <div className="border-l border-gray-300 h-12 mx-4"></div>
+            <div className="flex-grow">
+              <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
+                Comanda nr:{' '}
+                <span style={{ fontWeight: 600 }}>{order.name}</span>
+              </p>
+              <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
+                Total:{' '}
+                <span style={{ fontWeight: 600 }}>
+                  {order.totalPriceSet.shopMoney.amount} LEI
+                </span>
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <div className="mt-4 md:mt-0">
+                {/* 1. Check for "Cancellation Rejected" tag first */}
+                {order.tags.includes('Cancellation Rejected') ? (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                    Cerere respinsă
+                  </span>
+                ) :
+                  /* 2. Check for "Cancellation Requested" tag */
+                  order.tags.includes('Cancellation Requested') ? (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                      Cerere trimisă
+                    </span>
+                  ) :
+                    /* 3. Show button if no relevant tags and not currently sending */
+                    cancellationState === 'idle' ? (
+                      <button
+                        onClick={handleRequestCancellation}
+                        className="bg-secondary text-foreground px-4 py-2 rounded-lg hover:bg-muted transition-colors text-sm"
+                      >
+                        Cerere de anulare
+                      </button>
+                    ) : cancellationState === 'sending' ? (
+                      <p className="text-sm text-muted-foreground">Se trimite cererea...</p>
+                    ) : cancellationState === 'sent' ? (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                        Cerere trimisă
                       </span>
-                    </p>
-                  </div>
-                  <div className="flex justify-end">
-                  <div className="mt-4 md:mt-0">
-            {cancellationState === 'idle' && (
-              <button
-                onClick={handleRequestCancellation}
-                className="bg-secondary text-foreground px-4 py-2 rounded-lg hover:bg-muted transition-colors text-sm"
-              >
-                Cerere de anulare
-              </button>
-            )}
-            {cancellationState === 'sending' && (
-                 <p className="text-sm text-muted-foreground">Se trimite cererea...</p>
-            )}
-             {cancellationState === 'sent' && (
-                  <p className="text-sm text-green-600">Cerere trimisă.</p>
-             )}
-              {cancellationState === 'error' && (
-                <p className="text-sm text-red-600">Eroare la trimiterea cererii.</p>
-              )}
+                    ) : cancellationState === 'error' ? (
+                      <p className="text-sm text-red-600">Eroare la trimiterea cererii.</p>
+                    ) : null}
+              </div>
+            </div>
           </div>
-          </div>
-                </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -264,27 +286,65 @@ export default function OrderDetailsPage() {
             <p className="text-sm">
               <span className="font-medium">Plată:</span>{' '}
               <span
-                className={`font-semibold ${
-                  order.displayFinancialStatus === 'PAID'
-                    ? 'text-green-600'
-                    : 'text-yellow-600'
-                }`}
+                className={`font-semibold ${order.displayFinancialStatus === 'PAID'
+                  ? 'text-green-600'
+                  : 'text-yellow-600'
+                  }`}
               >
-                {order.displayFinancialStatus}
+                {(() => {
+                  const s = order.displayFinancialStatus;
+                  if (s === 'PAID') return 'Plătită';
+                  if (s === 'PENDING') return 'În așteptare';
+                  if (s === 'REFUNDED') return 'Rambursată';
+                  if (s === 'VOIDED') return 'Anulată';
+                  return s;
+                })()}
               </span>
             </p>
             <p className="text-sm">
               <span className="font-medium">Livrare:</span>{' '}
               <span
-                className={`font-semibold ${
-                  order.displayFulfillmentStatus === 'FULFILLED'
-                    ? 'text-green-600'
+                className={`font-semibold ${order.displayFulfillmentStatus === 'FULFILLED'
+                  ? 'text-green-600'
+                  : order.displayFulfillmentStatus === 'IN_PROGRESS'
+                    ? 'text-blue-600'
                     : 'text-yellow-600'
-                }`}
+                  }`}
               >
-                {order.displayFulfillmentStatus}
+                {(() => {
+                  const s = order.displayFulfillmentStatus;
+                  if (s === 'FULFILLED') return 'Expediată';
+                  if (s === 'UNFULFILLED') return 'Neexpediată';
+                  if (s === 'IN_PROGRESS') return 'În procesare';
+                  if (s === 'ON_HOLD') return 'În așteptare';
+                  if (s === 'OPEN') return 'Deschisă';
+                  if (s === 'PARTIALLY_FULFILLED') return 'Parțial expediată';
+                  return s;
+                })()}
               </span>
             </p>
+            {order.fulfillment && (
+              <div className="mt-4 pt-4 border-t border-muted">
+                <p className="text-sm font-semibold mb-1">Informații expediere:</p>
+                <p className="text-sm">
+                  <span className="text-muted-foreground">Curier:</span>{' '}
+                  {order.fulfillment.trackingCompany}
+                </p>
+                {order.fulfillment.trackingInfo && (
+                  <p className="text-sm">
+                    <span className="text-muted-foreground">AWB:</span>{' '}
+                    <a
+                      href={order.fulfillment.trackingInfo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {order.fulfillment.trackingInfo.number}
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

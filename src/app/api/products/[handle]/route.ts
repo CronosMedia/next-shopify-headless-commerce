@@ -3,9 +3,12 @@ import { shopifyClient } from '@/lib/shopify'
 import { PRODUCT_BY_HANDLE_QUERY } from '@/lib/queries'
 import { Product } from '@/lib/shopify/generated/graphql'
 
-export const GET = async (req: NextRequest) => {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ handle: string }> }
+) {
   try {
-    const handle = req.nextUrl.pathname.split('/').pop()
+    const { handle } = await params
 
     if (!handle) {
       return NextResponse.json(
@@ -14,15 +17,17 @@ export const GET = async (req: NextRequest) => {
       )
     }
 
-    const data: { product: Product } = await shopifyClient.request(PRODUCT_BY_HANDLE_QUERY, {
+    const response = await shopifyClient.request<{ product: Product }>(PRODUCT_BY_HANDLE_QUERY, {
       handle,
     })
 
-    if (!data.product) {
+    const product = response.data?.product
+
+    if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ product: data.product })
+    return NextResponse.json({ product })
   } catch (error: unknown) {
     console.error('Product API error:', error)
     return NextResponse.json(
