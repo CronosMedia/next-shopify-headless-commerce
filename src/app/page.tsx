@@ -1,9 +1,8 @@
 import { shopifyClient } from '@/lib/shopify'
-import { PRODUCTS_QUERY, COLLECTIONS_QUERY } from '@/lib/queries'
-import ProductCard from '@/components/ProductCard'
+import {PRODUCTS_QUERY} from '@/lib/queries'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import {ArrowRight} from 'lucide-react'
 import HeroSection from '@/components/HeroSection'
 import TrendingCarousel from '@/components/TrendingCarousel'
 import NewsletterSection from '@/components/NewsletterSection'
@@ -31,37 +30,22 @@ type ProductNode = {
   }
 }
 
-type CollectionNode = {
-  id: string
-  handle: string
-  title: string
-  description: string
-  image?: {
-    url: string
-    altText: string | null
-    width: number
-    height: number
-  } | null
+type ProductsData = {
+  products: {
+    edges: Array<{node: ProductNode}>
+  }
 }
 
 async function getProducts(): Promise<ProductNode[]> {
-  const data: any = await shopifyClient.request(PRODUCTS_QUERY, { first: 12 })
-  const edges = data?.data?.products?.edges ?? []
-  return edges.map((e: any) => e.node) as ProductNode[]
-}
-
-async function getCollections(): Promise<CollectionNode[]> {
-  const data: any = await shopifyClient.request(COLLECTIONS_QUERY, { first: 8 })
-  const edges = data?.data?.collections?.edges ?? []
-  return edges.map((e: any) => e.node) as CollectionNode[]
+  const {data} = await shopifyClient.request<ProductsData>(PRODUCTS_QUERY, {
+    first: 12,
+  })
+  return data.products.edges.map(({node}) => node)
 }
 
 export default async function Home() {
-  const [products, collections] = await Promise.all([getProducts(), getCollections()])
-
-  const featuredProducts = products.slice(0, 4)
+  const products = await getProducts()
   const trendingProducts = products.slice(0, 8)
-  const newArrivals = products.slice(4, 8)
 
   return (
     <main className="bg-[var(--background)] -mt-24">

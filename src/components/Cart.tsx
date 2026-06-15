@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from './CartProvider'
 import Link from 'next/link'

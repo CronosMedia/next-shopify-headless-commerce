@@ -1,25 +1,13 @@
 'use client'
 import Link from 'next/link'
-import Image from 'next/image'
-import {
-  ChevronDown,
-  ChevronRight,
-  Package,
-  Heart,
-  Zap,
-  Leaf,
-  Sparkles,
-} from 'lucide-react'
+import {ChevronDown, ChevronRight} from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
-import MegaFilterPanel from './MegaFilterPanel'
 
-const categoryIcons = {
-  supplements: Package,
-  vitamins: Heart,
-  protein: Zap,
-  organic: Leaf,
-  beauty: Sparkles,
-  default: Package,
+type Collection = {
+  id: string
+  handle: string
+  title: string
+  description?: string
 }
 
 export default function MegaMenu({
@@ -29,52 +17,9 @@ export default function MegaMenu({
   title?: string
   align?: 'left' | 'right' | 'center'
 }) {
-  const [collections, setCollections] = useState<any[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
-
-  // Hardcoded filter data (mimicking Shopify API response)
-  const filterData = {
-    suplimente: [
-      {
-        title: 'Tip Supliment',
-        links: [
-          { name: 'Proteine', href: '/collections/suplimente?filter=proteine' },
-          { name: 'Creatină', href: '/collections/suplimente?filter=creatina' },
-          { name: 'Vitamine', href: '/collections/suplimente?filter=vitamine' },
-        ],
-      },
-      {
-        title: 'Obiectiv',
-        links: [
-          {
-            name: 'Masă Musculară',
-            href: '/collections/suplimente?filter=masa-musculara',
-          },
-          { name: 'Slăbire', href: '/collections/suplimente?filter=slabire' },
-          { name: 'Energie', href: '/collections/suplimente?filter=energie' },
-        ],
-      },
-    ],
-    vitamine: [
-      {
-        title: 'Tip Vitamină',
-        links: [
-          {
-            name: 'Vitamina C',
-            href: '/collections/vitamine?filter=vitamina-c',
-          },
-          {
-            name: 'Vitamina D',
-            href: '/collections/vitamine?filter=vitamina-d',
-          },
-        ],
-      },
-    ],
-    // Add more categories and their filters as needed
-  }
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -86,8 +31,8 @@ export default function MegaMenu({
           const data = await response.json()
           setCollections(data.collections || [])
         }
-      } catch (error) {
-        console.error('Failed to fetch collections:', error)
+      } catch {
+        setCollections([])
       } finally {
         setLoading(false)
       }
@@ -100,12 +45,10 @@ export default function MegaMenu({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    setIsHovering(true)
     setIsOpen(true)
   }
 
   const handleMouseLeave = () => {
-    setIsHovering(false)
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
     }, 150) // Delay de 150ms pentru a permite mouse-ului să se miște
@@ -115,11 +58,9 @@ export default function MegaMenu({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    setIsHovering(true)
   }
 
   const handleMenuMouseLeave = () => {
-    setIsHovering(false)
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
     }, 150)
@@ -166,11 +107,7 @@ export default function MegaMenu({
           onMouseLeave={handleMenuMouseLeave}
         >
           <div className="flex flex-col">
-            {collections.map((c: any) => {
-              const IconComponent =
-                categoryIcons[
-                  c.handle?.toLowerCase() as keyof typeof categoryIcons
-                ] || categoryIcons.default
+            {collections.map((c) => {
               return (
                 <Link
                   key={c.id}

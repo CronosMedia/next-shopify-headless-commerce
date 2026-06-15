@@ -16,7 +16,7 @@ type Product = {
     tags: string[]
     featuredImage: {
         url: string
-        altText: string
+        altText: string | null
         width: number
         height: number
     } | null
@@ -54,7 +54,6 @@ type ActivePanel = 'sort' | 'availability' | 'price' | 'vendor' | 'type' | 'tags
 
 export default function CollectionProductGrid({
     initialProducts,
-    collectionTitle
 }: {
     initialProducts: Product[]
     collectionTitle: string
@@ -69,8 +68,14 @@ export default function CollectionProductGrid({
 
     // Dynamic price range
     const prices = useMemo(() => products.map(p => parseFloat(p.priceRange.minVariantPrice.amount)), [products])
-    const absoluteMin = useMemo(() => Math.floor(Math.min(...prices, 0)), [prices])
-    const absoluteMax = useMemo(() => Math.ceil(Math.max(...prices, 1000)), [prices])
+    const absoluteMin = useMemo(
+        () => prices.length > 0 ? Math.floor(Math.min(...prices)) : 0,
+        [prices]
+    )
+    const absoluteMax = useMemo(
+        () => prices.length > 0 ? Math.ceil(Math.max(...prices)) : 0,
+        [prices]
+    )
 
     // Extract unique values for dynamic filters
     const uniqueVendors = useMemo(() => {
@@ -97,15 +102,8 @@ export default function CollectionProductGrid({
     const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set())
 
     useEffect(() => {
-        if (initialProducts.length > 0) {
-            const newPrices = initialProducts.map(p => parseFloat(p.priceRange.minVariantPrice.amount))
-            const newMin = Math.floor(Math.min(...newPrices))
-            const newMax = Math.ceil(Math.max(...newPrices))
-            if (newMin !== absoluteMin || newMax !== absoluteMax) {
-                setPriceRange([newMin, newMax])
-            }
-        }
-    }, [initialProducts])
+        setPriceRange([absoluteMin, absoluteMax])
+    }, [absoluteMax, absoluteMin, initialProducts])
 
     // Close panel on outside click
     useEffect(() => {

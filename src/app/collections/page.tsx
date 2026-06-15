@@ -42,8 +42,8 @@ export default async function CollectionsPage() {
             first: 20
         })
         collections = data?.collections?.edges?.map((edge) => edge.node) || []
-    } catch (error) {
-        console.error('Error fetching collections:', error)
+    } catch {
+        collections = []
     }
 
     return (
@@ -52,7 +52,7 @@ export default async function CollectionsPage() {
 
             {collections.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {collections.map((collection: any, index: number) => {
+                    {collections.map((collection, index) => {
                         // Use Shopify image if available, otherwise cycle through fallbacks based on index
                         const imageUrl = collection.image?.url || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]
 

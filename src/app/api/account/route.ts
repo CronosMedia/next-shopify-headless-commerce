@@ -6,6 +6,7 @@ import {
   GET_CUSTOMER_QUERY,
 } from '@/lib/queries'
 import { Customer, CustomerUpdateInput } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 type CustomerUpdateData = {
   customerUpdate: {
@@ -71,7 +72,7 @@ export const PUT = async (req: NextRequest) => {
 
     // Check if customerUpdateResult is missing
     if (!customerUpdateResult) {
-      console.error('Shopify customerUpdate returned an unexpected empty or null response:', updateData);
+      serverLogger.error('account.update.empty_response')
       return Response.json(
         { error: 'Failed to update account: Unexpected response from Shopify.' },
         { status: 500 }
@@ -91,7 +92,7 @@ export const PUT = async (req: NextRequest) => {
 
     // If customer is null even without user errors, it's still an issue
     if (!customer) {
-        console.error('Shopify customerUpdate returned null customer with no user errors:', updateData);
+        serverLogger.error('account.update.missing_customer')
         return Response.json(
             { error: 'Failed to update account: Customer object is null or missing.' },
             { status: 500 }
@@ -100,7 +101,7 @@ export const PUT = async (req: NextRequest) => {
 
     return Response.json({ customer: customer })
   } catch (error: unknown) {
-    console.error('Error updating customer account:', error);
+    serverLogger.error('account.update.failed', error)
     return Response.json(
       { error: (error as Error).message || 'Failed to update account' },
       { status: 500 }

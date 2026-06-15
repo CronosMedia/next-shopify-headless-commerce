@@ -1,5 +1,5 @@
 import { shopifyClient } from '@/lib/shopify'
-import { ProductConnection } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 const NEWEST_PRODUCTS_QUERY = `#graphql
   query NewestProducts($first: Int = 12) {
@@ -70,13 +70,10 @@ export async function GET() {
 
     const data = response.data;
 
-    let products: any[] = [];
-    if (data && data.products && data.products.edges) {
-      products = data.products.edges.map((edge) => edge.node);
-    }
+    const products = data.products.edges.map((edge) => edge.node)
     return Response.json({ products })
   } catch (error: unknown) {
-    console.error('Shopify API error:', error)
+    serverLogger.error('products.newest.failed', error)
     return Response.json(
       { error: (error as Error).message || 'Failed to fetch newest products' },
       { status: 500 }

@@ -1,36 +1,51 @@
 
 import { NextResponse } from 'next/server';
+import {serverLogger} from '@/lib/logger.server'
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { name, email, message } = body;
+        const body: unknown = await request.json();
+        const name =
+            typeof body === 'object' && body !== null && 'name' in body
+                ? body.name
+                : null
+        const email =
+            typeof body === 'object' && body !== null && 'email' in body
+                ? body.email
+                : null
+        const message =
+            typeof body === 'object' && body !== null && 'message' in body
+                ? body.message
+                : null
 
-        // Validate input
-        if (!name || !email || !message) {
+        if (
+            typeof name !== 'string' ||
+            typeof email !== 'string' ||
+            typeof message !== 'string' ||
+            !name.trim() ||
+            !email.trim() ||
+            !message.trim()
+        ) {
             return NextResponse.json(
                 { error: { message: 'Toate câmpurile sunt obligatorii.' } },
                 { status: 400 }
             );
         }
 
-        // In a real application, you would send an email here using a service like Resend, SendGrid, or Nodemailer.
-        // For now, we will log the message to the console to simulate sending.
-        console.log('--- Contact Form Submission ---');
-        console.log(`Name: ${name}`);
-        console.log(`Email: ${email}`);
-        console.log(`Message: ${message}`);
-        console.log('-------------------------------');
-
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        return NextResponse.json({ success: true, message: 'Mesajul a fost trimis cu succes!' });
+        return NextResponse.json(
+            {
+                error: {
+                    message:
+                        'Formularul de contact nu este configurat momentan.',
+                },
+            },
+            { status: 503 }
+        );
     } catch (error) {
-        console.error('Contact form error:', error);
+        serverLogger.error('contact.invalid_request', error)
         return NextResponse.json(
             { error: { message: 'A apărut o eroare la trimiterea mesajului.' } },
-            { status: 500 }
+            { status: 400 }
         );
     }
 }

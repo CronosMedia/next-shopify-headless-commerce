@@ -96,8 +96,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user } = await response.json()
         setUser(user)
       }
-    } catch (error) {
-      console.error('Auth check failed:', error)
+    } catch {
+      setUser(null)
     } finally {
       setLoading(false)
     }
@@ -133,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return data
-    } catch (error) {
+    } catch {
       return { error: { message: 'Login failed due to a network error.' } }
     } finally {
       setLoading(false)
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return data
-    } catch (error) {
+    } catch {
       return {
         error: { message: 'Registration failed due to a network error.' },
       }
@@ -176,8 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cartId }), // Pass cartId to disassociate
       })
-    } catch (error) {
-      console.error('Logout failed:', error)
+    } catch {
+      // Local session is cleared even if the server request fails.
     } finally {
       setUser(null)
     }
@@ -199,7 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return await response.json()
-    } catch (error) {
+    } catch {
       return { error: { message: 'Update failed due to a network error.' } }
     }
   }
@@ -215,8 +215,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return []
       }
       return []
-    } catch (error) {
-      console.error('Failed to fetch orders:', error)
+    } catch {
       return []
     }
   }
@@ -235,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return await response.json()
-    } catch (error) {
+    } catch {
       return {
         error: { message: 'Failed to add address due to a network error.' },
       }
@@ -257,7 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return await response.json()
-    } catch (error) {
+    } catch {
       return {
         error: { message: 'Failed to update address due to a network error.' },
       }
@@ -276,7 +275,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return await response.json()
-    } catch (error) {
+    } catch {
       return {
         error: { message: 'Failed to delete address due to a network error.' },
       }
@@ -295,7 +294,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
       return await response.json()
-    } catch (error) {
+    } catch {
       return {
         error: {
           message: 'Failed to set default address due to a network error.',

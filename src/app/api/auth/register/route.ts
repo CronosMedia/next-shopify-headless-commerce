@@ -102,10 +102,14 @@ export const POST = async (req: NextRequest) => {
     }
 
     return Response.json({ user: finalCustomer })
-  } catch (error: any) {
-    console.error('Registration Route Error:', error)
+  } catch (error: unknown) {
     return Response.json(
-      { error: { message: error.message || 'Registration failed' } },
+      {
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Registration failed',
+        },
+      },
       { status: 500 }
     )
   }

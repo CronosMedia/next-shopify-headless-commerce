@@ -7,6 +7,7 @@ import {
   cartLinesUpdate,
   cartLinesRemove,
 } from '@/lib/cart'
+import {serverLogger} from '@/lib/logger.server'
 
 async function handler(req: NextRequest) {
   try {
@@ -34,9 +35,7 @@ async function handler(req: NextRequest) {
 
           const newCart = await cartCreate(lines)
           if (!newCart) {
-            console.error(
-              'Cart creation failed - no cart returned from Shopify'
-            )
+            serverLogger.error('cart.create.empty_response')
             return Response.json(
               { error: { message: 'Cart creation failed' } },
               { status: 500 }
@@ -44,7 +43,7 @@ async function handler(req: NextRequest) {
           }
           return Response.json({ cart: newCart })
         } catch (error) {
-          console.error('Cart creation failed:', error)
+          serverLogger.error('cart.create.failed', error)
           return Response.json(
             {
               error: {

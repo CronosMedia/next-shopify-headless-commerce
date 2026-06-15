@@ -2,6 +2,7 @@ import {cookies} from 'next/headers'
 import {NextResponse} from 'next/server'
 import {GET_CUSTOMER_ORDERS_QUERY} from '@/lib/queries'
 import {shopifyClient} from '@/lib/shopify'
+import {serverLogger} from '@/lib/logger.server'
 
 type CustomerOrder = {
   id: string
@@ -54,7 +55,7 @@ export async function GET() {
 
     return NextResponse.json({orders})
   } catch (error: unknown) {
-    console.error('Orders request failed', error)
+    serverLogger.error('account.orders.list.failed', error)
     return NextResponse.json(
       {error: {message: 'Comenzile nu au putut fi încărcate.'}},
       {status: 500}

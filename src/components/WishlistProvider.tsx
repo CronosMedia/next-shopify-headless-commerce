@@ -49,8 +49,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         if (stored) {
             try {
                 setItems(JSON.parse(stored))
-            } catch (e) {
-                console.error('Failed to parse wishlist from local storage', e)
+            } catch {
                 localStorage.removeItem(LOCAL_STORAGE_KEY)
             }
         }

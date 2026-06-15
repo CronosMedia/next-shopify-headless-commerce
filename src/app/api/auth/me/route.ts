@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { shopifyClient, GraphQLResponse } from '@/lib/shopify'
 import { GET_CUSTOMER_QUERY } from '@/lib/queries'
 import { Customer } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 export const GET = async (req: NextRequest) => {
   const accessToken = req.cookies.get('customer-access-token')?.value
@@ -16,8 +17,7 @@ export const GET = async (req: NextRequest) => {
     })) as GraphQLResponse<{ customer: Customer }>
 
     if (response.errors) {
-      // This can happen if the token is expired or invalid
-      console.error('Error in /api/auth/me:', response.errors)
+      serverLogger.warn('auth.me.invalid_session')
       return Response.json({ user: null })
     }
 
@@ -42,7 +42,7 @@ export const GET = async (req: NextRequest) => {
 
     return nextResponse
   } catch (error) {
-    console.error('Error fetching customer data:', error)
+    serverLogger.error('auth.me.failed', error)
     return Response.json({ user: null })
   }
 }

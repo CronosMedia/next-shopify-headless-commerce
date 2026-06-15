@@ -1,5 +1,6 @@
 import { shopifyClient } from '@/lib/shopify'
 import { CollectionConnection } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 const COLLECTIONS_QUERY = `#graphql
   query Collections($first: Int = 10) {
@@ -40,7 +41,7 @@ export async function GET() {
     )
     return Response.json({ collections })
   } catch (error) {
-    console.error('Collections API error:', error)
+    serverLogger.error('collections.list.failed', error)
     return Response.json({ collections: [] })
   }
 }

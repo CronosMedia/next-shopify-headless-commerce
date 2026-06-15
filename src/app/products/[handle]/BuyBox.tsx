@@ -1,7 +1,7 @@
 'use client'
 import { useMemo, useState, useEffect } from 'react'
 import { useCart } from '@/components/CartProvider'
-import { Minus, Plus, ShoppingCart, CreditCard } from 'lucide-react'
+import {Minus, Plus} from 'lucide-react'
 import Swatch from './Swatch' // Import the new Swatch component
 import WishlistButton from '@/components/WishlistButton'
 
@@ -66,10 +66,9 @@ export default function BuyBox({
   const handleAddToCart = async () => {
     try {
       await addToCart(selectedVariant.id, quantity)
-      console.log('BuyBox: onAddToCartSuccess called.')
       onAddToCartSuccess?.()
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
+    } catch {
+      return
     }
   }
 

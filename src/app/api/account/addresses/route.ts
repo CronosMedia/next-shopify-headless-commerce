@@ -15,6 +15,7 @@ import {
   CustomerAddressDeletePayload,
   CustomerDefaultAddressUpdatePayload,
 } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 // Get all addresses
 export const GET = async (req: NextRequest) => {
@@ -64,7 +65,6 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const { address }: { address: MailingAddress } = await req.json()
-    console.log('Creating address for customer:', { address })
 
     const response = await shopifyClient.request<{ customerAddressCreate: CustomerAddressCreatePayload }>(
       CUSTOMER_ADDRESS_CREATE_MUTATION,
@@ -75,7 +75,7 @@ export const POST = async (req: NextRequest) => {
     )
 
     if (response.errors) {
-      console.error('Shopify request errors:', response.errors)
+      serverLogger.warn('account.address.create.shopify_error')
       const message =
         response.errors[0]?.message || 'An error occurred creating the address.'
       return Response.json({ error: message }, { status: 400 })
@@ -85,7 +85,6 @@ export const POST = async (req: NextRequest) => {
       response.data.customerAddressCreate
 
     if (customerUserErrors?.length > 0) {
-      console.error('Shopify customer user errors:', customerUserErrors)
       return Response.json(
         { error: customerUserErrors[0].message },
         { status: 400 }
@@ -94,7 +93,7 @@ export const POST = async (req: NextRequest) => {
 
     return Response.json({ address: customerAddress })
   } catch (error: unknown) {
-    console.error('Unhandled error in address creation:', error)
+    serverLogger.error('account.address.create.failed', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to create address';
     return Response.json(
       { error: errorMessage },

@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function HeroSection() {

@@ -52,7 +52,7 @@ export default function Tabs({
           <div className="space-y-16">
             <div className="space-y-4 border-l-2 border-[#1a1a1a] pl-6 transition-all hover:border-[#8a8a8a]">
               <p className="text-[14px] font-light italic leading-relaxed text-[#1a1a1a]">
-                "The quality of the finish is beyond what I expected. A truly minimalist masterpiece that functions as good as it looks."
+                &ldquo;The quality of the finish is beyond what I expected. A truly minimalist masterpiece that functions as good as it looks.&rdquo;
               </p>
               <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] text-[#8a8a8a]">
                 <span>Maria G.</span>
@@ -63,7 +63,7 @@ export default function Tabs({
 
             <div className="space-y-4 border-l-2 border-[#f0efed] pl-6 transition-all hover:border-[#1a1a1a]">
               <p className="text-[14px] font-light italic leading-relaxed text-[#1a1a1a]">
-                "Exceptional craftsmanship. The delivery was seamless and the packaging reflects the premium nature of the brand."
+                &ldquo;Exceptional craftsmanship. The delivery was seamless and the packaging reflects the premium nature of the brand.&rdquo;
               </p>
               <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] text-[#8a8a8a]">
                 <span>Andreas K.</span>

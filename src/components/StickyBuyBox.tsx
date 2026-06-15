@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ShoppingCart, X, Minus, Plus, ChevronDown } from 'lucide-react'
+import {ShoppingCart} from 'lucide-react'
 import { useCart } from './CartProvider'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
@@ -102,10 +102,7 @@ export default function StickyBuyBox({
     variantId,
     isVisible
 }: StickyBuyBoxProps) {
-    const [isOpenMobile, setIsOpenMobile] = useState(false)
-    const [quantity, setQuantity] = useState(1)
-    const { cart, addToCart, loading } = useCart()
-    const cartCount = cart?.totalQuantity || 0
+    const {addToCart, loading} = useCart()
 
     // Toggle body class to hide main navbar
     useEffect(() => {
@@ -120,7 +117,6 @@ export default function StickyBuyBox({
     const handleAddToCart = async (quantity: number) => {
         if (!variantId) return
         await addToCart(variantId, quantity)
-        setIsOpenMobile(false)
     }
 
     return (

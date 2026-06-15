@@ -1,4 +1,4 @@
-import { shopifyClient } from './shopify'
+import {shopifyClient, type ShopifyUserError} from './shopify'
 import type { CartBuyerIdentityInput } from './types'
 
 const CART_FRAGMENT = `#graphql
@@ -250,59 +250,49 @@ export type Cart = {
   }
 }
 
-// The robust wrapper to handle ALL Shopify API requests and errors
-async function shopifyRequest(query: string, variables: Record<string, unknown>) {
-  try {
-    const { data, errors }: { data: Record<string, any>, errors?: any } = await shopifyClient.request(query, variables);
+type CartMutationResult = {
+  cart: Cart | null
+  userErrors: ShopifyUserError[]
+}
 
-    if (errors) {
-      const message = Array.isArray(errors)
-        ? errors.map((e: any) => e.message).join(', ')
-        : (errors as any).message || 'An unknown GraphQL error occurred.';
-      if (errors.graphQLErrors && Array.isArray(errors.graphQLErrors)) {
-        const graphQLErrorsMessages = errors.graphQLErrors.map((e: any) => e.message).join(', ');
-        throw new Error(`GraphQL Client: ${graphQLErrorsMessages}. Original error: ${message}`);
-      }
-      throw new Error(`GraphQL Client: ${message}`);
-    }
+function hasUserErrors(
+  value: unknown
+): value is {userErrors: ShopifyUserError[]} {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'userErrors' in value &&
+    Array.isArray(value.userErrors)
+  )
+}
 
-    if (!data) {
-      throw new Error('No data returned from Shopify API');
-    }
+async function shopifyRequest<T>(
+  query: string,
+  variables: Record<string, unknown>
+): Promise<T> {
+  const {data, errors} = await shopifyClient.request<Record<string, T>>(
+    query,
+    variables
+  )
 
-    const dataKey = Object.keys(data)[0];
-    if (!dataKey) {
-      throw new Error('No data key found in Shopify API response');
-    }
-    const result = data[dataKey];
-
-    if (result && result.userErrors && result.userErrors.length > 0) {
-      const errorMessages = result.userErrors.map((e: any) => e.message).join(', ');
-      throw new Error(errorMessages);
-    }
-
-    return result;
-  } catch (error: any) {
-    // Check for GraphQL errors from the storefront-api-client
-    if (error.graphQLErrors && Array.isArray(error.graphQLErrors)) {
-      const errorMessages = error.graphQLErrors.map((e: any) => e.message).join(', ');
-      throw new Error(`GraphQL Client: ${errorMessages}`);
-    }
-    // Fallback to network errors (if any)
-    if (error.networkError?.result?.errors) {
-      const errors = error.networkError.result.errors;
-      const errorMessages = Array.isArray(errors)
-        ? errors.map((e: any) => e.message).join(', ')
-        : (errors as any).message || 'An unknown network error occurred.';
-      throw new Error(`Network Error: ${errorMessages}`);
-    }
-    // Re-throw if it's another type of error
-    throw error;
+  if (errors?.length) {
+    throw new Error(errors.map(({message}) => message).join(', '))
   }
+
+  const result = Object.values(data)[0]
+  if (!result) {
+    throw new Error('No data returned from Shopify API')
+  }
+
+  if (hasUserErrors(result) && result.userErrors.length) {
+    throw new Error(result.userErrors.map(({message}) => message).join(', '))
+  }
+
+  return result
 }
 
 export async function cartGet(cartId: string): Promise<Cart | null> {
-  const result = await shopifyRequest(CART_QUERY, { id: cartId });
+  const result = await shopifyRequest<Cart>(CART_QUERY, { id: cartId });
   if (!result || !result.id) {
     return null;
   }
@@ -310,7 +300,10 @@ export async function cartGet(cartId: string): Promise<Cart | null> {
 }
 
 export async function cartCreate(lines: { merchandiseId: string; quantity: number }[] = []): Promise<Cart> {
-  const result = await shopifyRequest(CART_CREATE_MUTATION, { input: { lines } });
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_CREATE_MUTATION,
+    {input: {lines}}
+  )
   if (!result || !result.cart) {
     throw new Error('Cart creation failed - no cart returned from Shopify');
   }
@@ -321,7 +314,10 @@ export async function cartLinesAdd(
   cartId: string,
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
-  const result = await shopifyRequest(CART_LINES_ADD_MUTATION, { cartId, lines });
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_LINES_ADD_MUTATION,
+    {cartId, lines}
+  )
   if (!result || !result.cart) {
     throw new Error('Failed to add lines to cart');
   }
@@ -332,7 +328,10 @@ export async function cartLinesUpdate(
   cartId: string,
   lines: { id: string; quantity: number }[]
 ): Promise<Cart> {
-  const result = await shopifyRequest(CART_LINES_UPDATE_MUTATION, { cartId, lines });
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_LINES_UPDATE_MUTATION,
+    {cartId, lines}
+  )
   if (!result || !result.cart) {
     throw new Error('Failed to update cart lines');
   }
@@ -340,7 +339,10 @@ export async function cartLinesUpdate(
 }
 
 export async function cartLinesRemove(cartId: string, lineIds: string[]): Promise<Cart> {
-  const result = await shopifyRequest(CART_LINES_REMOVE_MUTATION, { cartId, lineIds });
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_LINES_REMOVE_MUTATION,
+    {cartId, lineIds}
+  )
   if (!result || !result.cart) {
     throw new Error('Failed to remove cart lines');
   }
@@ -351,7 +353,10 @@ export async function cartBuyerIdentityUpdate(
   cartId: string,
   buyerIdentity: CartBuyerIdentityInput
 ): Promise<Cart> {
-  const result = await shopifyRequest(CART_BUYER_IDENTITY_UPDATE_MUTATION, { cartId, buyerIdentity });
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_BUYER_IDENTITY_UPDATE_MUTATION,
+    {cartId, buyerIdentity}
+  )
   if (!result || !result.cart) {
     throw new Error('Failed to update buyer identity');
   }

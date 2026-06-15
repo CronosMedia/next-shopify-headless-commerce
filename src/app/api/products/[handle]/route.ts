@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { shopifyClient } from '@/lib/shopify'
 import { PRODUCT_BY_HANDLE_QUERY } from '@/lib/queries'
 import { Product } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 export async function GET(
   request: NextRequest,
@@ -29,7 +30,7 @@ export async function GET(
 
     return NextResponse.json({ product })
   } catch (error: unknown) {
-    console.error('Product API error:', error)
+    serverLogger.error('products.details.failed', error)
     return NextResponse.json(
       {
         error: { message: (error as Error).message || 'Failed to fetch product details' },

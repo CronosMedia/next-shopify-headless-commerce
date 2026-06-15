@@ -1,5 +1,4 @@
 'use client'
-import { useMemo } from 'react'
 import { Truck } from 'lucide-react'
 import type { DeliveryOption } from '@/lib/types'
 

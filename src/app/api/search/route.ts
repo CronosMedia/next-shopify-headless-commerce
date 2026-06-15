@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { shopifyClient } from '@/lib/shopify'
-import { ProductConnection } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
 
 const SEARCH_PRODUCTS_QUERY = `#graphql
   query SearchProducts($query: String!, $first: Int = 12) {
@@ -69,10 +69,10 @@ export const GET = async (req: NextRequest) => {
     const data = response.data
 
     return NextResponse.json({
-      products: data?.products?.edges.map((edge: any) => edge.node) || [],
+      products: data.products.edges.map((edge) => edge.node),
     })
   } catch (error: unknown) {
-    console.error('Search API error:', error)
+    serverLogger.error('search.failed', error)
     return NextResponse.json(
       { error: { message: (error as Error).message || 'Failed to perform search' } },
       { status: 500 }

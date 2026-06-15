@@ -9,11 +9,8 @@ import {
   CreditCard,
   LogOut,
   Edit,
-  Save,
-  X,
   PlusCircle,
   Trash2,
-  Star,
   AlertCircle,
   ChevronRight,
   Settings, // Added for Security & Settings
@@ -294,8 +291,8 @@ function SettingsTab({ user }: { user: User }) {
       setSuccess('Adresa de email a fost schimbată cu succes.');
       setIsEditingEmail(false);
       refetchUser();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'A apărut o eroare.');
     }
   };
 
@@ -321,8 +318,8 @@ function SettingsTab({ user }: { user: User }) {
       setConfirmPassword('');
       setSuccess('Parola a fost schimbată cu succes.');
       setIsEditingPassword(false);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'A apărut o eroare.');
     }
   };
 
@@ -727,7 +724,7 @@ function AddressesTab({ user }: { user: User }) {
 
 
   const addresses = useMemo(
-    () => user.addresses?.edges?.map((e: any) => e.node) || [],
+    () => user.addresses?.edges?.map(({node}) => node) || [],
     [user.addresses]
   )
 

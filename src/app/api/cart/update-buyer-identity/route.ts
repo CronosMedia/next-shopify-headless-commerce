@@ -12,8 +12,15 @@ export async function POST(request: NextRequest) {
 
     const updatedCart = await cartBuyerIdentityUpdate(cartId, buyerIdentity);
     return NextResponse.json({ cart: updatedCart });
-  } catch (error: any) {
-    console.error('API Route Error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to update buyer identity via API' }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to update buyer identity via API',
+      },
+      {status: 500}
+    )
   }
 }

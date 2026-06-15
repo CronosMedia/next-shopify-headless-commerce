@@ -7,10 +7,8 @@ import {
   ShoppingCart,
   Trash2,
   ArrowLeft,
-  ArrowRight,
   ShieldCheck,
   ChevronDown,
-  Sparkles,
   MapPin,
   Undo2, // Added for restore icon
   X, // Added for remove icon
@@ -26,6 +24,7 @@ export default function CartPage() {
   const {
     cart,
     loading,
+    setError,
     updateCartItemQuantity,
     removeFromCart,
     clearCart,
@@ -220,7 +219,7 @@ export default function CartPage() {
         {/* Cart Items & Related Products */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg divide-y divide-gray-200 mb-8">
-            {cart.lines.edges.map(({ node: line }, index) => (
+            {cart.lines.edges.map(({node: line}) => (
               <div key={line.id} className="p-6">
                 <div className="flex gap-6">
                   {/* Product Image */}
@@ -231,7 +230,11 @@ export default function CartPage() {
                     >
                       {(line.merchandise.image?.url || line.merchandise.product.featuredImage?.url) ? (
                         <Image
-                          src={line.merchandise.image?.url || line.merchandise.product.featuredImage?.url!}
+                          src={
+                            line.merchandise.image?.url ??
+                            line.merchandise.product.featuredImage?.url ??
+                            ''
+                          }
                           alt={
                             line.merchandise.image?.altText ||
                             line.merchandise.product.featuredImage?.altText ||
@@ -438,7 +441,7 @@ export default function CartPage() {
                             (
                               cart.deliveryGroups.edges[0]?.node
                                 .deliveryOptions || []
-                            ).find((o: any) => o.handle === handle) || null
+                            ).find((option) => option.handle === handle) || null
                           setSelectedDeliveryOption(option)
                         }}
                       />
@@ -513,8 +516,8 @@ export default function CartPage() {
           try {
             await setSelectedDeliveryAddress(address)
             setIsAddressModalOpen(false)
-          } catch (error) {
-            console.error('Failed to update delivery address:', error)
+          } catch {
+            setError('Adresa de livrare nu a putut fi actualizată.')
           }
         }}
       />

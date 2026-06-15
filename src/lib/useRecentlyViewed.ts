@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 export type RecentProduct = {
     id: string
@@ -28,13 +28,13 @@ export function useRecentlyViewed() {
             if (stored) {
                 setViewedProducts(JSON.parse(stored))
             }
-        } catch (e) {
-            console.error('Failed to parse recently viewed products', e)
+        } catch {
+            localStorage.removeItem(STORAGE_KEY)
         }
         setIsInitialized(true)
     }, [])
 
-    const addProduct = (product: RecentProduct) => {
+    const addProduct = useCallback((product: RecentProduct) => {
         if (!product || !product.id) return
 
         setViewedProducts((prev) => {
@@ -49,7 +49,7 @@ export function useRecentlyViewed() {
 
             return updated
         })
-    }
+    }, [])
 
     return {
         viewedProducts,

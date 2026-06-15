@@ -39,10 +39,10 @@ export default function NewArrivalsPage() {
         if (response.ok) {
           setProducts(data.products)
         } else {
-          console.error('Failed to fetch newest products:', data.error)
+          setProducts([])
         }
-      } catch (error) {
-        console.error('Error fetching newest products:', error)
+      } catch {
+        setProducts([])
       } finally {
         setLoading(false)
       }

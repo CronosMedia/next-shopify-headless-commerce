@@ -8,6 +8,39 @@ type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
+type CollectionProduct = {
+  id: string
+  handle: string
+  title: string
+  vendor: string
+  productType: string
+  tags: string[]
+  featuredImage: {
+    url: string
+    altText: string | null
+    width: number
+    height: number
+  } | null
+  priceRange: {
+    minVariantPrice: {amount: string; currencyCode: string}
+  }
+  availableForSale: boolean
+  variants: {
+    edges: Array<{
+      node: {id: string; availableForSale: boolean}
+    }>
+  }
+}
+
+type CollectionProductsData = {
+  collection: {
+    title: string
+    products: {
+      edges: Array<{node: CollectionProduct}>
+    }
+  } | null
+}
+
 export default async function CollectionPage({ params, searchParams }: PageProps) {
   const { handle } = await params
   const resolvedSearchParams = await searchParams
@@ -41,14 +74,11 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       break
   }
 
-  console.log('CollectionPage params:', { handle, sortParam, sortKey, reverse })
-
   try {
-    const { data } = await shopifyClient.request<any>(COLLECTION_PRODUCT_QUERY, {
-      handle,
-      sortKey,
-      reverse
-    })
+    const {data} = await shopifyClient.request<CollectionProductsData>(
+      COLLECTION_PRODUCT_QUERY,
+      {handle, sortKey, reverse}
+    )
 
     const collection = data?.collection
 
@@ -56,7 +86,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       notFound()
     }
 
-    const products = collection.products.edges.map((edge: any) => edge.node)
+    const products = collection.products.edges.map(({node}) => node)
 
     return (
       <main className="w-full px-4 md:px-8 lg:px-12 py-10">
@@ -70,8 +100,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
         />
       </main>
     )
-  } catch (error) {
-    console.error('Error fetching collection:', error)
+  } catch {
     notFound()
   }
 }

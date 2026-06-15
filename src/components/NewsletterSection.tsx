@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight } from 'lucide-react'
 
 export default function NewsletterSection() {
     const [email, setEmail] = useState('')

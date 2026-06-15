@@ -1,17 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import { GalleryImage } from './Gallery'
 import { Variant } from './BuyBox'
 import Gallery from './Gallery'
 import BuyBox from './BuyBox'
 import Tabs from './Tabs'
-import Breadcrumbs from '@/components/Breadcrumbs'
 import RelatedProducts from '@/components/RelatedProducts'
 import StickyBuyBox from '@/components/StickyBuyBox'
 import RecentlyViewed from '@/components/RecentlyViewed'
 import { useRecentlyViewed } from '@/lib/useRecentlyViewed'
-import { useEffect } from 'react'
 
 // Import Lightbox component (will create next)
 import Lightbox from './Lightbox'
@@ -23,14 +21,30 @@ const DEFAULT_PLACEHOLDER_IMAGE: GalleryImage = {
   height: 600,
 };
 
+export type ProductViewProduct = {
+  id: string
+  handle: string
+  title: string
+  descriptionHtml: string
+  featuredImage: GalleryImage | null
+  images: {
+    edges: Array<{node: GalleryImage}>
+  }
+  options: Array<{name: string; values: string[]}>
+  variants: {
+    edges: Array<{node: Variant}>
+  }
+}
+
 export default function ProductView({
   product,
-  relatedProducts,
 }: {
-  product: any
-  relatedProducts: any[]
+  product: ProductViewProduct
 }) {
-  const images = (product.images?.edges ?? []).map((e: any) => e.node)
+  const images = useMemo(
+    () => product.images.edges.map(({node}) => node),
+    [product.images.edges]
+  )
   const [mainImage, setMainImage] = useState<GalleryImage>(
     images[0] || product.featuredImage || DEFAULT_PLACEHOLDER_IMAGE
   )
@@ -45,24 +59,14 @@ export default function ProductView({
   const openLightbox = () => setShowLightbox(true) // Function to open lightbox
   const closeLightbox = () => setShowLightbox(false) // Function to close lightbox
 
-  const variants = (product.variants?.edges ?? []).map((e: any) => e.node)
-
-  // Build breadcrumbs
-  const collection = product.collections?.edges?.[0]?.node
-  const breadcrumbItems = [{ name: 'Home', href: '/' }]
-  if (collection) {
-    breadcrumbItems.push({
-      name: collection.title,
-      href: `/collections/${collection.handle}`,
-    })
-  }
-  breadcrumbItems.push({
-    name: product.title,
-    href: `/products/${product.handle}`,
-  })
+  const variants = useMemo(
+    () => product.variants.edges.map(({node}) => node),
+    [product.variants.edges]
+  )
 
   const { addProduct } = useRecentlyViewed()
   const [isStickyVisible, setIsStickyVisible] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   const firstVariant = variants[0]
   const price = firstVariant?.price?.amount || '0'
@@ -80,7 +84,16 @@ export default function ProductView({
         currencyCode: currency
       })
     }
-  }, [product.id])
+  }, [addProduct, currency, images, price, product])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)')
+    const updateViewport = () => setIsDesktop(mediaQuery.matches)
+
+    updateViewport()
+    mediaQuery.addEventListener('change', updateViewport)
+    return () => mediaQuery.removeEventListener('change', updateViewport)
+  }, [])
 
   // Intersection Observer to toggle sticky header
   useEffect(() => {
@@ -150,7 +163,7 @@ export default function ProductView({
           featuredImage: product.featuredImage || images[0] || null
         }}
         variantId={firstVariant?.id}
-        isVisible={isStickyVisible && !window.matchMedia('(min-width: 1024px)').matches}
+        isVisible={isStickyVisible && !isDesktop}
       />
 
       {/* Lightbox component */}

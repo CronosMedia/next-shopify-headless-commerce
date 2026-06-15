@@ -136,7 +136,6 @@ export async function PUT(request: NextRequest) {
     }
 
     // Should never reach here if Shopify API contract is maintained
-    console.error('Missing customer data in successful response:', data)
     return NextResponse.json(
       {
         error: {
@@ -146,7 +145,7 @@ export async function PUT(request: NextRequest) {
       },
       { status: 500 }
     )
-  } catch (error: unknown) {
+  } catch {
     return NextResponse.json(
       { error: { message: 'Failed to update customer.' } },
       { status: 500 }

@@ -33,8 +33,7 @@ export default function QuickViewModal() {
           setProduct(data.product)
           setLoading(false)
         })
-        .catch((err) => {
-          console.error('Failed to fetch product for quick view', err)
+        .catch(() => {
           setLoading(false)
           closeQuickView()
         })

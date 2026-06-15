@@ -14,7 +14,6 @@ import {
 import { useCart } from './CartProvider'
 import { useWishlist } from './WishlistProvider'
 import MegaMenu from './MegaMenu'
-import Cart from './Cart'
 
 type Product = {
   id: string

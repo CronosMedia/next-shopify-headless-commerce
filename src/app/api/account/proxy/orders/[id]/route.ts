@@ -3,6 +3,7 @@ import {NextRequest, NextResponse} from 'next/server'
 import {GET_ORDER_DETAILS_QUERY} from '@/lib/queries'
 import {shopifyClient} from '@/lib/shopify'
 import {shopifyAdminRequest} from '@/lib/shopify/admin.server'
+import {serverLogger} from '@/lib/logger.server'
 
 export const fetchCache = 'force-no-store'
 
@@ -136,7 +137,7 @@ export async function GET(req: NextRequest) {
       )
       orderTags = tagsResponse.data?.order?.tags ?? []
     } catch (error: unknown) {
-      console.warn('Order tags could not be loaded', error)
+      serverLogger.warn('account.order.tags.failed', error)
     }
 
     const firstFulfillment = storefrontOrder.successfulFulfillments[0]
@@ -177,7 +178,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({order: mappedOrder})
   } catch (error: unknown) {
-    console.error('Order details request failed', error)
+    serverLogger.error('account.order.details.failed', error)
     return NextResponse.json(
       {error: {message: 'Detaliile comenzii nu au putut fi încărcate.'}},
       {status: 500}

@@ -85,8 +85,7 @@ export default function AddressModal({
       } else {
         setIsAdding(false)
       }
-    } catch (err: any) {
-      console.error(err)
+    } catch {
       setError('Nu am putut încărca adresele.')
     } finally {
       setLoading(false)
@@ -137,9 +136,10 @@ export default function AddressModal({
         setIsAdding(false)
       }, 1500)
 
-    } catch (err: any) {
-      console.error(err)
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : 'Eroare la salvarea adresei.'
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -158,8 +158,7 @@ export default function AddressModal({
         throw new Error('Failed to set default address')
       }
       onClose()
-    } catch (err) {
-      console.error(err)
+    } catch {
       setError('Eroare la setarea adresei implicite.')
     }
   }

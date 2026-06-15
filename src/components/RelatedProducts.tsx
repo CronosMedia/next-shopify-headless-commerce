@@ -41,7 +41,6 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
       try {
         let finalProducts: ProductNode[] = []
 
-        console.log('RelatedProducts: currentProductId', currentProductId)
         if (currentProductId) {
           const response = await fetch(
             `/api/products/recommendations?productId=${currentProductId}`
@@ -49,34 +48,27 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
 
           if (response.ok) {
             const data = await response.json()
-            console.log('RelatedProducts: recommendations data', data)
             finalProducts = data.products || []
           }
         }
 
         // Fallback if no recommendations or no currentProductId
         if (finalProducts.length === 0) {
-          console.log('RelatedProducts: Falling back to newest')
           const fallbackResponse = await fetch('/api/products/newest')
           if (fallbackResponse.ok) {
             const data = await fallbackResponse.json()
-            console.log('RelatedProducts: newest data', data)
             finalProducts = data.products || []
           }
         }
-
-        console.log('RelatedProducts: finalProducts before filter', finalProducts.length)
 
         // Filter out current product and unavailable
         const validProducts = finalProducts
           .filter(p => p.id !== currentProductId) // Exclude current
           .slice(0, 8) // Limit to 8 items
 
-        console.log('RelatedProducts: validProducts after filter', validProducts.length)
-
         setProducts(validProducts)
-      } catch (error) {
-        console.error('Failed to fetch related products:', error)
+      } catch {
+        setProducts([])
       } finally {
         setLoading(false)
       }
@@ -154,8 +146,6 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
             {products.map((product) => {
               const variant = product.variants?.edges[0]?.node
               const price = variant?.price?.amount || product.priceRange?.minVariantPrice?.amount || '0'
-              const currency = variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode || 'RON'
-
               return (
                 <div key={product.id} className="min-w-[200px] w-[200px]" onClick={(e) => {
                   if (hasMoved) e.preventDefault()
@@ -198,5 +188,4 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
     </section>
   )
 }
-
 

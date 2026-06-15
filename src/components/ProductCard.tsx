@@ -1,8 +1,6 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCart } from './CartProvider'
-import { useUI } from './UIProvider'
 
 type ProductNode = {
   id: string
@@ -33,30 +31,11 @@ type ProductCardProps = {
 }
 
 export default function ProductCard({ product, isLCP }: ProductCardProps) {
-  const { addToCart, loading } = useCart()
-  const { openQuickView } = useUI()
-
-  const hasMultipleVariants = (product.variants?.edges?.length ?? 0) > 1
   const isAvailable = product.variants?.edges?.[0]?.node?.availableForSale ?? false
-  const firstVariantId = product.variants?.edges?.[0]?.node?.id
-
-  const handleQuickAdd = async () => {
-    if (hasMultipleVariants) return
-    if (!firstVariantId || !isAvailable) return
-    try {
-      await addToCart(firstVariantId, 1)
-    } catch (error) {
-      console.error('Quick add failed:', error)
-    }
-  }
 
   const price = product.priceRange?.minVariantPrice?.amount
     ? Number(product.priceRange.minVariantPrice.amount).toFixed(2)
     : null
-  const currency = product.priceRange?.minVariantPrice?.currencyCode === 'RON' || product.priceRange?.minVariantPrice?.currencyCode === 'LEI'
-    ? 'LEI'
-    : product.priceRange?.minVariantPrice?.currencyCode
-
   return (
     <div className="group relative flex flex-col h-full bg-white">
       {/* Image Container with subtle zoom */}

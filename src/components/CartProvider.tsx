@@ -84,8 +84,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (storedItems) {
         try {
           setRecentlyRemovedItems(JSON.parse(storedItems));
-        } catch (e) {
-          console.error("Failed to parse recently removed items from localStorage", e);
+        } catch {
           localStorage.removeItem(LOCAL_STORAGE_RECENTLY_REMOVED_KEY);
         }
       }
@@ -184,8 +183,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const fetched = await fetchCart(cartId)
         if (fetched) return fetched
         localStorage.removeItem('cartId')
-      } catch (err) {
-        console.error('Failed to fetch cart by id, will create new one', err)
+      } catch {
         localStorage.removeItem('cartId')
       }
     }
@@ -286,7 +284,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart, ensureCart, syncFromCart, addToCart] // Modified: Removed MAX_RECENTLY_REMOVED_ITEMS from dependencies, added addToCart
+    [cart, ensureCart, syncFromCart]
   )
 
   const restoreCartItem = useCallback(
@@ -391,6 +389,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateDeliveryOption = useCallback(
     async (handle: string) => {
+      void handle
       setLoading(true)
       setError(null)
       try {
@@ -398,7 +397,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!currentCart) throw new Error('No cart available')
         // const updated = await cartDeliveryOptionUpdate(currentCart.id, handle)
         // syncFromCart(updated ?? null)
-        console.warn('updateDeliveryOption is not implemented')
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -406,7 +404,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart, ensureCart, syncFromCart]
+    [cart, ensureCart]
   )
 
   const shippingCost = useMemo(() => {

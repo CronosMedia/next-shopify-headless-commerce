@@ -34,7 +34,7 @@ function ContactForm() {
                 setStatus('error');
                 setMessage(data.error?.message || 'A apărut o eroare.');
             }
-        } catch (error) {
+        } catch {
             setStatus('error');
             setMessage('A apărut o eroare de rețea.');
         }

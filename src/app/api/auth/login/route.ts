@@ -10,6 +10,7 @@ import {
   Customer,
 } from '@/lib/shopify/generated/graphql'
 import { GraphQLResponse } from '@/lib/shopify'
+import {serverLogger} from '@/lib/logger.server'
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -96,7 +97,7 @@ export const POST = async (req: NextRequest) => {
 
     return response
   } catch (error: unknown) {
-    console.error("Login API Error:", error) // Log the actual error
+    serverLogger.error('auth.login.failed', error)
     return Response.json(
       { error: { message: 'An unexpected error occurred during login.' } },
       { status: 500 }

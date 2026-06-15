@@ -2,6 +2,7 @@ import {cookies} from 'next/headers'
 import {NextRequest} from 'next/server'
 import {shopifyStorefrontRequest} from '@/lib/shopify'
 import {shopifyAdminRequest} from '@/lib/shopify/admin.server'
+import {serverLogger} from '@/lib/logger.server'
 
 const CUSTOMER_ORDERS_QUERY = `#graphql
   query CustomerOrdersForCancellation(
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
       message: `Cererea pentru ${ownedOrder.name} a fost înregistrată.`,
     })
   } catch (error: unknown) {
-    console.error('Cancellation request failed', error)
+    serverLogger.error('account.order.cancellation.failed', error)
     return Response.json(
       {error: {message: 'Cererea de anulare nu a putut fi procesată.'}},
       {status: 500}

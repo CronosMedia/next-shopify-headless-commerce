@@ -49,8 +49,12 @@ function SearchContent() {
         }
 
         setProducts(data.products)
-      } catch (err: any) {
-        setError(err.message)
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch search results.'
+        )
       } finally {
         setLoading(false)
       }
@@ -63,7 +67,7 @@ function SearchContent() {
     return (
       <div className="max-w-6xl mx-auto p-6 text-center">
         <p className="text-muted-foreground">
-          Searching for "{searchQuery}"...
+          Searching for &ldquo;{searchQuery}&rdquo;...
         </p>
       </div>
     )
@@ -90,7 +94,7 @@ function SearchContent() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6 text-foreground">
-        Search Results for "{searchQuery}"
+        Search Results for &ldquo;{searchQuery}&rdquo;
       </h1>
       {products.length === 0 ? (
         <p className="text-muted-foreground">

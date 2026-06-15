@@ -1,6 +1,14 @@
 import { shopifyClient } from '@/lib/shopify'
 import { NextRequest } from 'next/server'
-import { Product } from '@/lib/shopify/generated/graphql'
+import {serverLogger} from '@/lib/logger.server'
+
+type ProductRecommendationsData = {
+  productRecommendations: Array<{
+    id: string
+    handle: string
+    title: string
+  }> | null
+}
 
 const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
   query productRecommendations($productId: ID!) {
@@ -41,7 +49,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await shopifyClient.request(
+    const response = await shopifyClient.request<ProductRecommendationsData>(
       PRODUCT_RECOMMENDATIONS_QUERY,
       { productId }
     )
@@ -50,7 +58,7 @@ export async function GET(request: NextRequest) {
     const products = data?.productRecommendations || []
     return Response.json({ products })
   } catch (error: unknown) {
-    console.error('Shopify API error:', error)
+    serverLogger.error('products.recommendations.failed', error)
     return Response.json(
       { error: (error as Error).message || 'Failed to fetch product recommendations' },
       { status: 500 }
