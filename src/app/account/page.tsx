@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import {Suspense, useEffect, useMemo, useState} from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation' // Added useRouter and useSearchParams, and Router type
 import {
@@ -32,8 +32,15 @@ import { useCart } from '@/components/CartProvider'
 import { romanianCounties } from '@/lib/geo-data'
 import ConfirmationModal from '@/components/ConfirmationModal'
 
-// Main component for the account page
 export default function AccountPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AccountPageContent />
+    </Suspense>
+  )
+}
+
+function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'profile';

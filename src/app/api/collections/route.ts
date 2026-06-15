@@ -31,9 +31,9 @@ export async function GET() {
       return Response.json({ collections: [] })
     }
 
-    const data: { collections: CollectionConnection } = await shopifyClient.request(COLLECTIONS_QUERY, {
-      first: 250,
-    })
+    const {data} = await shopifyClient.request<{
+      collections: CollectionConnection
+    }>(COLLECTIONS_QUERY, {first: 250})
 
     const collections = (data?.collections?.edges || []).map(
       (e) => e.node

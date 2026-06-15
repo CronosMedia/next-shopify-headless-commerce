@@ -41,7 +41,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
       openQuickView,
       closeQuickView,
     }),
-    [isQuickViewOpen, quickViewProduct]
+    [isQuickViewOpen, quickViewProduct, closeQuickView]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

@@ -114,16 +114,16 @@ export type CartMutationResponse = {
   }>
 }
 
+export type GraphQLError = {
+  message: string
+  path?: Array<string | number>
+  extensions?: Record<string, unknown>
+}
+
 export type GraphQLResponse<T> = {
-  data: {
-    [K in keyof T]: T[K] extends { cart: Cart }
-    ? { cart: T[K]['cart'] }
-    : T[K] extends { [key: string]: unknown }
-    ? T[K]
-    : never
-  }
+  data: T
   headers?: Headers
-  errors?: any
+  errors?: GraphQLError[]
 }
 
 const client = createStorefrontApiClient({ // Create client once
@@ -182,43 +182,6 @@ export async function shopifyStorefrontRequest<T>(
   if (!response.ok) {
     const errorBody = await response.text()
     throw new Error(`Shopify Storefront API Error (${response.status}): ${errorBody}`)
-  }
-
-  return response.json()
-}
-
-/**
- * Helper for making authenticated requests to the Shopify Admin API.
- * Only use this server-side.
- */
-export async function shopifyAdminRequest<T>(
-  query: string,
-  variables?: Record<string, unknown>
-): Promise<GraphQLResponse<T>> {
-  const adminDomain = process.env.SHOPIFY_STORE_DOMAIN
-  const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
-  const adminVersion = process.env.SHOPIFY_ADMIN_API_VERSION || '2024-10'
-
-  if (!adminDomain || !adminToken) {
-    throw new Error('Missing Shopify Admin API configuration')
-  }
-
-  const response = await fetch(
-    `https://${adminDomain}/admin/api/${adminVersion}/graphql.json`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': adminToken,
-      },
-      body: JSON.stringify({ query, variables }),
-      cache: 'no-store',
-    }
-  )
-
-  if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`Shopify Admin API Error (${response.status}): ${errorBody}`)
   }
 
   return response.json()

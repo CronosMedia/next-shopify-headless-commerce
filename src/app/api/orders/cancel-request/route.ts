@@ -1,13 +1,31 @@
-import { NextRequest } from 'next/server'
-import { cookies } from 'next/headers'
-import { shopifyAdminRequest } from '@/lib/shopify'
+import {cookies} from 'next/headers'
+import {NextRequest} from 'next/server'
+import {shopifyStorefrontRequest} from '@/lib/shopify'
+import {shopifyAdminRequest} from '@/lib/shopify/admin.server'
 
-const ORDER_TAG_MUTATION = `#graphql
-  mutation orderUpdate($input: OrderInput!) {
-    orderUpdate(input: $input) {
-      order {
+const CUSTOMER_ORDERS_QUERY = `#graphql
+  query CustomerOrdersForCancellation(
+    $customerAccessToken: String!
+    $first: Int!
+  ) {
+    customer(customerAccessToken: $customerAccessToken) {
+      orders(first: $first, sortKey: PROCESSED_AT, reverse: true) {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`
+
+const TAGS_ADD_MUTATION = `#graphql
+  mutation AddCancellationRequestTag($id: ID!, $tags: [String!]!) {
+    tagsAdd(id: $id, tags: $tags) {
+      node {
         id
-        tags
       }
       userErrors {
         field
@@ -17,139 +35,120 @@ const ORDER_TAG_MUTATION = `#graphql
   }
 `
 
-export const POST = async (req: NextRequest) => {
+type CustomerOrdersData = {
+  customer: {
+    orders: {
+      edges: Array<{
+        node: {
+          id: string
+          name: string
+        }
+      }>
+    }
+  } | null
+}
+
+type TagsAddData = {
+  tagsAdd: {
+    node: {id: string} | null
+    userErrors: Array<{
+      field: string[] | null
+      message: string
+    }>
+  }
+}
+
+function normalizeOrderId(orderId: string) {
+  return orderId.split('?')[0]
+}
+
+export async function POST(req: NextRequest) {
   try {
-    // 1. Verify Authentication
     const cookieStore = await cookies()
-    const accessToken = cookieStore.get('customer-access-token')?.value
-    if (!accessToken) {
+    const customerAccessToken = cookieStore.get(
+      'customer-access-token'
+    )?.value
+
+    if (!customerAccessToken) {
       return Response.json(
-        { error: { message: 'Not authenticated' } },
-        { status: 401 }
+        {error: {message: 'Nu ești autentificat.'}},
+        {status: 401}
       )
     }
 
-    // 2. Extract Data
-    const body = await req.json()
-    console.log('Cancellation Request Body:', JSON.stringify(body))
-    const { orderId, orderName, customerEmail } = body
+    const body: unknown = await req.json()
+    const orderId =
+      typeof body === 'object' &&
+      body !== null &&
+      'orderId' in body &&
+      typeof body.orderId === 'string'
+        ? body.orderId
+        : null
 
-    if (!orderId || !orderName || !customerEmail) {
-      console.error('Missing required fields:', { orderId, orderName, customerEmail })
+    if (!orderId) {
       return Response.json(
-        { error: { message: 'Order ID, name and customer email are required.' } },
-        { status: 400 }
+        {error: {message: 'ID-ul comenzii este obligatoriu.'}},
+        {status: 400}
       )
     }
 
-    // 3. Fetch existing tags (optional but good for appending)
-    // For simplicity, we'll just add the tag. Shopify Admin API orderUpdate 
-    // input for tags usually replaces the tags if you provide a new list, 
-    // or we can use the tags field. 
-    // Actually, orderUpdate input `tags` replaces all tags.
-    // To be safe and just add, we should fetch current tags first or use a specialized mutation.
+    const customerResponse =
+      await shopifyStorefrontRequest<CustomerOrdersData>(
+        CUSTOMER_ORDERS_QUERY,
+        {customerAccessToken, first: 100},
+        customerAccessToken
+      )
 
-    // Let's use tagsAdd mutation instead if available, or just orderUpdate with a strategy.
-    // tagsAdd is available for many objects in Admin API.
-
-    const TAGS_ADD_MUTATION = `#graphql
-      mutation tagsAdd($id: ID!, $tags: [String!]!) {
-        tagsAdd(id: $id, tags: $tags) {
-          node {
-            id
-          }
-          userErrors {
-            field
-            message
-          }
-        }
-      }
-    `
-
-    console.log(`Processing cancellation request for ${orderName} (${orderId})`)
-
-    // Clean orderId - Storefront API IDs sometimes include ?key=... which Admin API rejects
-    const cleanOrderId = orderId.split('?')[0]
-
-    // 1. Fetch current tags
-    const GET_ORDER_TAGS = `#graphql
-      query getOrderTags($id: ID!) {
-        order(id: $id) {
-          id
-          tags
-        }
-      }
-    `
-    const tagsResponse = await shopifyAdminRequest<any>(GET_ORDER_TAGS, { id: cleanOrderId })
-
-    if (tagsResponse.errors) {
-      console.error('Error fetching order tags:', tagsResponse.errors)
-      throw new Error(tagsResponse.errors[0]?.message || 'Failed to fetch order tags for update')
+    if (customerResponse.errors?.length) {
+      throw new Error(customerResponse.errors[0]?.message)
     }
 
-    const currentTags = tagsResponse.data?.order?.tags || []
-    const newTag = 'Cancellation Requested'
-
-    // Check if tag already exists
-    if (!currentTags.includes(newTag)) {
-      const updatedTags = [...currentTags, newTag].join(', ')
-
-      const ORDER_UPDATE_MUTATION = `#graphql
-          mutation orderUpdate($input: OrderInput!) {
-            orderUpdate(input: $input) {
-              order {
-                id
-                tags
-              }
-              userErrors {
-                field
-                message
-              }
-            }
-          }
-        `
-
-      const updateResponse = await shopifyAdminRequest<any>(ORDER_UPDATE_MUTATION, {
-        input: {
-          id: cleanOrderId,
-          tags: updatedTags
-        }
-      })
-
-      if (updateResponse.errors) {
-        console.error('Error updating order tags:', updateResponse.errors)
-        throw new Error(updateResponse.errors[0]?.message || 'Failed to update order tags')
-      }
-
-      const { userErrors } = updateResponse.data.orderUpdate
-      if (userErrors && userErrors.length > 0) {
-        console.error('Shopify Order Update User Errors:', userErrors)
-        throw new Error(userErrors[0].message)
-      }
-    } else {
-      console.log('Order already has cancellation tag.')
+    const customer = customerResponse.data?.customer
+    if (!customer) {
+      return Response.json(
+        {error: {message: 'Sesiunea clientului nu mai este validă.'}},
+        {status: 401}
+      )
     }
 
-    // 4. Send "mock" email as well for logging/secondary notification
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com'
-    console.log('--- Order Cancellation Request (Tagged in Shopify) ---')
-    console.log(`Order: ${orderName} (${orderId})`)
-    console.log(`Customer: ${customerEmail}`)
-    console.log('----------------------------------------------------')
+    const normalizedRequestedId = normalizeOrderId(orderId)
+    const ownedOrder = customer.orders.edges
+      .map(({node}) => node)
+      .find(({id}) => normalizeOrderId(id) === normalizedRequestedId)
+
+    if (!ownedOrder) {
+      return Response.json(
+        {error: {message: 'Comanda nu a fost găsită.'}},
+        {status: 404}
+      )
+    }
+
+    const updateResponse = await shopifyAdminRequest<TagsAddData>(
+      TAGS_ADD_MUTATION,
+      {
+        id: normalizedRequestedId,
+        tags: ['Cancellation Requested'],
+      }
+    )
+
+    if (updateResponse.errors?.length) {
+      throw new Error(updateResponse.errors[0]?.message)
+    }
+
+    const userErrors = updateResponse.data?.tagsAdd.userErrors ?? []
+    if (userErrors.length > 0) {
+      throw new Error(userErrors[0].message)
+    }
 
     return Response.json({
       success: true,
-      message: 'Cancellation request sent and order tagged.',
+      message: `Cererea pentru ${ownedOrder.name} a fost înregistrată.`,
     })
-  } catch (error: any) {
-    console.error('Cancellation Request Error:', error)
+  } catch (error: unknown) {
+    console.error('Cancellation request failed', error)
     return Response.json(
-      {
-        error: {
-          message: error.message || 'Failed to process cancellation request.',
-        },
-      },
-      { status: 500 }
+      {error: {message: 'Cererea de anulare nu a putut fi procesată.'}},
+      {status: 500}
     )
   }
 }

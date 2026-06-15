@@ -7,6 +7,13 @@ import {
 } from '@/lib/queries'
 import { Customer, CustomerUpdateInput } from '@/lib/shopify/generated/graphql'
 
+type CustomerUpdateData = {
+  customerUpdate: {
+    customer: Customer | null
+    customerUserErrors: Array<{message: string}>
+  } | null
+}
+
 export const GET = async () => {
   try {
     const cookieStore = await cookies()
@@ -15,12 +22,11 @@ export const GET = async () => {
       return Response.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    const { customer }: { customer: Customer } = await shopifyClient.request(
+    const {data} = await shopifyClient.request<{customer: Customer | null}>(
       GET_CUSTOMER_QUERY,
-      {
-        customerAccessToken: accessToken,
-      }
+      {customerAccessToken: accessToken}
     )
+    const customer = data.customer
 
     if (!customer) {
       return Response.json({ error: 'Customer not found' }, { status: 404 })
@@ -52,10 +58,13 @@ export const PUT = async (req: NextRequest) => {
       }
     })
 
-    const updateData = await shopifyClient.request(CUSTOMER_UPDATE_MUTATION, {
-      customer: customerData,
-      customerAccessToken: accessToken,
-    })
+    const updateData = await shopifyClient.request<CustomerUpdateData>(
+      CUSTOMER_UPDATE_MUTATION,
+      {
+        customer: customerData,
+        customerAccessToken: accessToken,
+      }
+    )
 
     // Correctly access customerUpdate from updateData.data
     const customerUpdateResult = updateData.data?.customerUpdate; // Use optional chaining for safety

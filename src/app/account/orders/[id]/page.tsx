@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { ArrowLeft, ChevronLeft } from 'lucide-react'
-import { useAuth } from '@/components/AuthProvider'
+import {ChevronLeft} from 'lucide-react'
 
 // Type updated to use product featuredImage
 type AdminOrder = {
@@ -76,7 +75,6 @@ export default function OrderDetailsPage() {
   const [cancellationState, setCancellationState] = useState<
     'idle' | 'sending' | 'sent' | 'error'
   >('idle')
-  const { user } = useAuth()
 
   useEffect(() => {
     if (!id) return
@@ -110,7 +108,7 @@ export default function OrderDetailsPage() {
   }, [id])
 
   const handleRequestCancellation = async () => {
-    if (!order || !user) return
+    if (!order) return
 
     setCancellationState('sending')
     try {
@@ -119,8 +117,6 @@ export default function OrderDetailsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderId: order.id,
-          orderName: order.name,
-          customerEmail: user.email,
         }),
       })
 

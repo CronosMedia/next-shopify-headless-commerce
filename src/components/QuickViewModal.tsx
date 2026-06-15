@@ -13,7 +13,7 @@ type Product = {
     url: string
     altText: string | null
   }
-  options: any[]
+  options: Array<{name: string; values: string[]}>
   variants: {
     edges: { node: Variant }[]
   }
@@ -90,6 +90,7 @@ export default function QuickViewModal() {
             <div>
               <BuyBox
                 title={product.title}
+                handle={product.handle}
                 options={product.options}
                 variants={product.variants.edges.map((e) => e.node)}
                 onAddToCartSuccess={closeQuickView}

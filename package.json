@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "codegen": "cross-env NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=32ad65281620efb8ae876be254738b0f graphql-codegen --config codegen.ts",
+    "codegen": "node --env-file-if-exists=.env node_modules/@graphql-codegen/cli/cjs/bin.js --config codegen.ts",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --incremental false"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
