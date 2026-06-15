@@ -24,12 +24,14 @@ export type Variant = {
 
 export default function BuyBox({
   title,
+  handle,
   options,
   variants,
   onVariantChange,
   onAddToCartSuccess,
 }: {
   title: string
+  handle: string
   options: Option[]
   variants: Variant[]
   onVariantChange?: (variant: Variant) => void
@@ -72,173 +74,149 @@ export default function BuyBox({
   }
 
   return (
-    <div className="space-y-16">
-      {/* Product Info Group */}
-      <div>
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-2xl font-semibold">{title}</h1>
-            <div className="mt-2">
-
-            </div>
-          </div>
+    <div className="space-y-12">
+      {/* Product Information */}
+      <div className="space-y-4">
+        <h1 className="text-3xl md:text-4xl font-extralight tracking-[0.1em] uppercase text-[#1a1a1a] leading-tight">
+          {title}
+        </h1>
+        <div className="flex items-baseline gap-4 pt-2">
+          <span className="text-xl font-light text-[#1a1a1a]">
+            £{Number(selectedVariant?.price.amount || 0).toFixed(2)}
+          </span>
+          {selectedVariant?.compareAtPrice?.amount ? (
+            <span className="text-sm line-through text-[#8a8a8a] font-light">
+              £{Number(selectedVariant.compareAtPrice.amount).toFixed(2)}
+            </span>
+          ) : null}
         </div>
-
-        {variants.length > 1 ? (
-          <div className="space-y-4">
-            {options.map((opt) => (
-              <div key={opt.name} className="space-y-2">
-                {opt.name !== 'Title' && <div className="text-sm font-medium">{opt.name}</div>}
-                <div className="flex flex-wrap gap-3">
-                  {opt.values.map((val) => {
-                    const variantForSwatch = variants.find(v =>
-                      v.selectedOptions.some(so => so.name === opt.name && so.value === val)
-                    );
-                    const swatchMetafield = variantForSwatch?.metafield;
-
-                    return (
-                      <Swatch
-                        key={val}
-                        name={opt.name}
-                        value={val}
-                        active={selection[opt.name] === val}
-                        onClick={() =>
-                          setSelection((s) => ({ ...s, [opt.name]: val }))
-                        }
-                        metafield={swatchMetafield} // Pass the metafield here
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
-      {/* Price & Add to Cart Group */}
-      <div>
-        <div className="space-y-1">
-          <div className="flex items-baseline gap-3">
-            <span className="text-2xl font-semibold">
-              {Number(selectedVariant?.price.amount || 0).toFixed(2)}{' '}
-              {selectedVariant?.price.currencyCode}
-            </span>
-            {selectedVariant?.compareAtPrice?.amount ? (
-              <span className="text-sm line-through text-gray-500">
-                {Number(selectedVariant.compareAtPrice.amount).toFixed(2)}{' '}
-                {selectedVariant.compareAtPrice.currencyCode}
-              </span>
-            ) : null}
-          </div>
-          {!selectedVariant?.availableForSale ? (
-            <div className="text-sm text-red-600">Stoc epuizat</div>
-          ) : (
-            <div className="text-sm text-green-600">În stoc</div>
-          )}
+      {/* Variant Selection */}
+      {variants.length > 1 ? (
+        <div className="space-y-10 pt-4">
+          {options.map((opt) => (
+            <div key={opt.name} className="space-y-4">
+              {opt.name !== 'Title' && (
+                <div className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#8a8a8a]">
+                  Select {opt.name}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-4">
+                {opt.values.map((val) => {
+                  const variantForSwatch = variants.find(v =>
+                    v.selectedOptions.some(so => so.name === opt.name && so.value === val)
+                  );
+                  const swatchMetafield = variantForSwatch?.metafield;
+
+                  return (
+                    <Swatch
+                      key={val}
+                      name={opt.name}
+                      value={val}
+                      active={selection[opt.name] === val}
+                      onClick={() =>
+                        setSelection((s) => ({ ...s, [opt.name]: val }))
+                      }
+                      metafield={swatchMetafield}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
+      ) : null}
 
-        <div className="flex gap-3 mt-8 h-12">
-          {/* Quantity - Square Box Style */}
-          <div className="flex items-center border border-gray-200 rounded-lg bg-white shrink-0 h-full">
-            <button
-              className="px-3 h-full hover:bg-gray-50 hover:text-black text-gray-500 transition-colors"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              aria-label="Scade cantitatea"
-            >
-              <Minus size={16} />
-            </button>
-            <input
-              className="w-10 text-center h-full outline-none font-medium text-gray-900 appearance-none m-0 bg-transparent"
-              type="number"
-              min={1}
-              value={quantity}
-              onChange={(e) =>
-                setQuantity(Math.max(1, Number(e.target.value) || 1))
-              }
-            />
-            <button
-              className="px-3 h-full hover:bg-gray-50 hover:text-black text-gray-500 transition-colors"
-              onClick={() => setQuantity((q) => q + 1)}
-              aria-label="Crește cantitatea"
-            >
-              <Plus size={16} />
-            </button>
+      {/* Purchase Actions */}
+      <div className="pt-8 space-y-8">
+        <div className="flex flex-col gap-8">
+          {/* Quantity Selector - Minimalist Luxury */}
+          <div className="flex items-center gap-6">
+            <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#8a8a8a]">Quantity</span>
+            <div className="flex items-center border border-[#e5e4e0] rounded-sm">
+              <button
+                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                aria-label="Decrease quantity"
+              >
+                <Minus size={14} className="text-[#1a1a1a]" />
+              </button>
+              <input
+                className="w-10 text-center outline-none text-sm font-light bg-transparent"
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) =>
+                  setQuantity(Math.max(1, Number(e.target.value) || 1))
+                }
+              />
+              <button
+                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors"
+                onClick={() => setQuantity((q) => q + 1)}
+                aria-label="Increase quantity"
+              >
+                <Plus size={14} className="text-[#1a1a1a]" />
+              </button>
+            </div>
           </div>
 
-          {/* Add to Cart - Dominant Button */}
+          {/* Add to Bag - Solid Coherent Button */}
           <button
             disabled={!canAdd}
-            className={`flex-1 h-full px-4 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${canAdd
-                ? 'bg-black hover:bg-gray-900 shadow-md hover:shadow-lg'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            className={`w-full group h-14 flex items-center justify-center text-[12px] font-semibold tracking-[0.2em] uppercase transition-all duration-300 ${canAdd
+              ? 'bg-[#1a1a1a] text-white hover:bg-[#333333]'
+              : 'bg-[#f0efed] text-[#cbcbcb] cursor-not-allowed'
               }`}
             onClick={handleAddToCart}
           >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <>
-                <ShoppingCart size={20} />
-                <span>Adaugă în coș</span>
-              </>
-            )}
+            <span>
+              {loading ? 'Adding...' : selectedVariant?.availableForSale ? 'Add to Bag' : 'Out of Stock'}
+            </span>
           </button>
 
-          {/* Wishlist - Icon Box */}
-          <div className="h-full">
+          <div className="flex justify-start">
             <WishlistButton
               item={{
-                id: selectedVariant.id,
-                handle: '',
+                id: selectedVariant?.id,
+                handle: handle,
                 title: title,
-                featuredImage: selectedVariant.image ? {
+                featuredImage: selectedVariant?.image ? {
                   url: selectedVariant.image.url,
                   altText: selectedVariant.image.altText || undefined
                 } : null,
                 priceRange: {
-                  minVariantPrice: selectedVariant.price
+                  minVariantPrice: selectedVariant?.price
                 }
               }}
               variant="icon"
-              className="h-full w-12 !p-0"
+              className="text-[#8a8a8a] hover:text-[#1a1a1a] transition-colors p-0"
             />
           </div>
         </div>
 
-        {/* Payment & Trust Badges - Clean & Aligned Left */}
-        <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
-
-          {/* Simple Payment Indicator */}
-          <div className="flex items-center gap-2 text-gray-600">
-            <div className="p-1.5 bg-gray-50 rounded text-gray-500">
-              <CreditCard size={18} />
-            </div>
-            <span className="text-sm font-medium">Plată 100% securizată</span>
-            <span className="text-xs text-gray-400 ml-1">(SSL Encrypted)</span>
+        {/* Product Highlights / Useful Info */}
+        <div className="pt-8 space-y-6 border-t border-[#f0efed]">
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a]">Product Highlights</h4>
+            <ul className="space-y-3">
+              {[
+                { label: 'Craftsmanship', value: 'Handcrafted in limited runs' },
+                { label: 'Sustainability', value: '100% recycled core materials' },
+                { label: 'Warranty', value: '2-year limited manufacturer warranty' }
+              ].map((item, i) => (
+                <li key={i} className="flex justify-between items-baseline gap-4">
+                  <span className="text-[10px] uppercase tracking-wider text-[#8a8a8a]">{item.label}</span>
+                  <span className="text-[11px] text-[#4a4a4a] text-right">{item.value}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Value Props - Simple List */}
-          <ul className="space-y-3 pt-2">
-            <li className="flex items-start gap-3 text-sm text-gray-600">
-              <div className="mt-0.5 text-green-600 shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <span>Livrare rapidă (24-48h) prin curier rapid</span>
-            </li>
-            <li className="flex items-start gap-3 text-sm text-gray-600">
-              <div className="mt-0.5 text-green-600 shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <span>Transport gratuit la comenzi peste 200 LEI</span>
-            </li>
-            <li className="flex items-start gap-3 text-sm text-gray-600">
-              <div className="mt-0.5 text-green-600 shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <span>Garanție de retur în 30 de zile</span>
-            </li>
-          </ul>
+          <div className="text-[10px] font-normal leading-relaxed text-[#b1b1b1] tracking-wider max-w-xs">
+            Complimentary shipping on all orders over £200.
+            Estimated delivery 2-4 business days.
+          </div>
         </div>
       </div>
     </div>

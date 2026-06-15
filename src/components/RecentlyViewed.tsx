@@ -122,7 +122,7 @@ export default function RecentlyViewed({ currentProductId }: { currentProductId?
                                         {product.title}
                                     </h3>
                                     <p className="text-sm text-gray-500 mt-1">
-                                        {Number(product.price).toFixed(2)} {product.currencyCode}
+                                        £{Number(product.price).toFixed(2)}
                                     </p>
                                 </Link>
                             </div>

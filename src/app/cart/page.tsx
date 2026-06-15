@@ -323,11 +323,10 @@ export default function CartPage() {
 
                       {/* Right: Price */}
                       <div className="text-lg font-medium text-gray-900 w-32 text-right pl-4">
-                        {(
+                        £{(
                           parseFloat(line.merchandise.price.amount) *
                           line.quantity
-                        ).toFixed(2)}{' '}
-                        {line.merchandise.price.currencyCode === 'RON' ? 'LEI' : line.merchandise.price.currencyCode}
+                        ).toFixed(2)}
                       </div>
                     </div>
                   </div>
@@ -356,7 +355,7 @@ export default function CartPage() {
                   {cart.totalQuantity === 1 ? 'produs' : 'produse'})
                 </span>
                 <span className="font-medium">
-                  {subtotal.toFixed(2)} {cart.cost.subtotalAmount.currencyCode === 'RON' ? 'LEI' : cart.cost.subtotalAmount.currencyCode}
+                  £{subtotal.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -374,8 +373,8 @@ export default function CartPage() {
                 <button
                   onClick={() => setIsAddressModalOpen(true)}
                   className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${selectedDeliveryAddress
-                      ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                      : 'bg-green-600 text-white hover:bg-green-700'
+                    ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    : 'bg-green-600 text-white hover:bg-green-700'
                     }`}
                 >
                   <MapPin size={20} />
@@ -457,8 +456,7 @@ export default function CartPage() {
                   <span className="font-medium text-green-600">Gratuit</span>
                 ) : (
                   <span className="font-medium">
-                    {shippingCost.toFixed(2)}{' '}
-                    {cart.cost.subtotalAmount.currencyCode === 'RON' ? 'LEI' : cart.cost.subtotalAmount.currencyCode}
+                    £{shippingCost.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -467,7 +465,7 @@ export default function CartPage() {
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total comandă</span>
                   <span>
-                    {total.toFixed(2)} {cart.cost.totalAmount.currencyCode === 'RON' ? 'LEI' : cart.cost.totalAmount.currencyCode}
+                    £{total.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -477,8 +475,8 @@ export default function CartPage() {
               <Link
                 href={cart.checkoutUrl}
                 className={`w-full py-3 px-4 rounded-lg text-center block font-medium transition-all ${user && !selectedDeliveryAddress
-                    ? 'border border-gray-300 text-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                  ? 'border border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
                 onClick={(e) => {
                   if (user && !selectedDeliveryAddress) {

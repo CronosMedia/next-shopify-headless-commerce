@@ -28,10 +28,10 @@ export default function FreeShippingPage() {
                             <h3 className="text-xl font-semibold text-foreground mt-6">Costuri de Livrare</h3>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>
-                                    <strong>Livrare Gratuită:</strong> Pentru toate comenzile cu o valoare mai mare de <strong>300 LEI</strong>.
+                                    <strong>Livrare Gratuită:</strong> Pentru toate comenzile cu o valoare mai mare de <strong>£300</strong>.
                                 </li>
                                 <li>
-                                    <strong>Livrare Standard:</strong> Pentru comenzile sub 300 LEI, costul livrării este de <strong>19.99 LEI</strong>.
+                                    <strong>Livrare Standard:</strong> Pentru comenzile sub £300, costul livrării este de <strong>£19.99</strong>.
                                 </li>
                             </ul>
 

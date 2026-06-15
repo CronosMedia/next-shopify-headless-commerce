@@ -104,41 +104,38 @@ export default function ProductView({
 
   return (
     <>
-      <main className="max-w-6xl mx-auto p-6">
-        <div className="mb-6">
-          <Breadcrumbs items={breadcrumbItems} />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
-          <Gallery
-            key={mainImage.url}
-            images={images}
-            mainImage={mainImage}
-            onThumbnailClick={(imageUrl: string) => {
-              const clickedImage = images.find(
-                (img: GalleryImage) => img.url === imageUrl
-              )
-              if (clickedImage) {
-                setMainImage(clickedImage)
-              }
-            }}
-            onMainImageClick={openLightbox}
-          />
-          <div id="main-buy-box">
-            <BuyBox
-              title={product.title}
-              options={product.options}
-              variants={variants}
-              onVariantChange={handleVariantChange}
+      <main className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 pt-16 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+          {/* Left Column: Visual Gallery Stack + Content */}
+          <div className="lg:col-span-1 space-y-24">
+            <Gallery
+              images={images}
+              mainImage={mainImage}
+              onThumbnailClick={() => { }} // Vertical stack doesn't need thumbnail clicks
+              onMainImageClick={openLightbox}
             />
-          </div>
-        </div>
 
-        <div id="overview" className="max-w-4xl scroll-mt-24">
-          <Tabs descriptionHtml={product.descriptionHtml} />
+            <div id="overview" className="max-w-2xl">
+              <Tabs descriptionHtml={product.descriptionHtml} />
+            </div>
+          </div>
+
+          {/* Right Column: Sticky Purchase Details */}
+          <div className="lg:col-span-1 lg:sticky lg:top-32 lg:h-fit">
+            <div id="main-buy-box">
+              <BuyBox
+                title={product.title}
+                handle={product.handle}
+                options={product.options}
+                variants={variants}
+                onVariantChange={handleVariantChange}
+              />
+            </div>
+          </div>
         </div>
       </main>
 
-      <div id="recommended" className="scroll-mt-24">
+      <div id="recommended" className="bg-[#F9F8F6] py-24 md:py-32">
         <RelatedProducts currentProductId={product.id} />
       </div>
 
@@ -153,7 +150,7 @@ export default function ProductView({
           featuredImage: product.featuredImage || images[0] || null
         }}
         variantId={firstVariant?.id}
-        isVisible={isStickyVisible}
+        isVisible={isStickyVisible && !window.matchMedia('(min-width: 1024px)').matches}
       />
 
       {/* Lightbox component */}

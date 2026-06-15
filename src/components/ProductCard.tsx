@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Plus, Star } from 'lucide-react'
 import { useCart } from './CartProvider'
 import { useUI } from './UIProvider'
 
@@ -9,6 +8,7 @@ type ProductNode = {
   id: string
   handle: string
   title: string
+  vendor?: string
   description?: string
   featuredImage?: {
     url: string
@@ -29,7 +29,7 @@ type ProductNode = {
 
 type ProductCardProps = {
   product: ProductNode
-  isLCP?: boolean // New prop for LCP images
+  isLCP?: boolean
 }
 
 export default function ProductCard({ product, isLCP }: ProductCardProps) {
@@ -41,14 +41,8 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
   const firstVariantId = product.variants?.edges?.[0]?.node?.id
 
   const handleQuickAdd = async () => {
-    if (hasMultipleVariants) {
-      // This case is now handled by the quick view modal
-      return
-    }
-    if (!firstVariantId || !isAvailable) {
-      console.error('Product is not available for purchase.')
-      return
-    }
+    if (hasMultipleVariants) return
+    if (!firstVariantId || !isAvailable) return
     try {
       await addToCart(firstVariantId, 1)
     } catch (error) {
@@ -56,95 +50,74 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
     }
   }
 
-  const buttonClassName =
-    'mt-2 w-full px-4 py-2 text-base font-medium rounded-md transition-colors'
+  const price = product.priceRange?.minVariantPrice?.amount
+    ? Number(product.priceRange.minVariantPrice.amount).toFixed(2)
+    : null
+  const currency = product.priceRange?.minVariantPrice?.currencyCode === 'RON' || product.priceRange?.minVariantPrice?.currencyCode === 'LEI'
+    ? 'LEI'
+    : product.priceRange?.minVariantPrice?.currencyCode
 
   return (
-    <div className="group relative bg-white rounded-lg hover:shadow-md transition-shadow flex flex-col h-full">
-      <Link href={`/products/${product.handle}`} className="block">
-        <div className="aspect-square overflow-hidden rounded-t-lg">
+    <div className="group relative flex flex-col h-full bg-white">
+      {/* Image Container with subtle zoom */}
+      <Link href={`/products/${product.handle}`} className="block relative overflow-hidden aspect-[3/4]">
+        <div className="w-full h-full bg-[#F9F8F6]">
           {product.featuredImage?.url ? (
             <Image
               src={product.featuredImage.url}
               alt={product.featuredImage.altText || product.title}
-              width={600}
-              height={600}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              width={800}
+              height={1067}
+              className="w-full h-full object-cover transition-all duration-[1500ms] ease-out group-hover:scale-105"
               {...(isLCP && { priority: true })}
             />
           ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-400">No image</span>
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#a0a0a0]">Maison</span>
             </div>
           )}
         </div>
+
+        {/* Subtle hover state indication (no buttons for pure luxury) */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.02] transition-colors duration-500" />
+
+        {/* Out of Stock Label */}
+        {!isAvailable && (
+          <div className="absolute top-4 left-4">
+            <span className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] bg-white/90 px-3 py-1.5 backdrop-blur-sm">
+              Archived
+            </span>
+          </div>
+        )}
       </Link>
 
-      <div className="p-4 flex flex-col flex-grow">
-        <div className="flex-grow">
-          <Link href={`/products/${product.handle}`}>
-            <h2 className="font-normal text-base leading-snug text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition-colors">
-              {product.title}
-            </h2>
-          </Link>
+      {/* Product Information */}
+      <div className="pt-5 pb-2 flex flex-col items-start px-1">
+        {/* Vendor/Brand */}
+        {product.vendor && (
+          <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] mb-2">
+            {product.vendor}
+          </span>
+        )}
 
-          <div className="flex items-center gap-1 mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={14}
-                className="fill-yellow-400 text-yellow-400"
-              />
-            ))}
-            <span className="text-sm text-gray-500 ml-1">(4.5)</span>
-          </div>
-        </div>
+        {/* Title */}
+        <Link href={`/products/${product.handle}`} className="block w-full">
+          <h2 className="text-[13px] font-normal leading-relaxed text-[#4a4a4a] tracking-wide truncate hover:text-black transition-colors">
+            {product.title}
+          </h2>
+        </Link>
 
-        <div className="flex flex-col items-start mt-2">
-          <div className="font-bold text-xl leading-[30px] text-[rgb(38,38,38)]">
-            {product.priceRange?.minVariantPrice?.amount ? (
-              <>
-                {Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                <span className="text-sm text-gray-500 ml-1">
-                  {product.priceRange.minVariantPrice.currencyCode === 'RON' || product.priceRange.minVariantPrice.currencyCode === 'LEI'
-                    ? 'LEI'
-                    : product.priceRange.minVariantPrice.currencyCode}
-                </span>
-              </>
-            ) : (
-              'Price unavailable'
-            )}
-          </div>
-
-          {hasMultipleVariants ? (
-            <button
-              onClick={() => openQuickView({ handle: product.handle })}
-              className={`${buttonClassName} bg-gray-800 text-white hover:bg-gray-900`}
-              title="Selectează opțiuni"
-            >
-              Selectează opțiuni
-            </button>
-          ) : isAvailable ? (
-            <button
-              onClick={handleQuickAdd}
-              disabled={loading}
-              className={`${buttonClassName} bg-green-600 text-white hover:bg-green-700 cursor-pointer`}
-              title="Adaugă în coș"
-            >
-              Adaugă în coș
-            </button>
+        {/* Price */}
+        <div className="mt-2.5">
+          {price ? (
+            <span className="text-[13px] font-medium tracking-wide text-[#1a1a1a]">
+              £{price}
+            </span>
           ) : (
-            <button
-              disabled
-              className={`${buttonClassName} bg-gray-300 text-gray-500 cursor-not-allowed`}
-              title="Stoc epuizat"
-            >
-              Stoc epuizat
-            </button>
+            <span className="text-[11px] uppercase tracking-[0.1em] text-[#8a8a8a]">By Inquiry</span>
           )}
         </div>
       </div>
     </div>
   )
 }
-

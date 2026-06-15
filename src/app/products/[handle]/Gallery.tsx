@@ -10,8 +10,6 @@ export type GalleryImage = {
 
 export default function Gallery({
   images,
-  mainImage,
-  onThumbnailClick,
   onMainImageClick,
 }: {
   images: GalleryImage[]
@@ -20,44 +18,25 @@ export default function Gallery({
   onMainImageClick: () => void
 }) {
   return (
-    <div className="space-y-3">
-      <div
-        className="aspect-square w-full rounded border relative overflow-hidden"
-        onClick={onMainImageClick} // Added onClick
-      >
-        <Image
-          key={mainImage.url}
-          src={mainImage.url}
-          alt={mainImage.altText || 'Product image'}
-          width={1000}
-          height={1000}
-          className="w-full h-auto object-cover"
-        />
-      </div>
-      {images.length > 1 && (
-        <div className="grid grid-cols-5 gap-2">
-          {images.map((img) => (
-            <button
-              key={img.url}
-              className={`relative aspect-square rounded border overflow-hidden ${
-                img.url === mainImage.url
-                  ? 'ring-2 ring-offset-2 ring-green-600'
-                  : 'hover:ring-2 hover:ring-gray-300'
-              }`}
-              onClick={() => onThumbnailClick(img.url)}
-              aria-label={`View image of ${img.altText || 'product'}`}
-            >
-              <Image
-                src={img.url}
-                alt={img.altText || 'Thumbnail'}
-                width={300}
-                height={300}
-                className="w-full h-auto object-cover"
-              />
-            </button>
-          ))}
+    <div className="flex flex-col gap-1 md:gap-2">
+      {images.map((img, index) => (
+        <div
+          key={`${img.url}-${index}`}
+          className="w-full relative overflow-hidden bg-[#F9F8F6] cursor-zoom-in group"
+          onClick={onMainImageClick}
+        >
+          <div className="aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] relative">
+            <Image
+              src={img.url}
+              alt={img.altText || `Product image ${index + 1}`}
+              fill
+              className="object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105"
+              sizes="(max-w-768px) 100vw, 60vw"
+              priority={index < 2}
+            />
+          </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }

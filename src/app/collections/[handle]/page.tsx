@@ -59,10 +59,9 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     const products = collection.products.edges.map((edge: any) => edge.node)
 
     return (
-      <main className="w-full px-4 md:px-8 lg:px-12 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">{collection.title}</h1>
-          {/* Description could go here */}
+      <main className="w-full px-4 md:px-8 lg:px-12 py-10">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-light tracking-[0.12em] uppercase text-[var(--foreground)]">{collection.title}</h1>
         </div>
 
         <CollectionProductGrid

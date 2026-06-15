@@ -147,7 +147,7 @@ export default function StickyBuyBox({
                         <div className="min-w-0">
                             <h3 className="font-medium text-gray-900 line-clamp-1 text-sm">{product.title}</h3>
                             <div className="flex items-baseline gap-2">
-                                <span className="font-bold text-gray-900">{product.price} {product.currency}</span>
+                                <span className="font-bold text-gray-900">£{product.price}</span>
                                 {product.availableForSale ?
                                     <span className="text-xs text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded">In Stoc</span> :
                                     <span className="text-xs text-red-600 font-medium bg-red-50 px-1.5 py-0.5 rounded">Stoc Epuizat</span>
@@ -197,7 +197,7 @@ export default function StickyBuyBox({
                             {product.title}
                         </div>
                         <div className="text-lg font-bold text-gray-900">
-                            {product.price} {product.currency}
+                            £{product.price}
                         </div>
                     </div>
 

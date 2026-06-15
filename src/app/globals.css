@@ -2,24 +2,18 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Define the light theme color palette */
-  --background: #ffffff;
-  /* White background */
-  --foreground: #111827;
-  /* Soft black for text */
-  --primary: #006642;
-  /* iHerb-like green for buttons and accents */
-  --primary-foreground: #ffffff;
-  /* White text on primary buttons */
-  --secondary: #f3f4f6;
-  /* Light gray for input backgrounds and cards */
-  --muted: #e5e7eb;
-  /* Border color */
-  --muted-foreground: #6b7280;
-  /* Gray for placeholders and muted text */
-  --link-green: oklch(0.424 0.199 265.638);
-  --link-green-hover: oklch(0.35 0.22 265.638);
-  /* A darker shade for hover */
+  /* Luxury London palette */
+  --background: #faf9f7;
+  --foreground: #1a1a1a;
+  --primary: #1a1a1a;
+  --primary-foreground: #faf9f7;
+  --accent: #c9a96e;
+  --accent-light: #d4b97a;
+  --secondary: #f5f4f1;
+  --muted: #e8e6e1;
+  --muted-foreground: #8a8780;
+  --card: #ffffff;
+  --border: #e2e0db;
 }
 
 @theme inline {
@@ -27,24 +21,24 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
   --color-secondary: var(--secondary);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
   --font-barlow: var(--font-barlow);
-  /* Add this line */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-barlow), sans-serif;
-  /* Use Barlow font variable */
+  font-family: var(--font-inter), var(--font-barlow), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Argos-style Sticky Header Helpers */
-/* Argos-style Sticky Header Helpers */
+/* Sticky header transitions */
 header {
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
@@ -54,6 +48,26 @@ body.hide-navbar header {
   transform: translateY(-100%);
 }
 
-body.hide-navbar main {
-  /* Optional: add padding if needed, but sticky header is overlay */
+/* Luxury selection color */
+::selection {
+  background-color: var(--accent);
+  color: var(--foreground);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }

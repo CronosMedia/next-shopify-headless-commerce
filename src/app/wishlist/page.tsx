@@ -43,8 +43,7 @@ export default function WishlistPage() {
                                     </h2>
                                     {item.priceRange && (
                                         <p className="text-gray-600">
-                                            {item.priceRange.minVariantPrice.amount}{' '}
-                                            {item.priceRange.minVariantPrice.currencyCode}
+                                            £{item.priceRange.minVariantPrice.amount}
                                         </p>
                                     )}
                                 </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Barlow } from 'next/font/google' // Add this line
+import { Geist_Mono } from 'next/font/google'
+import { Inter, Cormorant_Garamond, Barlow } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/components/CartProvider'
 import { UIProvider } from '@/components/UIProvider'
@@ -11,9 +11,17 @@ import Footer from '@/components/Footer'
 import QuickViewModal from '@/components/QuickViewModal'
 import SmoothScroll from '@/components/SmoothScroll'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-inter',
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-cormorant',
+  style: ['normal', 'italic'],
 })
 
 const geistMono = Geist_Mono({
@@ -44,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
+        className={`${inter.variable} ${cormorant.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
       >
         <SmoothScroll>
           <AuthProvider>

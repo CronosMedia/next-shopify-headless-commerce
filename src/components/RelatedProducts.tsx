@@ -186,7 +186,7 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
                       {product.title}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      {Number(price).toFixed(2)} {currency}
+                      £{Number(price).toFixed(2)}
                     </p>
                   </Link>
                 </div>

@@ -113,11 +113,11 @@ export default function Swatch({ name, value, active, onClick, metafield }: Swat
         </div>
       );
     } else if (!swatchContent) { // If background style is set by metafield hex, but no image content
-        swatchContent = (
-            <div className={`w-full h-full rounded-full flex items-center justify-center`} style={backgroundColorStyle}>
-                {active && (isLightColor ? <Check size={16} className="text-black" /> : <Check size={16} className="text-white" />)}
-            </div>
-        );
+      swatchContent = (
+        <div className={`w-full h-full rounded-full flex items-center justify-center`} style={backgroundColorStyle}>
+          {active && (isLightColor ? <Check size={16} className="text-black" /> : <Check size={16} className="text-white" />)}
+        </div>
+      );
     }
 
 
@@ -126,11 +126,16 @@ export default function Swatch({ name, value, active, onClick, metafield }: Swat
         onClick={onClick}
         aria-label={`Select ${value}`}
         title={value}
-        className={`w-9 h-9 rounded-full border-2 transition-all flex items-center justify-center ${ // Centering content
-          active ? 'border-black' : 'border-transparent'
-        }`}
+        className={`w-4 h-4 rounded-full transition-all relative ${active ? 'ring-1 ring-offset-2 ring-[#1a1a1a]' : 'hover:scale-110'
+          }`}
+        style={{
+          ...backgroundColorStyle,
+          backgroundColor: backgroundColorStyle.backgroundColor || (colorMap[lowerCaseValue] ? undefined : '#e5e4e0')
+        }}
       >
-        {swatchContent}
+        {!backgroundColorStyle.backgroundColor && (
+          <div className={`w-full h-full rounded-full ${colorMap[lowerCaseValue] || 'bg-gray-200'}`} />
+        )}
       </button>
     )
   }
@@ -139,11 +144,10 @@ export default function Swatch({ name, value, active, onClick, metafield }: Swat
   return (
     <button
       onClick={onClick}
-      className={`px-4 h-10 rounded-lg border text-base font-medium transition-colors ${
-        active
+      className={`px-4 h-10 rounded-lg border text-base font-medium transition-colors ${active
           ? 'bg-black text-white border-black'
           : 'bg-white text-black hover:bg-gray-100'
-      }`}
+        }`}
     >
       {value}
     </button>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "codegen": "cross-env NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=32ad65281620efb8ae876be254738b0f graphql-codegen --config codegen.ts",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -29,6 +29,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "baseline-browser-mapping": "^2.10.27",
     "cross-env": "^7.0.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "15.1.0",

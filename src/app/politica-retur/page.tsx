@@ -57,7 +57,7 @@ export default function ReturnPolicyPage() {
                                 Contravaloarea produselor returnate va fi rambursată în contul tău bancar în termen de maximum <strong>14 zile</strong> de la recepționarea și verificarea returului în depozitul nostru.
                             </p>
                             <p className="text-sm text-gray-500 italic">
-                                *Costul transportului pentru retur este suportat de client (19.99 LEI), cu excepția cazurilor în care produsul a fost livrat greșit sau prezintă defecte de fabricație.
+                                *Costul transportului pentru retur este suportat de client (£19.99), cu excepția cazurilor în care produsul a fost livrat greșit sau prezintă defecte de fabricație.
                             </p>
                         </div>
                     </section>

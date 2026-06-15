@@ -84,15 +84,11 @@ const DualRangeSlider = ({ min, max, value, onChange, className }: DualRangeSlid
       />
 
       <div className="slider relative w-full">
-        <div className="slider__track absolute h-[3px] w-full bg-gray-200 rounded-full"></div>
-        <div ref={range} className="slider__range absolute h-[3px] rounded-full" style={{ backgroundColor: 'var(--primary, #006642)' }}></div>
+        <div className="slider__track absolute h-[2px] w-full bg-[var(--muted,#e8e6e1)]"></div>
+        <div ref={range} className="slider__range absolute h-[2px]" style={{ backgroundColor: 'var(--foreground, #1a1a1a)' }}></div>
       </div>
 
       <style jsx>{`
-        .container {
-          /* height: 100%; */
-        }
-        
         .slider {
           position: relative;
           width: 100%;
@@ -103,7 +99,6 @@ const DualRangeSlider = ({ min, max, value, onChange, className }: DualRangeSlid
           position: absolute;
         }
 
-        /* Thumb Styles */
         .thumb {
           -webkit-appearance: none;
           -webkit-tap-highlight-color: transparent;
@@ -114,52 +109,45 @@ const DualRangeSlider = ({ min, max, value, onChange, className }: DualRangeSlid
           outline: none;
         }
 
-        .thumb--left {
-          z-index: 3;
-        }
+        .thumb--left { z-index: 3; }
+        .thumb--right { z-index: 4; }
 
-        .thumb--right {
-          z-index: 4;
-        }
-
-        /* Webkit Thumb */
         .thumb::-webkit-slider-thumb {
           -webkit-appearance: none;
           -webkit-tap-highlight-color: transparent;
-          background-color: white;
-          border: 2px solid var(--primary, #006642);
+          background-color: var(--background, #faf9f7);
+          border: 1.5px solid var(--foreground, #1a1a1a);
           border-radius: 50%;
           cursor: pointer;
-          height: 20px;
-          width: 20px;
+          height: 16px;
+          width: 16px;
           margin-top: 2px;
           pointer-events: all;
           position: relative;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-          transition: box-shadow 0.2s, transform 0.2s;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+          transition: box-shadow 0.3s, transform 0.3s;
         }
 
         .thumb::-webkit-slider-thumb:hover {
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          transform: scale(1.1);
+          box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+          transform: scale(1.05);
         }
 
-        /* Mozilla Thumb */
         .thumb::-moz-range-thumb {
-          background-color: white;
-          border: 2px solid var(--primary, #006642);
+          background-color: var(--background, #faf9f7);
+          border: 1.5px solid var(--foreground, #1a1a1a);
           border-radius: 50%;
           cursor: pointer;
-          height: 20px;
-          width: 20px;
+          height: 16px;
+          width: 16px;
           pointer-events: all;
           position: relative;
           box-sizing: border-box;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
         
         .thumb:focus::-webkit-slider-thumb {
-            box-shadow: 0 0 0 3px rgba(0, 102, 66, 0.15);
+            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
         }
       `}</style>
     </div>

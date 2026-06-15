@@ -1,97 +1,78 @@
-'use client'
-
-import AccordionGroup, { AccordionItem } from '@/components/Accordion'
-import ReviewsSection from '@/components/ReviewsSection'
-
 export default function Tabs({
   descriptionHtml,
-  details,
 }: {
   descriptionHtml: string
   details?: { label: string; value: string }[]
 }) {
   return (
-    <div className="space-y-12">
-      <div className="space-y-12">
-        {/* Mobile: Accordion Layout */}
-        <div className="md:hidden">
-          <AccordionGroup>
-            <AccordionItem title="Descriere" defaultOpen={true}>
-              <div
-                className="prose prose-sm max-w-none text-gray-600"
-                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-              />
-            </AccordionItem>
-
-            <AccordionItem title="Specificații">
-              <dl className="grid grid-cols-1 gap-x-4 gap-y-4">
-                {details?.map((d) => (
-                  <div key={d.label} className="flex gap-2 text-sm border-b border-gray-100 pb-2 last:border-0">
-                    <dt className="w-32 font-medium text-gray-900 shrink-0">{d.label}</dt>
-                    <dd className="text-gray-600">{d.value}</dd>
-                  </div>
-                )) || <div className="text-sm text-gray-500">Nu există specificații disponibile.</div>}
-              </dl>
-            </AccordionItem>
-
-            <AccordionItem title="Livrare și Retur">
-              <div className="prose prose-sm max-w-none text-gray-600">
-                <h4 className="font-medium text-gray-900 mb-2">Livrare Rapidă</h4>
-                <p className="mb-4">Comenzile plasate până în ora 14:00 sunt procesate în aceeași zi. Livrarea standard durează 24-48 de ore lucrătoare oriunde în România.</p>
-
-                <h4 className="font-medium text-gray-900 mb-2">Retur Simplu</h4>
-                <p>Dacă produsul nu ți se potrivește, îl poți returna în termen de 30 de zile. Procesul este simplu și rapid, direct din contul tău de client.</p>
-              </div>
-            </AccordionItem>
-          </AccordionGroup>
+    <div className="space-y-32">
+      {/* Description Section */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-12 border-t border-[#f0efed] pt-12">
+        <div className="md:col-span-4">
+          <h3 className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#1a1a1a]">
+            Description
+          </h3>
         </div>
+        <div className="md:col-span-8">
+          <div
+            className="text-[14px] font-normal leading-[1.8] text-[#4a4a4a] prose-strong:font-semibold prose-strong:text-[#1a1a1a] max-w-xl"
+            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+          />
+        </div>
+      </section>
 
-        {/* Desktop: Expanded Vertical Layout */}
-        <div className="hidden md:block space-y-16">
-          <section id="overview" className="scroll-mt-32">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Descriere</h3>
-            <div
-              className="prose max-w-none text-gray-600"
-              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-            />
-          </section>
+      {/* Shipping & Reviews Mixed Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-24 border-t border-[#f0efed] pt-12">
+        {/* Shipping */}
+        <section className="space-y-8">
+          <h3 className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#1a1a1a]">
+            Shipping & Returns
+          </h3>
+          <div className="text-[13px] font-normal leading-relaxed text-[#4a4a4a] space-y-4 max-w-sm">
+            <p>
+              Standard shipping (2-4 business days) is complimentary on all orders
+              above £200.
+            </p>
+            <p>
+              Returns may be initiated within 30 days of delivery. All items must
+              be in their original condition.
+            </p>
+          </div>
+        </section>
 
-          <section id="specifications" className="scroll-mt-32 pt-8 border-t border-gray-100">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Specificații</h3>
-            <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
-              {details?.map((d) => (
-                <div key={d.label} className="flex gap-2 text-sm border-b border-gray-100 pb-2">
-                  <dt className="w-40 font-medium text-gray-900 shrink-0">{d.label}</dt>
-                  <dd className="text-gray-600">{d.value}</dd>
-                </div>
-              )) || <div className="text-sm text-gray-500">Nu există specificații disponibile.</div>}
-            </dl>
-          </section>
+        {/* Reviews */}
+        <section className="space-y-12">
+          <div className="flex items-baseline justify-between">
+            <h3 className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#1a1a1a]">
+              Reviews
+            </h3>
+            <span className="text-[10px] text-[#b1b1b1] tracking-widest uppercase italic">4.8 Average</span>
+          </div>
 
-          <section className="pt-8 border-t border-gray-100">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Livrare și Returi</h3>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                  <span className="text-green-600">🚚</span> Livrare Rapidă
-                </h4>
-                <p className="text-sm text-gray-600">Comenzile plasate până în ora 14:00 sunt procesate în aceeași zi. Livrarea standard durează 24-48 de ore lucrătoare oriunde în România.</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                  <span className="text-green-600">↩️</span> Retur Simplu
-                </h4>
-                <p className="text-sm text-gray-600">Dacă produsul nu ți se potrivește, îl poți returna în termen de 30 de zile. Procesul este simplu și rapid.</p>
+          <div className="space-y-16">
+            <div className="space-y-4 border-l-2 border-[#1a1a1a] pl-6 transition-all hover:border-[#8a8a8a]">
+              <p className="text-[14px] font-light italic leading-relaxed text-[#1a1a1a]">
+                "The quality of the finish is beyond what I expected. A truly minimalist masterpiece that functions as good as it looks."
+              </p>
+              <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] text-[#8a8a8a]">
+                <span>Maria G.</span>
+                <span className="w-1 h-1 rounded-full bg-[#f0efed]" />
+                <span>Verified Purchase</span>
               </div>
             </div>
-          </section>
-        </div>
-      </div>
 
-      {/* Reviews Section Separated for Impact */}
-      <div id="reviews" className="scroll-mt-24">
-        <h3 className="text-lg font-medium text-gray-900 mb-6 border-b border-gray-200 pb-4">Recenzii și Întrebări</h3>
-        <ReviewsSection />
+            <div className="space-y-4 border-l-2 border-[#f0efed] pl-6 transition-all hover:border-[#1a1a1a]">
+              <p className="text-[14px] font-light italic leading-relaxed text-[#1a1a1a]">
+                "Exceptional craftsmanship. The delivery was seamless and the packaging reflects the premium nature of the brand."
+              </p>
+              <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.2em] text-[#8a8a8a]">
+                <span>Andreas K.</span>
+                <span className="w-1 h-1 rounded-full bg-[#f0efed]" />
+                <span>Verified Purchase</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   )

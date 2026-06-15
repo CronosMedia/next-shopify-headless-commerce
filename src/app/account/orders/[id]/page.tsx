@@ -213,7 +213,7 @@ export default function OrderDetailsPage() {
               <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
                 Total:{' '}
                 <span style={{ fontWeight: 600 }}>
-                  {order.totalPriceSet.shopMoney.amount} LEI
+                  £{order.totalPriceSet.shopMoney.amount}
                 </span>
               </p>
             </div>
@@ -396,7 +396,7 @@ export default function OrderDetailsPage() {
                     {(() => {
                       const unit = parseFloat(item.variant?.price || '0')
                       const total = unit * item.quantity
-                      return `${total.toFixed(2)} LEI`
+                      return `£${total.toFixed(2)}`
                     })()}
                   </p>
                 </div>
@@ -408,25 +408,25 @@ export default function OrderDetailsPage() {
           <p className="text-muted-foreground">
             Subtotal:{' '}
             <span className="font-medium text-foreground">
-              {order.subtotalPriceSet.shopMoney.amount} LEI
+              £{order.subtotalPriceSet.shopMoney.amount}
             </span>
           </p>
           <p className="text-muted-foreground">
             Livrare:{' '}
             <span className="font-medium text-foreground">
-              {order.totalShippingPriceSet.shopMoney.amount} LEI
+              £{order.totalShippingPriceSet.shopMoney.amount}
             </span>
           </p>
           <p className="text-muted-foreground">
             Taxe:{' '}
             <span className="font-medium text-foreground">
-              {order.totalTaxSet.shopMoney.amount} LEI
+              £{order.totalTaxSet.shopMoney.amount}
             </span>
           </p>
           <p className="text-lg font-bold text-foreground">
             Total:{' '}
             <span className="font-bold">
-              {order.totalPriceSet.shopMoney.amount} LEI
+              £{order.totalPriceSet.shopMoney.amount}
             </span>
           </p>
         </div>
