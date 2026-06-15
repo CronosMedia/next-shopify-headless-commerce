@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Veridis Shopify Headless Storefront
+
+Reusable Shopify headless storefront built with Next.js, React and the Shopify
+Storefront API.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Copy `.env.example` to `.env` and provide the Shopify credentials, then start
+the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The storefront is available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run codegen
+npm run lint
+npm run typecheck
+npm run build
+```
 
-## Learn More
+## End-To-End Tests
 
-To learn more about Next.js, take a look at the following resources:
+The Playwright smoke suite starts the storefront on port `3100` and uses the
+locally installed Google Chrome:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run test:e2e
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Interactive mode:
 
-## Deploy on Vercel
+```bash
+npm run test:e2e:ui
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The initial suite covers:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- homepage and primary navigation;
+- collections index;
+- deterministic search rendering;
+- wishlist hydration and removal;
+- anonymous access denial for order cancellation.
+
+The tests do not create orders or mutate Shopify customer data.
