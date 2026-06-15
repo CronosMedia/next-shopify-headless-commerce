@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { formatMoney } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
@@ -209,7 +210,7 @@ export default function OrderDetailsPage() {
               <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
                 Total:{' '}
                 <span style={{ fontWeight: 600 }}>
-                  £{order.totalPriceSet.shopMoney.amount}
+                  {formatMoney(order.totalPriceSet.shopMoney.amount, order.totalPriceSet.shopMoney.currencyCode)}
                 </span>
               </p>
             </div>
@@ -392,7 +393,7 @@ export default function OrderDetailsPage() {
                     {(() => {
                       const unit = parseFloat(item.variant?.price || '0')
                       const total = unit * item.quantity
-                      return `£${total.toFixed(2)}`
+                      return formatMoney(total, order.totalPriceSet.shopMoney.currencyCode)
                     })()}
                   </p>
                 </div>
@@ -404,25 +405,25 @@ export default function OrderDetailsPage() {
           <p className="text-muted-foreground">
             Subtotal:{' '}
             <span className="font-medium text-foreground">
-              £{order.subtotalPriceSet.shopMoney.amount}
+              {formatMoney(order.subtotalPriceSet.shopMoney.amount, order.subtotalPriceSet.shopMoney.currencyCode)}
             </span>
           </p>
           <p className="text-muted-foreground">
             Livrare:{' '}
             <span className="font-medium text-foreground">
-              £{order.totalShippingPriceSet.shopMoney.amount}
+              {formatMoney(order.totalShippingPriceSet.shopMoney.amount, order.totalShippingPriceSet.shopMoney.currencyCode)}
             </span>
           </p>
           <p className="text-muted-foreground">
             Taxe:{' '}
             <span className="font-medium text-foreground">
-              £{order.totalTaxSet.shopMoney.amount}
+              {formatMoney(order.totalTaxSet.shopMoney.amount, order.totalTaxSet.shopMoney.currencyCode)}
             </span>
           </p>
           <p className="text-lg font-bold text-foreground">
             Total:{' '}
             <span className="font-bold">
-              £{order.totalPriceSet.shopMoney.amount}
+              {formatMoney(order.totalPriceSet.shopMoney.amount, order.totalPriceSet.shopMoney.currencyCode)}
             </span>
           </p>
         </div>

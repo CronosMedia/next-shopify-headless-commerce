@@ -21,17 +21,17 @@ export default function FreeShippingPage() {
 
                         <div className="prose max-w-none text-muted-foreground space-y-4">
                             <p>
-                                La Next Commerce, ne dorim ca produsele tale să ajungă la tine cât mai rapid și în siguranță.
+                                La Maison Outdoor, ne dorim ca produsele tale să ajungă la tine cât mai rapid și în siguranță.
                                 Colaborăm cu firme de curierat de top pentru a asigura o experiență de livrare excelentă.
                             </p>
 
                             <h3 className="text-xl font-semibold text-foreground mt-6">Costuri de Livrare</h3>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>
-                                    <strong>Livrare Gratuită:</strong> Pentru toate comenzile cu o valoare mai mare de <strong>£300</strong>.
+                                    <strong>Livrare Gratuită:</strong> Pentru toate comenzile cu o valoare mai mare de <strong>500 lei</strong>.
                                 </li>
                                 <li>
-                                    <strong>Livrare Standard:</strong> Pentru comenzile sub £300, costul livrării este de <strong>£19.99</strong>.
+                                    <strong>Livrare Standard:</strong> Pentru comenzile sub 500 lei, costul livrării este de <strong>25 lei</strong>.
                                 </li>
                             </ul>
 

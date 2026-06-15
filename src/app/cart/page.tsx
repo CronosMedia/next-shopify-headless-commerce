@@ -19,6 +19,7 @@ import RelatedProducts from '@/components/RelatedProducts'
 import AddressModal from '@/components/AddressModal'
 import { useAuth } from '@/components/AuthProvider'
 import DeliveryMethodSelector from '@/components/DeliveryMethodSelector'
+import { formatMoney } from '@/lib/utils'
 
 export default function CartPage() {
   const {
@@ -45,6 +46,7 @@ export default function CartPage() {
   const [isClearCartModalOpen, setIsClearCartModalOpen] = useState(false)
   const [selectedItemsToRestore, setSelectedItemsToRestore] = useState<string[]>([]) // New state for multi-restore
   const { user } = useAuth()
+  const currencyCode = cart?.cost?.subtotalAmount?.currencyCode || 'RON'
 
   useEffect(() => {
     // CartProvider handles initial cart load
@@ -326,10 +328,7 @@ export default function CartPage() {
 
                       {/* Right: Price */}
                       <div className="text-lg font-medium text-gray-900 w-32 text-right pl-4">
-                        £{(
-                          parseFloat(line.merchandise.price.amount) *
-                          line.quantity
-                        ).toFixed(2)}
+                        {formatMoney(parseFloat(line.merchandise.price.amount) * line.quantity, currencyCode)}
                       </div>
                     </div>
                   </div>
@@ -358,7 +357,7 @@ export default function CartPage() {
                   {cart.totalQuantity === 1 ? 'produs' : 'produse'})
                 </span>
                 <span className="font-medium">
-                  £{subtotal.toFixed(2)}
+                  {formatMoney(subtotal, currencyCode)}
                 </span>
               </div>
             </div>
@@ -459,7 +458,7 @@ export default function CartPage() {
                   <span className="font-medium text-green-600">Gratuit</span>
                 ) : (
                   <span className="font-medium">
-                    £{shippingCost.toFixed(2)}
+                    {formatMoney(shippingCost, currencyCode)}
                   </span>
                 )}
               </div>
@@ -468,7 +467,7 @@ export default function CartPage() {
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total comandă</span>
                   <span>
-                    £{total.toFixed(2)}
+                    {formatMoney(total, currencyCode)}
                   </span>
                 </div>
               </div>

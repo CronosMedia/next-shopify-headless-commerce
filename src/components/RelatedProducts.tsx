@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, MouseEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney } from '@/lib/utils'
 
 type ProductNode = {
   id: string
@@ -176,7 +176,7 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
                       {product.title}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      £{Number(price).toFixed(2)}
+                      {formatMoney(price, variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode)}
                     </p>
                   </Link>
                 </div>

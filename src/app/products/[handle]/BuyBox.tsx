@@ -4,6 +4,7 @@ import { useCart } from '@/components/CartProvider'
 import {Minus, Plus} from 'lucide-react'
 import Swatch from './Swatch' // Import the new Swatch component
 import WishlistButton from '@/components/WishlistButton'
+import { formatMoney } from '@/lib/utils'
 
 type Option = { name: string; values: string[] }
 export type Variant = {
@@ -81,11 +82,11 @@ export default function BuyBox({
         </h1>
         <div className="flex items-baseline gap-4 pt-2">
           <span className="text-xl font-light text-[#1a1a1a]">
-            £{Number(selectedVariant?.price.amount || 0).toFixed(2)}
+            {formatMoney(selectedVariant?.price.amount || 0, selectedVariant?.price.currencyCode)}
           </span>
           {selectedVariant?.compareAtPrice?.amount ? (
             <span className="text-sm line-through text-[#8a8a8a] font-light">
-              £{Number(selectedVariant.compareAtPrice.amount).toFixed(2)}
+              {formatMoney(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
             </span>
           ) : null}
         </div>

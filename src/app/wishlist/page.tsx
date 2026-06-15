@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useWishlist } from '@/components/WishlistProvider'
 import WishlistButton from '@/components/WishlistButton'
+import { formatMoney } from '@/lib/utils'
 
 export default function WishlistPage() {
     const { items } = useWishlist()
@@ -43,7 +44,7 @@ export default function WishlistPage() {
                                     </h2>
                                     {item.priceRange && (
                                         <p className="text-gray-600">
-                                            £{item.priceRange.minVariantPrice.amount}
+                                            {formatMoney(item.priceRange.minVariantPrice.amount, item.priceRange.minVariantPrice.currencyCode)}
                                         </p>
                                     )}
                                 </div>

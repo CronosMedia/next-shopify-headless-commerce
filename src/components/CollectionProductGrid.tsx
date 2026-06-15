@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, X, ArrowUpDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney } from '@/lib/utils'
 import ProductCard from './ProductCard'
 import DualRangeSlider from './DualRangeSlider'
 
@@ -60,6 +60,14 @@ export default function CollectionProductGrid({
 }) {
     const router = useRouter()
     const searchParams = useSearchParams()
+
+    const currencyCode = initialProducts[0]?.priceRange?.minVariantPrice?.currencyCode || 'RON'
+    const currencySymbol = useMemo(() => {
+        const formatter = new Intl.NumberFormat(currencyCode.toUpperCase() === 'RON' ? 'ro-RO' : 'en-GB', { style: 'currency', currency: currencyCode })
+        const parts = formatter.formatToParts(0)
+        const symbolPart = parts.find(p => p.type === 'currency')
+        return symbolPart ? symbolPart.value : currencyCode
+    }, [currencyCode])
 
     const [products, setProducts] = useState<Product[]>(initialProducts)
     const [loading, setLoading] = useState(false)
@@ -430,7 +438,7 @@ export default function CollectionProductGrid({
                                                 onChange={(e) => { const val = Math.min(Number(e.target.value), priceRange[1] - 1); setPriceRange([val, priceRange[1]]); }}
                                                 className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">£</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
                                         </div>
                                     </div>
                                     <span className="text-[var(--muted)] text-sm">—</span>
@@ -440,7 +448,7 @@ export default function CollectionProductGrid({
                                                 onChange={(e) => { const val = Math.max(Number(e.target.value), priceRange[0] + 1); setPriceRange([priceRange[0], val]); }}
                                                 className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">£</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -516,7 +524,7 @@ export default function CollectionProductGrid({
                                 {/* Price */}
                                 <div>
                                     <div className="flex items-center justify-between mb-5">
-                                        <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Price (£)</h3>
+                                        <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Price ({currencySymbol})</h3>
                                         {isPriceFiltered && (
                                             <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
                                                 className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
@@ -532,7 +540,7 @@ export default function CollectionProductGrid({
                                                     onChange={(e) => { const val = Math.min(Number(e.target.value), priceRange[1] - 1); setPriceRange([val, priceRange[1]]); }}
                                                     className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
                                                 />
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">£</span>
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
                                             </div>
                                         </div>
                                         <span className="text-[var(--muted)] text-sm">—</span>
@@ -542,7 +550,7 @@ export default function CollectionProductGrid({
                                                     onChange={(e) => { const val = Math.max(Number(e.target.value), priceRange[0] + 1); setPriceRange([priceRange[0], val]); }}
                                                     className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
                                                 />
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">£</span>
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -623,7 +631,7 @@ export default function CollectionProductGrid({
                         {isPriceFiltered && (
                             <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
                                 className="inline-flex items-center gap-1.5 h-7 px-3 bg-[var(--secondary)] text-[11px] font-light tracking-wide text-[var(--foreground)] transition-colors group">
-                                £{priceRange[0]} – £{priceRange[1]} <X size={10} className="text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]" />
+                                {formatMoney(priceRange[0], currencyCode)} – {formatMoney(priceRange[1], currencyCode)} <X size={10} className="text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]" />
                             </button>
                         )}
                         {[...selectedVendors].map(v => (

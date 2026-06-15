@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRef, useState, MouseEvent } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney } from '@/lib/utils'
 
 export default function RecentlyViewed({ currentProductId }: { currentProductId?: string }) {
     const { viewedProducts, isInitialized } = useRecentlyViewed()
@@ -122,7 +122,7 @@ export default function RecentlyViewed({ currentProductId }: { currentProductId?
                                         {product.title}
                                     </h3>
                                     <p className="text-sm text-gray-500 mt-1">
-                                        £{Number(product.price).toFixed(2)}
+                                        {formatMoney(product.price, product.currencyCode)}
                                     </p>
                                 </Link>
                             </div>

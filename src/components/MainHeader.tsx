@@ -14,6 +14,7 @@ import {
 import { useCart } from './CartProvider'
 import { useWishlist } from './WishlistProvider'
 import MegaMenu from './MegaMenu'
+import { formatMoney } from '@/lib/utils'
 
 type Product = {
   id: string
@@ -239,7 +240,7 @@ export default function MainHeader() {
                     <div>
                       <p className="text-sm font-normal text-[var(--foreground)] tracking-wide">{product.title}</p>
                       <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-                        £{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                        {formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
                       </p>
                     </div>
                   </Link>

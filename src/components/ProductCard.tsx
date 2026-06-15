@@ -1,6 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import { formatMoney } from '@/lib/utils'
 
 type ProductNode = {
   id: string
@@ -88,9 +89,9 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
 
         {/* Price */}
         <div className="mt-2.5">
-          {price ? (
+          {price && product.priceRange?.minVariantPrice ? (
             <span className="text-[13px] font-medium tracking-wide text-[#1a1a1a]">
-              £{price}
+              {formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
             </span>
           ) : (
             <span className="text-[11px] uppercase tracking-[0.1em] text-[#8a8a8a]">By Inquiry</span>

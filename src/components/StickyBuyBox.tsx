@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import {ShoppingCart} from 'lucide-react'
 import { useCart } from './CartProvider'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney } from '@/lib/utils'
 
 type StickyBuyBoxProps = {
     product: {
@@ -143,7 +143,7 @@ export default function StickyBuyBox({
                         <div className="min-w-0">
                             <h3 className="font-medium text-gray-900 line-clamp-1 text-sm">{product.title}</h3>
                             <div className="flex items-baseline gap-2">
-                                <span className="font-bold text-gray-900">£{product.price}</span>
+                                <span className="font-bold text-gray-900">{formatMoney(product.price, product.currency)}</span>
                                 {product.availableForSale ?
                                     <span className="text-xs text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded">In Stoc</span> :
                                     <span className="text-xs text-red-600 font-medium bg-red-50 px-1.5 py-0.5 rounded">Stoc Epuizat</span>
@@ -193,7 +193,7 @@ export default function StickyBuyBox({
                             {product.title}
                         </div>
                         <div className="text-lg font-bold text-gray-900">
-                            £{product.price}
+                            {formatMoney(product.price, product.currency)}
                         </div>
                     </div>
 
