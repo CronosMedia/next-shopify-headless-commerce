@@ -1,3 +1,4 @@
+import 'server-only'
 import { createStorefrontApiClient } from '@shopify/storefront-api-client'
 
 const storeDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN

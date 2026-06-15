@@ -83,7 +83,7 @@ export default function OrderDetailsPage() {
       try {
         setLoading(true)
         const searchParams = window.location.search;
-        const response = await fetch(`/api/account/proxy/orders/${id}${searchParams}`)
+        const response = await fetch(`/api/account/orders/${id}${searchParams}`)
         const data = await response.json()
 
         if (!response.ok) {

@@ -206,7 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchOrders = async (): Promise<Order[]> => {
     try {
-      const response = await fetch('/api/account/proxy/orders')
+      const response = await fetch('/api/account/orders')
       if (response.ok) {
         const data = await response.json()
         if (data.orders) {

@@ -279,7 +279,7 @@ function SettingsTab({ user }: { user: User }) {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch('/api/account/update', {
+      const response = await fetch('/api/account', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -305,7 +305,7 @@ function SettingsTab({ user }: { user: User }) {
       return;
     }
     try {
-      const response = await fetch('/api/account/update', {
+      const response = await fetch('/api/account', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),

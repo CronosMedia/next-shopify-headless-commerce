@@ -1,37 +1,66 @@
-import { NextRequest } from 'next/server'
-import { shopifyClient } from '@/lib/shopify'
-import { GET_CUSTOMER_ORDERS_QUERY } from '@/lib/queries'
-import { Customer } from '@/lib/shopify/generated/graphql'
+import {cookies} from 'next/headers'
+import {NextResponse} from 'next/server'
+import {GET_CUSTOMER_ORDERS_QUERY} from '@/lib/queries'
+import {shopifyClient} from '@/lib/shopify'
+import {serverLogger} from '@/lib/logger.server'
 
-export const GET = async (req: NextRequest) => {
+export const fetchCache = 'force-no-store'
+
+type CustomerOrder = {
+  id: string
+  orderNumber: number
+  processedAt: string
+  financialStatus: string
+  fulfillmentStatus: string
+  totalPrice: {
+    amount: string
+    currencyCode: string
+  }
+}
+
+type CustomerOrdersData = {
+  customer: {
+    orders: {
+      edges: Array<{node: CustomerOrder}>
+    }
+  } | null
+}
+
+export async function GET() {
   try {
-    const accessToken = req.cookies.get('customer-access-token')?.value
-    if (!accessToken) {
-      return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    const cookieStore = await cookies()
+    const customerAccessToken = cookieStore.get(
+      'customer-access-token'
+    )?.value
+
+    if (!customerAccessToken) {
+      return NextResponse.json(
+        {error: {message: 'Not authenticated. Session missing.'}},
+        {status: 401}
+      )
     }
 
-    const { data: { customer } } = await shopifyClient.request<{ customer: Customer }>(
+    const response = await shopifyClient.request<CustomerOrdersData>(
       GET_CUSTOMER_ORDERS_QUERY,
-      {
-        customerAccessToken: accessToken,
-      }
+      {customerAccessToken, first: 100}
     )
 
-    if (!customer) {
-      return Response.json({ orders: [] })
+    if (response.errors?.length) {
+      return NextResponse.json(
+        {error: {message: response.errors[0].message}},
+        {status: 400}
+      )
     }
 
-    return Response.json({
-      orders: customer.orders.edges.map((edge) => edge.node),
-    })
+    const orders =
+      response.data.customer?.orders.edges.map(({node}) => node) ?? []
+
+    return NextResponse.json({orders})
   } catch (error: unknown) {
-    return Response.json(
-      {
-        error: {
-          message: (error as Error).message || 'Failed to fetch orders',
-        },
-      },
-      { status: 500 }
+    serverLogger.error('account.orders.list.failed', error)
+    return NextResponse.json(
+      {error: {message: 'Comenzile nu au putut fi încărcate.'}},
+      {status: 500}
     )
   }
 }

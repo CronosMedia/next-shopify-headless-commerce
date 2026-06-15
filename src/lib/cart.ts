@@ -1,3 +1,4 @@
+import 'server-only'
 import {shopifyClient, type ShopifyUserError} from './shopify'
 import type { CartBuyerIdentityInput } from './types'
 
@@ -165,6 +166,18 @@ const CART_BUYER_IDENTITY_UPDATE_MUTATION = `#graphql
     }
   }
 `
+
+const CART_SELECTED_DELIVERY_OPTION_UPDATE_MUTATION = `#graphql
+  ${CART_FRAGMENT}
+  ${USER_ERROR_FRAGMENT}
+  mutation CartSelectedDeliveryOptionUpdate($cartId: ID!, $selectedDeliveryOptionHandle: String!) {
+    cartSelectedDeliveryOptionUpdate(cartId: $cartId, selectedDeliveryOptionHandle: $selectedDeliveryOptionHandle) {
+      cart { ...CartFields }
+      userErrors { ...UserErrorFragment }
+    }
+  }
+`
+
 
 export type CartLine = {
   id: string
@@ -362,3 +375,18 @@ export async function cartBuyerIdentityUpdate(
   }
   return result.cart;
 }
+
+export async function cartSelectedDeliveryOptionUpdate(
+  cartId: string,
+  selectedDeliveryOptionHandle: string
+): Promise<Cart> {
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_SELECTED_DELIVERY_OPTION_UPDATE_MUTATION,
+    {cartId, selectedDeliveryOptionHandle}
+  )
+  if (!result || !result.cart) {
+    throw new Error('Failed to update selected delivery option');
+  }
+  return result.cart;
+}
+

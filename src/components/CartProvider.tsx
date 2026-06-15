@@ -11,18 +11,9 @@ import React, {
 import type { ReactNode } from 'react'
 import { romanianCounties } from '@/lib/geo-data'
 
-import {
-  cartCreate,
-  cartGet,
-  cartLinesAdd,
-  cartLinesUpdate,
-  cartLinesRemove,
-  cartBuyerIdentityUpdate,
-  // cartDeliveryOptionUpdate,
-} from '@/lib/cart'
 import type { Cart, CartLine } from '@/lib/cart' // Modified: Added CartLine
 import type { Address } from '@/components/AddressModal'
-import type { DeliveryOption, CartBuyerIdentityInput } from '@/lib/types'
+import type { DeliveryOption } from '@/lib/types'
 
 const LOCAL_STORAGE_RECENTLY_REMOVED_KEY = 'recentlyRemovedItems'; // New constant
 
@@ -150,11 +141,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     async (lines?: { merchandiseId: string; quantity: number }[]) => {
       setLoading(true)
       try {
-        const newCart = await cartCreate(lines)
-        if (!newCart) throw new Error('Failed to create cart')
-        setCartId(newCart.id)
-        syncFromCart(newCart)
-        return newCart
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'create', lines }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to create cart')
+        }
+        setCartId(data.cart.id)
+        syncFromCart(data.cart)
+        return data.cart
       } finally {
         setLoading(false)
       }
@@ -166,9 +164,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     async (cartId: string) => {
       setLoading(true)
       try {
-        const fetched = await cartGet(cartId)
-        if (fetched) syncFromCart(fetched)
-        return fetched
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get', cartId }),
+        })
+        const data = await response.json()
+        if (response.ok && data.cart) {
+          syncFromCart(data.cart)
+          return data.cart
+        }
+        return null
       } finally {
         setLoading(false)
       }
@@ -177,6 +183,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   )
 
   const ensureCart = useCallback(async () => {
+    if (cart) return cart
     const cartId = getCartId()
     if (cartId) {
       try {
@@ -188,22 +195,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
     return createCart()
-  }, [fetchCart, createCart])
+  }, [cart, fetchCart, createCart])
 
   useEffect(() => {
-    // on mount, try to hydrate existing cart
+    // on mount, try to hydrate existing cart (lazy creation)
     const init = async () => {
-      try {
-        setLoading(true)
-        await ensureCart()
-      } catch (err) {
-        setError(err instanceof Error ? err.message : String(err))
-      } finally {
-        setLoading(false)
+      const cartId = getCartId()
+      if (cartId) {
+        try {
+          setLoading(true)
+          const fetched = await fetchCart(cartId)
+          if (!fetched) {
+            localStorage.removeItem('cartId')
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : String(err))
+          localStorage.removeItem('cartId')
+        } finally {
+          setLoading(false)
+        }
       }
     }
     init()
-  }, [ensureCart])
+  }, [fetchCart])
 
   const addToCart = useCallback(
     async (variantId: string, quantity = 1) => {
@@ -212,10 +226,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const currentCart = cart ?? (await ensureCart())
         if (!currentCart) throw new Error('No cart available')
-        const updated = await cartLinesAdd(currentCart.id, [
-          { merchandiseId: variantId, quantity },
-        ])
-        syncFromCart(updated ?? null)
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add_lines',
+            cartId: currentCart.id,
+            lines: [{ merchandiseId: variantId, quantity }],
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to add lines to cart')
+        }
+        syncFromCart(data.cart)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -233,10 +257,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const currentCart = cart ?? (await ensureCart())
         if (!currentCart) throw new Error('No cart available')
-        const updated = await cartLinesUpdate(currentCart.id, [
-          { id: lineId, quantity },
-        ])
-        syncFromCart(updated ?? null)
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'update_lines',
+            cartId: currentCart.id,
+            lines: [{ id: lineId, quantity }],
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to update cart')
+        }
+        syncFromCart(data.cart)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -260,8 +294,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
           ({ node }: { node: CartLine }) => node.id === lineId // Modified: Typed edge
         )?.node;
 
-        const updated = await cartLinesRemove(currentCart.id, [lineId])
-        syncFromCart(updated ?? null)
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'remove_lines',
+            cartId: currentCart.id,
+            lineIds: [lineId],
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to remove lines')
+        }
+        syncFromCart(data.cart)
 
         if (removedLine) {
           setRecentlyRemovedItems((prev) => {
@@ -330,8 +376,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }));
           setRecentlyRemovedItems((prev) => [...removedItems, ...prev].slice(0, MAX_RECENTLY_REMOVED_ITEMS));
 
-          const updated = await cartLinesRemove(currentCart.id, lineIds)
-          syncFromCart(updated ?? null)
+          const response = await fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'remove_lines',
+              cartId: currentCart.id,
+              lineIds,
+            }),
+          })
+          const data = await response.json()
+          if (!response.ok || !data.cart) {
+            throw new Error(data.error?.message || 'Failed to clear cart')
+          }
+          syncFromCart(data.cart)
         } else {
           // If cart is already empty, just set it to null or an empty cart structure
           setCart(null) // Or an empty cart object if preferred
@@ -354,29 +412,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const currentCart = cart ?? (await ensureCart())
         if (!currentCart) throw new Error('No cart available')
-        const buyerIdentity: CartBuyerIdentityInput = {
-          deliveryAddressPreferences: [
-            {
-              deliveryAddress: {
-                address1: address.address1,
-                address2: address.address2 ?? undefined,
-                city: address.city,
-                company: address.company,
-                country: address.country,
-                firstName: address.firstName,
-                lastName: address.lastName,
-                phone: address.phone,
-                province: address.province,
-                zip: address.zip,
-              },
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateDeliveryAddress',
+            cartId: currentCart.id,
+            address: {
+              address1: address.address1,
+              address2: address.address2 ?? undefined,
+              city: address.city,
+              company: address.company,
+              country: address.country,
+              firstName: address.firstName,
+              lastName: address.lastName,
+              phone: address.phone,
+              province: address.province,
+              zip: address.zip,
             },
-          ],
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to update delivery address')
         }
-        const updated = await cartBuyerIdentityUpdate(
-          currentCart.id,
-          buyerIdentity
-        )
-        syncFromCart(updated ?? null)
+        syncFromCart(data.cart)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -389,14 +449,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateDeliveryOption = useCallback(
     async (handle: string) => {
-      void handle
       setLoading(true)
       setError(null)
       try {
         const currentCart = cart ?? (await ensureCart())
         if (!currentCart) throw new Error('No cart available')
-        // const updated = await cartDeliveryOptionUpdate(currentCart.id, handle)
-        // syncFromCart(updated ?? null)
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'update_delivery_option',
+            cartId: currentCart.id,
+            deliveryOptionHandle: handle,
+          }),
+        })
+        const data = await response.json()
+        if (!response.ok || !data.cart) {
+          throw new Error(data.error?.message || 'Failed to update delivery option')
+        }
+        syncFromCart(data.cart)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -404,7 +475,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart, ensureCart]
+    [cart, ensureCart, syncFromCart]
   )
 
   const shippingCost = useMemo(() => {
@@ -427,6 +498,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       : 0
     return Math.max(0, amount)
   }, [cart?.cost?.totalAmount?.amount])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__cart = { addToCart, cart, loading }
+    }
+  }, [addToCart, cart, loading])
 
   const value = useMemo(
     () => ({

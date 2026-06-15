@@ -21,7 +21,7 @@ import {serverLogger} from '@/lib/logger.server'
 export const GET = async (req: NextRequest) => {
   const customerAccessToken = req.cookies.get('customer-access-token')?.value
   if (!customerAccessToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
   }
 
   try {
@@ -39,7 +39,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     if (!response.data.customer) {
-      return Response.json({ error: 'Customer not found' }, { status: 404 })
+      return Response.json({ error: { message: 'Customer not found' } }, { status: 404 })
     }
 
     const { addresses, defaultAddress } = response.data.customer
@@ -50,7 +50,7 @@ export const GET = async (req: NextRequest) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch addresses';
     return Response.json(
-      { error: errorMessage },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
@@ -60,7 +60,7 @@ export const GET = async (req: NextRequest) => {
 export const POST = async (req: NextRequest) => {
   const customerAccessToken = req.cookies.get('customer-access-token')?.value
   if (!customerAccessToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
   }
 
   try {
@@ -78,7 +78,7 @@ export const POST = async (req: NextRequest) => {
       serverLogger.warn('account.address.create.shopify_error')
       const message =
         response.errors[0]?.message || 'An error occurred creating the address.'
-      return Response.json({ error: message }, { status: 400 })
+      return Response.json({ error: { message } }, { status: 400 })
     }
 
     const { customerAddress, customerUserErrors } =
@@ -86,7 +86,7 @@ export const POST = async (req: NextRequest) => {
 
     if (customerUserErrors?.length > 0) {
       return Response.json(
-        { error: customerUserErrors[0].message },
+        { error: { message: customerUserErrors[0].message } },
         { status: 400 }
       )
     }
@@ -96,7 +96,7 @@ export const POST = async (req: NextRequest) => {
     serverLogger.error('account.address.create.failed', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to create address';
     return Response.json(
-      { error: errorMessage },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
@@ -106,13 +106,13 @@ export const POST = async (req: NextRequest) => {
 export const PUT = async (req: NextRequest) => {
   const customerAccessToken = req.cookies.get('customer-access-token')?.value
   if (!customerAccessToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
   }
 
   try {
     const { id, address }: { id: string; address: MailingAddress } = await req.json()
     if (!id) {
-      return Response.json({ error: 'Address ID is required' }, { status: 400 })
+      return Response.json({ error: { message: 'Address ID is required' } }, { status: 400 })
     }
 
     const response = await shopifyClient.request<{ customerAddressUpdate: CustomerAddressUpdatePayload }>(
@@ -133,7 +133,7 @@ export const PUT = async (req: NextRequest) => {
     const { customerAddress, customerUserErrors } = response.data.customerAddressUpdate
     if (customerUserErrors?.length > 0) {
       return Response.json(
-        { error: customerUserErrors[0].message },
+        { error: { message: customerUserErrors[0].message } },
         { status: 400 }
       )
     }
@@ -142,7 +142,7 @@ export const PUT = async (req: NextRequest) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to update address';
     return Response.json(
-      { error: errorMessage },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
@@ -152,13 +152,13 @@ export const PUT = async (req: NextRequest) => {
 export const DELETE = async (req: NextRequest) => {
   const customerAccessToken = req.cookies.get('customer-access-token')?.value
   if (!customerAccessToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
   }
 
   try {
     const { id }: { id: string } = await req.json()
     if (!id) {
-      return Response.json({ error: 'Address ID is required' }, { status: 400 })
+      return Response.json({ error: { message: 'Address ID is required' } }, { status: 400 })
     }
 
     const response = await shopifyClient.request<{ customerAddressDelete: CustomerAddressDeletePayload }>(
@@ -179,7 +179,7 @@ export const DELETE = async (req: NextRequest) => {
       response.data.customerAddressDelete
     if (customerUserErrors?.length > 0) {
       return Response.json(
-        { error: customerUserErrors[0].message },
+        { error: { message: customerUserErrors[0].message } },
         { status: 400 }
       )
     }
@@ -188,7 +188,7 @@ export const DELETE = async (req: NextRequest) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete address';
     return Response.json(
-      { error: errorMessage },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
@@ -198,13 +198,13 @@ export const DELETE = async (req: NextRequest) => {
 export const PATCH = async (req: NextRequest) => {
   const customerAccessToken = req.cookies.get('customer-access-token')?.value
   if (!customerAccessToken) {
-    return Response.json({ error: 'Not authenticated' }, { status: 401 })
+    return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
   }
 
   try {
     const { addressId }: { addressId: string } = await req.json()
     if (!addressId) {
-      return Response.json({ error: 'Address ID is required' }, { status: 400 })
+      return Response.json({ error: { message: 'Address ID is required' } }, { status: 400 })
     }
 
     const response = await shopifyClient.request<{
@@ -227,7 +227,7 @@ export const PATCH = async (req: NextRequest) => {
     const { customer, customerUserErrors } = response.data.customerDefaultAddressUpdate
     if (customerUserErrors?.length > 0) {
       return Response.json(
-        { error: customerUserErrors[0].message },
+        { error: { message: customerUserErrors[0].message } },
         { status: 400 }
       )
     }
@@ -236,7 +236,7 @@ export const PATCH = async (req: NextRequest) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to set default address';
     return Response.json(
-      { error: errorMessage },
+      { error: { message: errorMessage } },
       { status: 500 }
     )
   }
