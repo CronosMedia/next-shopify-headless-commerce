@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
 
                         <div className="prose max-w-none text-muted-foreground space-y-4">
                             <p>
-                                Next Commerce respectă confidențialitatea datelor clienților noștri și ne angajăm să protejăm informațiile personale pe care ni le oferiți.
+                                Maison Outdoor respectă confidențialitatea datelor clienților noștri și ne angajăm să protejăm informațiile personale pe care ni le oferiți.
                                 Această politică explică modul în care colectăm, utilizăm și păstrăm datele dumneavoastră.
                             </p>
 

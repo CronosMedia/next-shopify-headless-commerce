@@ -21,15 +21,15 @@ export default function TermsPage() {
 
                         <div className="prose max-w-none text-muted-foreground space-y-4">
                             <p>
-                                Bine ați venit pe Next Commerce. Vă rugăm să citiți cu atenție termenii și condițiile de utilizare a acestui site.
+                                Bine ați venit pe Maison Outdoor. Vă rugăm să citiți cu atenție termenii și condițiile de utilizare a acestui site.
                                 Accesarea și utilizarea acestui site implică acceptarea explicită a acestor termeni și condiții.
                             </p>
 
                             <h3 className="text-xl font-semibold text-foreground mt-6">1. Definiții</h3>
                             <p>
-                                <strong>Vânzător:</strong> Next Commerce SRL.<br />
+                                <strong>Vânzător:</strong> Maison Outdoor SRL.<br />
                                 <strong>Cumpărător:</strong> Orice persoană fizică sau juridică care plasează o comandă.<br />
-                                <strong>Site:</strong> Magazinul online găzduit la adresa next-commerce.ro.
+                                <strong>Site:</strong> Magazinul online găzduit la adresa maisonoutdoor.ro.
                             </p>
 
                             <h3 className="text-xl font-semibold text-foreground mt-6">2. Comanda</h3>

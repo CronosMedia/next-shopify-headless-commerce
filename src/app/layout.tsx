@@ -37,11 +37,11 @@ const barlow = Barlow({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Next Commerce',
-    default: 'Next Commerce',
+    template: '%s | Maison Outdoor',
+    default: 'Maison Outdoor',
   },
   description:
-    'A modern, performant, and user-friendly e-commerce storefront built with Next.js.',
+    'Maison Outdoor - Echipament tehnic și îmbrăcăminte premium pentru expediții și drumeții.',
 }
 
 export default function RootLayout({

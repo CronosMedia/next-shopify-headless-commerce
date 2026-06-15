@@ -6,7 +6,7 @@ export default function AboutPage() {
     return (
         <div className="max-w-6xl mx-auto p-6">
             <h1 className="text-3xl font-bold text-foreground mb-2">Despre Noi</h1>
-            <p className="text-lg text-muted-foreground mb-8">Povestea și misiunea Next Commerce</p>
+            <p className="text-lg text-muted-foreground mb-8">Povestea și misiunea Maison Outdoor</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <LegalSidebar />
@@ -21,7 +21,7 @@ export default function AboutPage() {
 
                         <div className="prose max-w-none text-muted-foreground space-y-4">
                             <p>
-                                Next Commerce este mai mult decât un magazin online. Suntem o echipă pasionată de calitate și inovație, dedicată să aducă cele mai bune produse direct la tine acasă.
+                                Maison Outdoor este mai mult decât un magazin online. Suntem o echipă pasionată de calitate și aventură, dedicată să aducă cel mai bun echipament tehnic de camping și hiking direct la tine.
                             </p>
 
                             <h3 className="text-xl font-semibold text-foreground mt-6">Misiunea Noastră</h3>
