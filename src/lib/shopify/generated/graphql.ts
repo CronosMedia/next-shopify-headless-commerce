@@ -1,11 +1,7 @@
-/* eslint-disable */
+/** Internal type. DO NOT USE DIRECTLY. */
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -13,14 +9,14 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Color: { input: any; output: any; }
-  DateTime: { input: any; output: any; }
-  Decimal: { input: any; output: any; }
-  HTML: { input: any; output: any; }
-  ISO8601DateTime: { input: any; output: any; }
-  JSON: { input: any; output: any; }
-  URL: { input: any; output: any; }
-  UnsignedInt64: { input: any; output: any; }
+  Color: { input: unknown; output: unknown; }
+  DateTime: { input: string; output: string; }
+  Decimal: { input: unknown; output: unknown; }
+  HTML: { input: unknown; output: unknown; }
+  ISO8601DateTime: { input: string; output: string; }
+  JSON: { input: unknown; output: unknown; }
+  URL: { input: unknown; output: unknown; }
+  UnsignedInt64: { input: unknown; output: unknown; }
 };
 
 /**

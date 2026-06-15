@@ -24,15 +24,13 @@ const config: CodegenConfig = {
   ignoreNoDocuments: true,
   generates: {
     './src/lib/shopify/generated/graphql.ts': {
-      plugins: [
-        {
-          add: {
-            content: '/* eslint-disable */',
-          },
+      config: {
+        scalars: {
+          DateTime: 'string',
+          ISO8601DateTime: 'string',
         },
-        'typescript',
-        'typescript-operations',
-      ],
+      },
+      plugins: ['typescript', 'typescript-operations'],
     },
   },
 }
