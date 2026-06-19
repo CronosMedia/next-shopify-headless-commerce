@@ -1,25 +1,72 @@
 import Link from 'next/link'
+import { Truck, Lock, RefreshCw } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="bg-[#F9F8F6] text-[#1a1a1a] border-t border-[#e5e4e0]">
+      {/* Trust/Assurance Row */}
+      <div className="border-b border-[#e5e4e0] pt-6 pb-10 md:py-16 bg-white">
+        <div className="max-w-full mx-auto px-6 md:px-10 lg:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 text-center">
+            <Link
+              href="/livrare-gratuita"
+              className="flex flex-col items-center group transition-opacity duration-300 hover:opacity-80"
+            >
+              <Truck size={28} strokeWidth={1} className="text-[#1a1a1a] mb-5" />
+              <h5 className="text-sm font-semibold tracking-[0.2em] uppercase text-[#1a1a1a] mb-3">
+                Livrare Gratuită
+              </h5>
+              <p className="text-[13px] md:text-sm text-[#5a5a5a] max-w-xs font-normal leading-relaxed">
+                Livrare gratuită în toată țara pentru orice comandă de peste 500 lei.
+              </p>
+            </Link>
+            
+            <Link
+              href="/help-center#payments"
+              className="flex flex-col items-center group transition-opacity duration-300 hover:opacity-80"
+            >
+              <Lock size={28} strokeWidth={1} className="text-[#1a1a1a] mb-5" />
+              <h5 className="text-sm font-semibold tracking-[0.2em] uppercase text-[#1a1a1a] mb-3">
+                Plată Securizată
+              </h5>
+              <p className="text-[13px] md:text-sm text-[#5a5a5a] max-w-xs font-normal leading-relaxed">
+                Tranzacții 100% securizate cu criptare SSL de ultimă generație.
+              </p>
+            </Link>
+
+            <Link
+              href="/politica-retur"
+              className="flex flex-col items-center group transition-opacity duration-300 hover:opacity-80"
+            >
+              <RefreshCw size={28} strokeWidth={1} className="text-[#1a1a1a] mb-5" />
+              <h5 className="text-sm font-semibold tracking-[0.2em] uppercase text-[#1a1a1a] mb-3">
+                Retur Simplu
+              </h5>
+              <p className="text-[13px] md:text-sm text-[#5a5a5a] max-w-xs font-normal leading-relaxed">
+                Ai la dispoziție 14 zile pentru a returna produsele fără bătăi de cap.
+              </p>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Main Footer */}
       <div className="max-w-full mx-auto px-6 md:px-10 lg:px-16 py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-8">
             <h3 className="text-xl font-light tracking-[0.3em] uppercase">
-              MAISON
+              MAISON OUTDOOR
             </h3>
             <div className="space-y-4 max-w-sm">
-              <p className="text-[13px] font-normal leading-relaxed text-[#4a4a4a]">
-                A curation of timeless essentials and modern luxury.
-                Rooted in Mayfair, London, serving a global community
-                of discerning individuals.
+              <p className="text-sm md:text-base font-normal leading-relaxed text-[#5a5a5a]">
+                O selecție de echipamente tehnice premium și produse esențiale pentru activități în aer liber. 
+                Înradăcinată în spiritul explorării și al aventurii, deservind o comunitate globală activă 
+                de pasionați de outdoor.
               </p>
               <div className="pt-2">
-                <p className="text-[11px] tracking-[0.15em] uppercase text-[#8a8a8a]">
-                  27 Savile Row, Mayfair, London
+                <p className="text-xs md:text-sm tracking-[0.15em] uppercase text-[#5a5a5a]">
+                  Brașov, România
                 </p>
               </div>
             </div>
@@ -27,17 +74,17 @@ export default function Footer() {
 
           {/* Customer Service */}
           <div className="space-y-8">
-            <h4 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a]">Customer Service</h4>
+            <h4 className="text-xs md:text-sm font-semibold tracking-[0.15em] uppercase text-[#1a1a1a]">Asistență Clienți</h4>
             <div className="space-y-4">
               {[
-                { href: '/contact', label: 'Contact Us' },
-                { href: '/livrare-gratuita', label: 'Shipping & Delivery' },
-                { href: '/politica-retur', label: 'Returns & Exchanges' },
-                { href: '/intrebari-frecvente', label: 'Account' },
-                { href: '/ghid-marimi', label: 'Size Guide' },
+                { href: '/contact', label: 'Contact' },
+                { href: '/livrare-gratuita', label: 'Livrare & Transport' },
+                { href: '/politica-retur', label: 'Retururi & Schimburi' },
+                { href: '/account', label: 'Contul Meu' },
+                { href: '/ghid-marimi', label: 'Ghid Mărimi' },
               ].map(({ href, label }) => (
                 <Link key={href} href={href}
-                  className="block text-[13px] font-normal text-[#4a4a4a] hover:text-[#000] transition-colors duration-300">
+                  className="block text-xs md:text-sm font-normal text-[#5a5a5a] hover:text-[#000] transition-colors duration-300">
                   {label}
                 </Link>
               ))}
@@ -46,16 +93,16 @@ export default function Footer() {
 
           {/* Company */}
           <div className="space-y-8">
-            <h4 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a]">Company</h4>
+            <h4 className="text-xs md:text-sm font-semibold tracking-[0.15em] uppercase text-[#1a1a1a]">Companie</h4>
             <div className="space-y-4">
               {[
-                { href: '/despre-noi', label: 'About MAISON' },
-                { href: '/collections', label: 'Collections' },
-                { href: '/brand-promise', label: 'The Promise' },
-                { href: '/careers', label: 'Careers' },
+                { href: '/despre-noi', label: 'Despre Maison Outdoor' },
+                { href: '/collections', label: 'Categorii' },
+                { href: '/despre-noi#promisiune', label: 'Promisiunea Noastră' },
+                { href: '/despre-noi#cariere', label: 'Cariere' },
               ].map(({ href, label }) => (
                 <Link key={href} href={href}
-                  className="block text-[13px] font-normal text-[#4a4a4a] hover:text-[#000] transition-colors duration-300">
+                  className="block text-xs md:text-sm font-normal text-[#5a5a5a] hover:text-[#000] transition-colors duration-300">
                   {label}
                 </Link>
               ))}
@@ -64,7 +111,7 @@ export default function Footer() {
 
           {/* Connect */}
           <div className="space-y-8">
-            <h4 className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a]">Connect</h4>
+            <h4 className="text-xs md:text-sm font-semibold tracking-[0.15em] uppercase text-[#1a1a1a]">Urmărește-ne</h4>
             <div className="space-y-4">
               {[
                 { href: '#', label: 'Instagram' },
@@ -73,7 +120,7 @@ export default function Footer() {
                 { href: '#', label: 'LinkedIn' },
               ].map(({ href, label }) => (
                 <Link key={label} href={href}
-                  className="block text-[13px] font-normal text-[#4a4a4a] hover:text-[#000] transition-colors duration-300">
+                  className="block text-xs md:text-sm font-normal text-[#5a5a5a] hover:text-[#000] transition-colors duration-300">
                   {label}
                 </Link>
               ))}
@@ -85,15 +132,14 @@ export default function Footer() {
       {/* Bottom Legal Bar */}
       <div className="border-t border-[#e5e4e0]">
         <div className="max-w-full mx-auto px-6 md:px-10 lg:px-16 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-[10px] tracking-[0.15em] uppercase text-[#8a8a8a]">
-              <span>© 2024 MAISON</span>
-              <Link href="/politica-confidentialitate" className="hover:text-[#1a1a1a] transition-colors">Privacy Policy</Link>
-              <Link href="/termeni-si-conditii" className="hover:text-[#1a1a1a] transition-colors">Terms of Service</Link>
-              <Link href="/politica-cookie" className="hover:text-[#1a1a1a] transition-colors">Cookies</Link>
-            </div>
-            <div className="text-[10px] tracking-[0.15em] uppercase text-[#8a8a8a]">
-              United Kingdom / English
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <span className="order-2 md:order-1 text-[11px] tracking-[0.2em] uppercase text-[#8a8a8a]" suppressHydrationWarning>
+              © {new Date().getFullYear()} MAISON OUTDOOR
+            </span>
+            <div className="order-1 md:order-2 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-8 text-[12px] text-[#5a5a5a]">
+              <Link href="/politica-confidentialitate" className="hover:text-[#1a1a1a] transition-colors">Politica de Confidențialitate</Link>
+              <Link href="/termeni-si-conditii" className="hover:text-[#1a1a1a] transition-colors">Termeni și Condiții</Link>
+              <Link href="/politica-cookie" className="hover:text-[#1a1a1a] transition-colors">Politica Cookie</Link>
             </div>
           </div>
         </div>

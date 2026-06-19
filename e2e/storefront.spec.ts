@@ -8,7 +8,7 @@ test.describe('storefront smoke tests', () => {
     await expect(
       page
         .getByRole('navigation')
-        .getByRole('link', {name: 'Collections', exact: true})
+        .getByRole('link', {name: 'Categorii', exact: true})
     ).toBeVisible()
     await expect(page.getByRole('link', {name: 'Shopping Bag'})).toBeVisible()
   })
@@ -51,7 +51,7 @@ test.describe('storefront smoke tests', () => {
 
     await expect(
       page.getByRole('heading', {
-        name: 'Search Results for “snowboard”',
+        name: 'Rezultate căutare pentru “snowboard”',
         level: 1,
       })
     ).toBeVisible()
@@ -88,7 +88,7 @@ test.describe('storefront smoke tests', () => {
       page.getByRole('heading', {name: 'Lista ta de dorințe', level: 1})
     ).toBeVisible()
     await expect(page.getByText('Wishlist Snowboard')).toBeVisible()
-    await page.getByRole('button', {name: 'Remove from wishlist'}).click()
+    await page.getByRole('button', {name: 'Elimină de la favorite'}).click()
     await expect(
       page.getByText('Nu ai niciun produs în lista de dorințe.')
     ).toBeVisible()

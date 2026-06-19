@@ -43,11 +43,11 @@ type SortOption = {
 }
 
 const SORT_OPTIONS: SortOption[] = [
-    { label: 'Relevance', value: 'relevance' },
-    { label: 'Newest', value: 'newest' },
-    { label: 'Price: Low to High', value: 'price-asc' },
-    { label: 'Price: High to Low', value: 'price-desc' },
-    { label: 'Bestsellers', value: 'best-selling' },
+    { label: 'Relevanță', value: 'relevance' },
+    { label: 'Cele mai noi', value: 'newest' },
+    { label: 'Preț: crescător', value: 'price-asc' },
+    { label: 'Preț: descrescător', value: 'price-desc' },
+    { label: 'Cele mai vândute', value: 'best-selling' },
 ]
 
 type ActivePanel = 'sort' | 'availability' | 'price' | 'vendor' | 'type' | 'tags' | 'all' | null
@@ -171,7 +171,7 @@ export default function CollectionProductGrid({
 
     const isPriceFiltered = priceRange[0] > absoluteMin || priceRange[1] < absoluteMax
     const activeFilterCount = (inStockOnly ? 1 : 0) + (isPriceFiltered ? 1 : 0) + selectedVendors.size + selectedTypes.size + selectedTags.size
-    const currentSortLabel = SORT_OPTIONS.find(o => o.value === currentSort)?.label || 'Relevance'
+    const currentSortLabel = SORT_OPTIONS.find(o => o.value === currentSort)?.label || 'Relevanță'
 
     const clearAllFilters = () => {
         setInStockOnly(false)
@@ -225,10 +225,9 @@ export default function CollectionProductGrid({
             <div className="sticky top-[72px] z-30 bg-[var(--background)] border-b border-[var(--border)]" ref={panelRef}>
                 <div className="w-full px-4 md:px-8 lg:px-12">
                     <div className="flex items-center justify-between h-[52px]">
-
                         {/* Left: Results count */}
                         <div className="text-[11px] tracking-[0.1em] uppercase text-[var(--muted-foreground)] hidden md:block">
-                            <span className="text-[var(--foreground)] font-medium">{filteredProducts.length}</span> products
+                            <span className="text-[var(--foreground)] font-medium">{filteredProducts.length}</span> produse
                         </div>
 
                         {/* Right: Filter controls */}
@@ -246,7 +245,7 @@ export default function CollectionProductGrid({
                             >
                                 <ArrowUpDown size={12} strokeWidth={1.5} />
                                 <span className="hidden sm:inline">{currentSortLabel}</span>
-                                <span className="sm:hidden">Sort</span>
+                                <span className="sm:hidden">Sortare</span>
                             </button>
 
                             <div className="w-px h-4 bg-[var(--border)] mx-1 hidden sm:block shrink-0" />
@@ -263,7 +262,7 @@ export default function CollectionProductGrid({
                                             : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
                                 )}
                             >
-                                Availability
+                                Disponibilitate
                             </button>
 
                             {/* Price */}
@@ -278,7 +277,7 @@ export default function CollectionProductGrid({
                                             : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
                                 )}
                             >
-                                Price
+                                Preț
                             </button>
 
                             {/* Brand */}
@@ -314,7 +313,7 @@ export default function CollectionProductGrid({
                                                 : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
                                     )}
                                 >
-                                    Category
+                                    Categorie
                                     {selectedTypes.size > 0 && (
                                         <span className="ml-1 text-[10px]">({selectedTypes.size})</span>
                                     )}
@@ -331,10 +330,10 @@ export default function CollectionProductGrid({
                                             ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
                                             : activePanel === 'tags'
                                                 ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                                : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
+                                                : "bg-transparent text-[var(--muted-foreground)] border(--border) hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
                                     )}
                                 >
-                                    Tags
+                                    Etichete
                                     {selectedTags.size > 0 && (
                                         <span className="ml-1 text-[10px]">({selectedTags.size})</span>
                                     )}
@@ -354,7 +353,7 @@ export default function CollectionProductGrid({
                                 )}
                             >
                                 <SlidersHorizontal size={12} strokeWidth={1.5} />
-                                All Filters
+                                Toate filtrele
                                 {activeFilterCount > 0 && (
                                     <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-[var(--accent)] text-white text-[9px] font-medium px-1">
                                         {activeFilterCount}
@@ -407,7 +406,7 @@ export default function CollectionProductGrid({
                                     <div className="absolute left-[3px] top-[3px] w-[18px] h-[18px] bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5" />
                                 </div>
                                 <span className="text-sm font-light text-[var(--foreground)] tracking-wide">
-                                    In stock only
+                                    Doar în stoc
                                 </span>
                             </label>
                         </div>
@@ -420,11 +419,11 @@ export default function CollectionProductGrid({
                         <div className="w-full px-4 md:px-8 lg:px-12 py-6">
                             <div className="max-w-md">
                                 <div className="flex items-center justify-between mb-5">
-                                    <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Price Range</span>
+                                    <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Interval de Preț</span>
                                     {isPriceFiltered && (
                                         <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
                                             className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">
-                                            Reset
+                                            Resetează
                                         </button>
                                     )}
                                 </div>
@@ -464,10 +463,10 @@ export default function CollectionProductGrid({
                             <div className="flex items-center justify-between mb-4">
                                 <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Brand</span>
                                 {selectedVendors.size > 0 && (
-                                    <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                    <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                 )}
                             </div>
-                            {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, 'No brands available.')}
+                            {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, 'Nu există branduri disponibile.')}
                         </div>
                     </div>
                 )}
@@ -477,12 +476,12 @@ export default function CollectionProductGrid({
                     <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
                         <div className="w-full px-4 md:px-8 lg:px-12 py-5">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Category</span>
+                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Categorie</span>
                                 {selectedTypes.size > 0 && (
-                                    <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                    <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                 )}
                             </div>
-                            {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, 'No categories available.')}
+                            {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, 'Nu există categorii disponibile.')}
                         </div>
                     </div>
                 )}
@@ -492,12 +491,12 @@ export default function CollectionProductGrid({
                     <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
                         <div className="w-full px-4 md:px-8 lg:px-12 py-5">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Tags</span>
+                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Etichete</span>
                                 {selectedTags.size > 0 && (
-                                    <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                    <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                 )}
                             </div>
-                            {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, 'No tags available.')}
+                            {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, 'Nu există etichete disponibile.')}
                         </div>
                     </div>
                 )}
@@ -510,24 +509,24 @@ export default function CollectionProductGrid({
 
                                 {/* Availability */}
                                 <div>
-                                    <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)] mb-5">Availability</h3>
+                                    <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)] mb-5">Disponibilitate</h3>
                                     <label className="inline-flex items-center gap-3 cursor-pointer select-none group">
                                         <div className="relative">
                                             <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="sr-only peer" />
                                             <div className="w-11 h-6 bg-[var(--muted)] peer peer-checked:bg-[var(--foreground)] transition-colors duration-300" />
                                             <div className="absolute left-[3px] top-[3px] w-[18px] h-[18px] bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5" />
                                         </div>
-                                        <span className="text-sm font-light text-[var(--foreground)]">In stock only</span>
+                                        <span className="text-sm font-light text-[var(--foreground)]">Doar în stoc</span>
                                     </label>
                                 </div>
 
                                 {/* Price */}
                                 <div>
                                     <div className="flex items-center justify-between mb-5">
-                                        <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Price ({currencySymbol})</h3>
+                                        <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Preț ({currencySymbol})</h3>
                                         {isPriceFiltered && (
                                             <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
-                                                className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                                className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                         )}
                                     </div>
                                     <div className="px-1 mb-5">
@@ -562,7 +561,7 @@ export default function CollectionProductGrid({
                                         <div className="flex items-center justify-between mb-5">
                                             <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Brand</h3>
                                             {selectedVendors.size > 0 && (
-                                                <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                                <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                             )}
                                         </div>
                                         {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, '')}
@@ -573,9 +572,9 @@ export default function CollectionProductGrid({
                                 {showTypeFilter && (
                                     <div>
                                         <div className="flex items-center justify-between mb-5">
-                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Category</h3>
+                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Categorie</h3>
                                             {selectedTypes.size > 0 && (
-                                                <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                                <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                             )}
                                         </div>
                                         {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, '')}
@@ -586,9 +585,9 @@ export default function CollectionProductGrid({
                                 {showTagsFilter && (
                                     <div>
                                         <div className="flex items-center justify-between mb-5">
-                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Tags</h3>
+                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Etichete</h3>
                                             {selectedTags.size > 0 && (
-                                                <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Reset</button>
+                                                <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
                                             )}
                                         </div>
                                         {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, '')}
@@ -600,11 +599,11 @@ export default function CollectionProductGrid({
                             <div className="flex items-center justify-between mt-8 pt-6 border-t border-[var(--border)]">
                                 <button onClick={clearAllFilters}
                                     className="text-[11px] tracking-[0.1em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium transition-colors underline underline-offset-4">
-                                    Clear all
+                                    Șterge tot
                                 </button>
                                 <button onClick={() => setActivePanel(null)}
                                     className="h-10 px-10 bg-[var(--foreground)] text-[var(--primary-foreground)] text-[11px] font-medium tracking-[0.15em] uppercase hover:bg-black transition-colors">
-                                    Show {filteredProducts.length} products
+                                    Afișează {filteredProducts.length} produse
                                 </button>
                             </div>
                         </div>
@@ -625,7 +624,7 @@ export default function CollectionProductGrid({
                         {inStockOnly && (
                             <button onClick={() => setInStockOnly(false)}
                                 className="inline-flex items-center gap-1.5 h-7 px-3 bg-[var(--secondary)] text-[11px] font-light tracking-wide text-[var(--foreground)] transition-colors group">
-                                In stock <X size={10} className="text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]" />
+                                În stoc <X size={10} className="text-[var(--muted-foreground)] group-hover:text-[var(--foreground)]" />
                             </button>
                         )}
                         {isPriceFiltered && (
@@ -654,7 +653,7 @@ export default function CollectionProductGrid({
                         ))}
                         <button onClick={clearAllFilters}
                             className="text-[10px] tracking-wider uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium transition-colors underline underline-offset-4 ml-1">
-                            Clear all
+                            Șterge tot
                         </button>
                     </div>
                 </div>
@@ -671,17 +670,17 @@ export default function CollectionProductGrid({
 
                     {filteredProducts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-32">
-                            <p className="text-lg font-light text-[var(--foreground)] mb-1">No products found</p>
-                            <p className="text-sm font-light text-[var(--muted-foreground)] mb-8 tracking-wide">Try adjusting your filters</p>
+                            <p className="text-lg font-light text-[var(--foreground)] mb-1">Nu s-au găsit produse</p>
+                            <p className="text-sm font-light text-[var(--muted-foreground)] mb-8 tracking-wide">Încearcă să modifici filtrele</p>
                             <button onClick={clearAllFilters}
                                 className="h-10 px-8 bg-[var(--foreground)] text-[var(--primary-foreground)] text-[11px] font-medium tracking-[0.15em] uppercase hover:bg-black transition-colors">
-                                Reset Filters
+                                Resetează filtrele
                             </button>
                         </div>
                     ) : (
                         <>
                             <div className="md:hidden text-[11px] tracking-[0.1em] uppercase text-[var(--muted-foreground)] mb-6">
-                                <span className="text-[var(--foreground)] font-medium">{filteredProducts.length}</span> products
+                                <span className="text-[var(--foreground)] font-medium">{filteredProducts.length}</span> produse
                             </div>
                             <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
                                 {filteredProducts.map((p) => (

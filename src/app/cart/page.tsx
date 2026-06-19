@@ -8,10 +8,11 @@ import {
   Trash2,
   ArrowLeft,
   ShieldCheck,
-  ChevronDown,
   MapPin,
   Undo2, // Added for restore icon
   X, // Added for remove icon
+  Minus,
+  Plus,
 } from 'lucide-react'
 import { useCart } from '@/components/CartProvider'
 import ConfirmationModal from '@/components/ConfirmationModal'
@@ -58,11 +59,11 @@ export default function CartPage() {
     setIsClearCartModalOpen(false)
   }
 
-  if (isLoading || !cart) {
+  if (isLoading || loading) {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
           <p className="mt-4 text-gray-600">Se încarcă coșul...</p>
         </div>
       </div>
@@ -70,15 +71,15 @@ export default function CartPage() {
   }
 
   // Empty Cart State - Re-structured
-  if (cart.lines.edges.length === 0) {
+  if (!cart || cart.lines.edges.length === 0) {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Coșul tău</h1> {/* Header */}
 
         {/* Security Message */}
-        <div className="mb-8 p-4 bg-green-50 rounded-lg text-green-800 text-sm flex items-center justify-center gap-2">
-          <ShieldCheck size={20} />
-          <span>Protein Shop este securizat și detaliile tale personale sunt protejate.</span>
+        <div className="mb-8 p-4 bg-secondary border border-border rounded-lg text-foreground text-sm flex items-center justify-center gap-2">
+          <ShieldCheck size={20} className="text-accent" />
+          <span>Maison Outdoor este securizat și detaliile tale personale sunt protejate.</span>
         </div>
 
         {/* Recently Removed Products */}
@@ -97,7 +98,7 @@ export default function CartPage() {
                   setSelectedItemsToRestore([]);
                 }}
                 disabled={loading || selectedItemsToRestore.length === 0}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-base font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-base font-medium rounded-lg hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Undo2 size={16} />
                 Restaurare selectate ({selectedItemsToRestore.length})
@@ -110,7 +111,7 @@ export default function CartPage() {
                   setSelectedItemsToRestore([]);
                 }}
                 disabled={loading || recentlyRemovedItems.length === 0}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-base font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-base font-medium rounded-lg hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Undo2 size={16} />
                 Restaurare toate ({recentlyRemovedItems.length})
@@ -130,7 +131,7 @@ export default function CartPage() {
                           setSelectedItemsToRestore((prev) => prev.filter((id) => id !== item.id));
                         }
                       }}
-                      className="form-checkbox h-4 w-4 text-green-600 transition duration-150 ease-in-out"
+                      className="form-checkbox h-4 w-4 text-accent border-border transition duration-150 ease-in-out"
                     />
                     {item.image?.url ? (
                       <Image
@@ -182,7 +183,7 @@ export default function CartPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 font-medium py-3 px-6 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 bg-primary text-white hover:opacity-90 font-medium py-3 px-6 rounded-lg transition-colors"
           >
             <ArrowLeft size={20} />
             <span>Continuă cumpărăturile</span>
@@ -193,11 +194,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Coșul Tău (
             {cart.totalQuantity === 1
               ? 'un produs'
@@ -208,7 +209,7 @@ export default function CartPage() {
             <button
               onClick={() => setIsClearCartModalOpen(true)} // Open confirmation modal
               disabled={loading}
-              className="flex items-center gap-2 text-red-600 hover:bg-red-50 transition-colors font-medium py-2 px-4 rounded-lg border border-red-600 cursor-pointer"
+              className="flex items-center gap-2 text-red-600 hover:bg-red-50 transition-colors font-medium py-2 px-4 rounded-lg border border-red-600 cursor-pointer text-sm sm:text-base w-full sm:w-auto justify-center"
             >
               <Trash2 size={20} />
               Golește Coșul
@@ -220,54 +221,69 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items & Related Products */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg divide-y divide-gray-200 mb-8">
+          <div className="bg-white rounded-lg divide-y divide-gray-200 mb-8 border border-[var(--border)] shadow-sm">
             {cart.lines.edges.map(({node: line}) => (
-              <div key={line.id} className="p-6">
-                <div className="flex gap-6">
-                  {/* Product Image */}
-                  <div className="w-24 h-24 flex-shrink-0">
-                    <Link
-                      href={`/products/${line.merchandise.product.handle}`}
-                      className="block w-full h-full"
-                    >
-                      {(line.merchandise.image?.url || line.merchandise.product.featuredImage?.url) ? (
-                        <Image
-                          src={
-                            line.merchandise.image?.url ??
-                            line.merchandise.product.featuredImage?.url ??
-                            ''
-                          }
-                          alt={
-                            line.merchandise.image?.altText ||
-                            line.merchandise.product.featuredImage?.altText ||
-                            line.merchandise.title
-                          }
-                          width={100} // Added width
-                          height={100} // Added height
-                          priority={true} // Added priority
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                          No Image
-                        </div>
-                      )}
-                    </Link>
+              <div key={line.id} className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                  {/* Product Image & Mobile Info Header */}
+                  <div className="flex gap-4 sm:block">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-secondary rounded-md overflow-hidden">
+                      <Link
+                        href={`/products/${line.merchandise.product.handle}`}
+                        className="block w-full h-full"
+                      >
+                        {(line.merchandise.image?.url || line.merchandise.product.featuredImage?.url) ? (
+                          <Image
+                            src={
+                              line.merchandise.image?.url ??
+                              line.merchandise.product.featuredImage?.url ??
+                              ''
+                            }
+                            alt={
+                              line.merchandise.image?.altText ||
+                              line.merchandise.product.featuredImage?.altText ||
+                              line.merchandise.title
+                            }
+                            width={100}
+                            height={100}
+                            priority={true}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                            No Image
+                          </div>
+                        )}
+                      </Link>
+                    </div>
+
+                    {/* Mobile Title (shows next to image on small screens) */}
+                    <div className="flex-1 min-w-0 sm:hidden">
+                      <Link
+                        href={`/products/${line.merchandise.product.handle}`}
+                        className="text-base font-medium text-gray-900 hover:text-accent line-clamp-2"
+                      >
+                        {line.merchandise.product.title}
+                      </Link>
+                      <div className="text-sm font-medium text-gray-900 mt-1">
+                        {formatMoney(parseFloat(line.merchandise.price.amount) * line.quantity, currencyCode)}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Product Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      {/* Left: Title & SKU */}
-                      <div className="flex-grow pr-4">
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      {/* Left: Desktop Title & Options */}
+                      <div className="flex-grow pr-0 sm:pr-4">
                         <Link
                           href={`/products/${line.merchandise.product.handle}`}
-                          className="text-lg font-medium text-gray-900 hover:text-green-600"
+                          className="hidden sm:block text-lg font-medium text-gray-900 hover:text-accent"
                         >
                           {line.merchandise.product.title}
                         </Link>
                         {line.merchandise.sku && (
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-xs sm:text-sm text-gray-500 mt-1">
                             SKU: {line.merchandise.sku}
                           </p>
                         )}
@@ -279,10 +295,10 @@ export default function CartPage() {
                               (option) => option.value !== 'Default Title'
                             );
                             return filteredOptions.length > 0 ? (
-                              <div className="text-sm text-gray-600 mt-1 space-y-0.5">
+                              <div className="text-xs sm:text-sm text-gray-600 mt-1 space-y-0.5">
                                 {filteredOptions.map((option, optIndex) => (
                                   <p key={optIndex}>
-                                    {option.name}: {option.value}
+                                    <span className="text-gray-400">{option.name}:</span> {option.value}
                                   </p>
                                 ))}
                               </div>
@@ -291,44 +307,52 @@ export default function CartPage() {
                         )}
                       </div>
 
-                      {/* Middle: Quantity & Remove Action */}
-                      <div className="flex flex-col items-center mx-4">
-                        <div className="relative">
-                          <select
-                            value={line.quantity}
-                            onChange={(e) =>
-                              updateCartItemQuantity(
-                                line.id,
-                                parseInt(e.target.value, 10)
-                              )
-                            }
-                            disabled={loading}
-                            className="m-0 text-base appearance-none h-[42px] px-[15px] py-[11px] border border-gray-300 leading-4 bg-white rounded-[3px] pr-8"
-                          >
-                            {Array.from({ length: 10 }, (_, i) => i + 1).map(
-                              (q) => (
-                                <option key={q} value={q}>
-                                  {q}
-                                </option>
-                              )
-                            )}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                            <ChevronDown size={18} />
+                      {/* Right: Actions & Price */}
+                      <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t border-gray-100 sm:border-0">
+                        {/* Quantity & Delete */}
+                        <div className="flex items-center sm:flex-col sm:mx-4 gap-4 sm:gap-0">
+                          <div className="flex items-center border border-gray-200 rounded-lg bg-gray-50/50 p-0.5 shadow-sm">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (line.quantity > 1) {
+                                  updateCartItemQuantity(line.id, line.quantity - 1)
+                                } else {
+                                  removeFromCart(line.id)
+                                }
+                              }}
+                              disabled={loading}
+                              className="w-9 h-9 flex items-center justify-center rounded-md text-gray-500 hover:text-accent hover:bg-white active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus size={14} strokeWidth={2.5} />
+                            </button>
+                            <span className="w-10 text-center text-sm font-medium text-gray-800 select-none">
+                              {line.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateCartItemQuantity(line.id, line.quantity + 1)}
+                              disabled={loading}
+                              className="w-9 h-9 flex items-center justify-center rounded-md text-gray-500 hover:text-accent hover:bg-white active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus size={14} strokeWidth={2.5} />
+                            </button>
                           </div>
+                          <button
+                            onClick={() => removeFromCart(line.id)}
+                            disabled={loading}
+                            className="font-medium text-gray-400 hover:text-accent underline cursor-pointer text-sm sm:text-base sm:mt-2 transition-colors"
+                          >
+                            Șterge
+                          </button>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(line.id)}
-                          disabled={loading}
-                          className="font-bold text-blue-600 hover:text-blue-800 underline cursor-pointer text-base leading-6 mt-2"
-                        >
-                          Șterge
-                        </button>
-                      </div>
 
-                      {/* Right: Price */}
-                      <div className="text-lg font-medium text-gray-900 w-32 text-right pl-4">
-                        {formatMoney(parseFloat(line.merchandise.price.amount) * line.quantity, currencyCode)}
+                        {/* Desktop Price */}
+                        <div className="hidden sm:block text-lg font-medium text-gray-900 w-32 text-right pl-4">
+                          {formatMoney(parseFloat(line.merchandise.price.amount) * line.quantity, currencyCode)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -367,7 +391,7 @@ export default function CartPage() {
               <div className="mb-6">
                 {/* Address Selection Button */}
                 <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-800 text-sm font-semibold">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-secondary text-primary border border-border text-sm font-semibold">
                     1
                   </span>
                   Adresa de livrare
@@ -375,8 +399,8 @@ export default function CartPage() {
                 <button
                   onClick={() => setIsAddressModalOpen(true)}
                   className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${selectedDeliveryAddress
-                    ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                    ? 'border border-border text-foreground hover:bg-secondary'
+                    : 'bg-primary text-white hover:opacity-90'
                     }`}
                 >
                   <MapPin size={20} />
@@ -422,7 +446,7 @@ export default function CartPage() {
                     {/* Step 3: Delivery Method - Only shown if address is selected */}
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-800 text-sm font-semibold">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-secondary text-primary border border-border text-sm font-semibold">
                           2
                         </span>
                         Metoda de livrare
@@ -455,7 +479,7 @@ export default function CartPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Cost livrare</span>
                 {shippingCost === 0 ? (
-                  <span className="font-medium text-green-600">Gratuit</span>
+                  <span className="font-medium text-accent">Gratuit</span>
                 ) : (
                   <span className="font-medium">
                     {formatMoney(shippingCost, currencyCode)}
@@ -477,8 +501,8 @@ export default function CartPage() {
               <Link
                 href={cart.checkoutUrl}
                 className={`w-full py-3 px-4 rounded-lg text-center block font-medium transition-all ${user && !selectedDeliveryAddress
-                  ? 'border border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'bg-green-600 text-white hover:bg-green-700'
+                  ? 'border border-border text-muted-foreground bg-secondary cursor-not-allowed'
+                  : 'bg-accent text-white hover:opacity-90'
                   }`}
                 onClick={(e) => {
                   if (user && !selectedDeliveryAddress) {
@@ -491,7 +515,7 @@ export default function CartPage() {
               </Link>
               <Link
                 href="/"
-                className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors text-center block font-medium"
+                className="w-full border border-border text-foreground py-3 px-4 rounded-lg hover:bg-secondary transition-colors text-center block font-medium"
               >
                 Continuă cumpărăturile
               </Link>
@@ -499,7 +523,7 @@ export default function CartPage() {
 
             <div className="mt-6 pt-6 border-t">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <ShieldCheck className="text-green-600" size={20} />
+                <ShieldCheck className="text-accent" size={20} />
                 <span>Plată securizată prin Shopify</span>
               </div>
             </div>

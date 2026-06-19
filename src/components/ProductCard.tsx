@@ -65,7 +65,7 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
         {!isAvailable && (
           <div className="absolute top-4 left-4">
             <span className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] bg-white/90 px-3 py-1.5 backdrop-blur-sm">
-              Archived
+              Stoc Epuizat
             </span>
           </div>
         )}
@@ -75,14 +75,14 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
       <div className="pt-5 pb-2 flex flex-col items-start px-1">
         {/* Vendor/Brand */}
         {product.vendor && (
-          <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] mb-2">
+          <span className="text-xs font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] mb-2">
             {product.vendor}
           </span>
         )}
 
         {/* Title */}
         <Link href={`/products/${product.handle}`} className="block w-full">
-          <h2 className="text-[13px] font-normal leading-relaxed text-[#4a4a4a] tracking-wide truncate hover:text-black transition-colors">
+          <h2 className="text-sm md:text-base font-semibold leading-relaxed text-[#4a4a4a] tracking-wide truncate hover:text-black transition-colors">
             {product.title}
           </h2>
         </Link>
@@ -90,11 +90,11 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
         {/* Price */}
         <div className="mt-2.5">
           {price && product.priceRange?.minVariantPrice ? (
-            <span className="text-[13px] font-medium tracking-wide text-[#1a1a1a]">
+            <span className="text-sm md:text-base font-semibold tracking-wide text-[#1a1a1a]">
               {formatMoney(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
             </span>
           ) : (
-            <span className="text-[11px] uppercase tracking-[0.1em] text-[#8a8a8a]">By Inquiry</span>
+            <span className="text-xs md:text-sm uppercase tracking-[0.1em] text-[#8a8a8a]">La cerere</span>
           )}
         </div>
       </div>

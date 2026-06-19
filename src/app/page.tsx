@@ -65,56 +65,53 @@ export default async function Home() {
             <div className="lg:w-3/5 relative">
               <div className="aspect-[4/5] md:aspect-[16/10] lg:aspect-[4/5] relative overflow-hidden">
                 <Image
-                  src="/images/hero/editorial-women.png"
-                  alt="Maison Editorial"
+                  src="/images/hero/editorial-outdoor.png"
+                  alt="Maison Outdoor Technical Gear"
                   fill
                   className="object-cover"
                 />
               </div>
               {/* Floating Product Callout */}
-              <div className="absolute -bottom-10 -right-6 md:right-10 lg:-right-20 bg-[#F9F8F6] p-8 md:p-12 shadow-sm max-w-[280px] md:max-w-[320px]">
-                <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#8a8a8a] mb-4 block">
-                  New Arrival
+              <div className="relative mx-auto -mt-10 lg:mt-0 lg:absolute lg:mx-0 lg:-bottom-10 lg:-right-20 bg-[#F9F8F6] p-8 lg:p-12 shadow-sm max-w-[280px] lg:max-w-[320px] z-10 text-center lg:text-left flex flex-col items-center lg:items-start">
+                <span className="text-xs md:text-sm font-semibold tracking-[0.3em] uppercase text-[#8a8a8a] mb-4 block">
+                  DETALII TEHNICE
                 </span>
                 <h3 className="text-lg md:text-xl font-light tracking-[0.05em] uppercase text-[#1a1a1a] mb-6">
-                  Structured
+                  Creat pentru
                   <br />
-                  <span className="font-normal italic">Silhouettes</span>
+                  <span className="font-semibold">înălțimi</span>
                 </h3>
                 <Link
                   href="/collections"
-                  className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a] border-b border-[#1a1a1a] pb-1 hover:text-[#8a8a8a] hover:border-[#8a8a8a] transition-all duration-300"
+                  className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-[#1a1a1a] border-b border-[#1a1a1a] pb-1 hover:text-[#8a8a8a] hover:border-[#8a8a8a] transition-all duration-300 justify-center lg:justify-start"
                 >
-                  View Details
+                  Vezi detalii
                 </Link>
               </div>
             </div>
 
             {/* Right: Refined Narrative Block */}
-            <div className="lg:w-2/5 flex flex-col justify-center pt-12 lg:pt-0">
-              <div className="max-w-md">
+            <div className="lg:w-2/5 flex flex-col justify-center pt-12 lg:pt-0 items-center lg:items-start text-center lg:text-left">
+              <div className="max-w-xl lg:max-w-md">
                 <h2 className="text-3xl md:text-4xl font-extralight tracking-[0.1em] uppercase text-[#1a1a1a] leading-[1.3] mb-10">
-                  Minimalism
+                  Explorează
                   <br />
-                  <span className="font-light">Reimagined</span>
+                  <span className="font-light">Fără Limite</span>
                 </h2>
                 <div className="space-y-6">
-                  <p className="text-[15px] font-normal leading-relaxed text-[#4a4a4a]">
-                    This season, we explore the intersection of brutalist architecture and
-                    soft tailoring. A collection that speaks in whispers but is heard
-                    by everyone in the room.
+                  <p className="text-base md:text-lg font-medium leading-relaxed text-[#4a4a4a]">
+                    Selecționăm echipamente premium care stau între tine și elementele naturii. De la jachete rezistente la vânt pentru altitudini mari până la piese ultra-ușoare și pliabile, fiecare produs este ales pentru a-ți susține căutarea necunoscutului.
                   </p>
-                  <p className="text-[15px] font-normal leading-relaxed text-[#4a4a4a]">
-                    Crafted from ethically sourced wool and organic silks, each piece
-                    is a testament to our commitment to enduring luxury.
+                  <p className="text-base md:text-lg font-medium leading-relaxed text-[#4a4a4a]">
+                    Realizate din materiale durabile, rezistente și având un design ergonomic, produsele din portofoliul nostru îți oferă libertatea de a explora mai departe și de a te odihni mai profund.
                   </p>
                 </div>
                 <div className="pt-12">
                   <Link
                     href="/collections"
-                    className="group flex items-center gap-4 text-[11px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a]"
+                    className="group flex items-center gap-4 text-xs md:text-sm font-bold tracking-[0.25em] uppercase text-[#1a1a1a] justify-center lg:justify-start"
                   >
-                    Explore the Edit
+                    Explorează selecția
                     <div className="h-[1px] w-8 bg-[#1a1a1a] group-hover:w-16 transition-all duration-500" />
                   </Link>
                 </div>
@@ -131,18 +128,18 @@ export default async function Home() {
         <div className="px-6 md:px-10 lg:px-16 mb-10">
           <div className="flex items-end justify-between">
             <div>
-              <span className="text-[11px] font-medium tracking-[0.2em] uppercase text-[var(--accent)] mb-3 block">
-                What&apos;s Hot
+              <span className="text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-[var(--accent)] mb-3 block">
+                Ce se poartă
               </span>
               <h2 className="text-2xl md:text-3xl font-light tracking-[0.08em] uppercase text-[var(--foreground)]">
-                Trending Now
+                În tendințe acum
               </h2>
             </div>
             <Link
               href="/collections"
-              className="hidden md:inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors group"
+              className="hidden md:inline-flex items-center gap-2 text-xs md:text-sm font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors group"
             >
-              View All
+              Vezi toate
               <ArrowRight size={12} strokeWidth={1.5} className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
@@ -153,38 +150,37 @@ export default async function Home() {
       {/* ════════════════════════════════════════════════════════════
           § 4 — EDITORIAL CAMPAIGN
           ════════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-24 md:py-32 lg:py-48 px-6 md:px-10 lg:px-24 border-t border-[#f0efed]">
+      <section className="bg-white py-24 md:py-32 lg:py-48 px-6 md:px-10 lg:px-12 xl:px-24 border-t border-[#f0efed]">
         <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-end">
-            <div className="lg:col-span-8 relative overflow-hidden group">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 xl:gap-24 items-end">
+            <div className="lg:col-span-7 xl:col-span-8 relative overflow-hidden group">
               <div className="aspect-[16/10] relative overflow-hidden">
                 <Image
-                  src="/images/hero/campaign-winter.jpg"
-                  alt="Maison Campaign"
+                  src="/images/hero/campaign-outdoor.jpg"
+                  alt="Maison Outdoor Campaign - Friends hiking on trail at sunset"
                   fill
                   className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
                 />
               </div>
             </div>
-            <div className="lg:col-span-4 pb-0 lg:pb-12">
-              <div className="max-w-xs">
-                <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-[#8a8a8a] mb-6 block">
-                  Edition 01
+            <div className="lg:col-span-5 xl:col-span-4 pb-0 lg:pb-12 flex flex-col items-center lg:items-start text-center lg:text-left w-full">
+              <div className="max-w-xl lg:max-w-xs">
+                <span className="text-xs md:text-sm font-semibold tracking-[0.4em] uppercase text-[#8a8a8a] mb-6 block">
+                  SERIA EXPEDIȚII
                 </span>
                 <h2 className="text-3xl md:text-4xl font-extralight tracking-[0.1em] uppercase text-[#1a1a1a] mb-8 leading-tight">
-                  Winter
+                  Evadarea
                   <br />
-                  <span className="font-light italic">Solstice</span>
+                  <span className="font-semibold">Alpină</span>
                 </h2>
-                <p className="text-[14px] font-normal leading-relaxed text-[#4a4a4a] mb-10">
-                  A visual exploration of silence and structure. Captured in the high
-                  altitudes of the north, our first limited edition capsule.
+                <p className="text-base md:text-lg font-medium leading-relaxed text-[#4a4a4a] mb-10">
+                  O explorare vizuală a sălbăticiei și a camaraderiei. Surprins la altitudinile mari ale vârfurilor abrupte, echipamentul tehnic pe care îl oferim este conceput pentru a face locurile izolate să se simtă ca acasă.
                 </p>
                 <Link
                   href="/collections"
-                  className="group flex items-center gap-4 text-[11px] font-semibold tracking-[0.3em] uppercase text-[#1a1a1a]"
+                  className="group flex items-center gap-4 text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-[#1a1a1a] justify-center lg:justify-start"
                 >
-                  Explore Sequence
+                  Explorează campania
                   <div className="h-[1px] w-8 bg-[#1a1a1a] group-hover:w-16 transition-all duration-700" />
                 </Link>
               </div>
@@ -196,21 +192,35 @@ export default async function Home() {
       {/* ════════════════════════════════════════════════════════════
           § 5 — BRAND MANIFESTO
           ════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#F9F8F6] py-32 md:py-48 lg:py-64">
-        <div className="max-w-3xl mx-auto text-center px-6">
-          <div className="mb-12">
-            <h2 className="text-xl md:text-2xl font-light tracking-[0.4em] uppercase text-[#1a1a1a]">
-              Maison
-            </h2>
+      <section className="relative overflow-hidden bg-[#151515] text-white py-16 md:py-24 lg:py-28">
+        {/* Background Image with dark overlay (Hero Style) */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <Image
+            src="/images/hero/manifesto-bg.png"
+            alt="Maison Outdoor brand manifesto background"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            quality={90}
+          />
+          {/* Dark Overlay similar to Hero Section */}
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-6 md:px-10">
+          <div className="mb-8">
+            <span className="text-xs md:text-sm font-semibold tracking-[0.4em] uppercase text-white/80 mb-4 block [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)]">
+              Maison Outdoor
+            </span>
           </div>
-          <p className="text-lg md:text-2xl font-light leading-relaxed text-[#4a4a4a] mb-12 italic">
-            &quot;Luxury is not about abundance, but the presence of meaning
-            in every thread, and the silence of quality in every room.&quot;
-          </p>
-          <div className="w-12 h-[1px] bg-[#1a1a1a] mx-auto mb-12" />
-          <p className="text-[13px] font-normal leading-relaxed text-[#8a8a8a] tracking-wide uppercase max-w-xl mx-auto">
-            Hand-curated in London. Sustained by tradition.
-            Defined by the future of craftsmanship.
+          <h3 className="text-xl md:text-3xl font-light leading-relaxed text-white tracking-wide mb-10 max-w-3xl mx-auto [text-shadow:_0_2px_8px_rgba(0,0,0,0.4)]">
+            &quot;Adevăratul lux nu constă în exces, ci în libertatea de a explora, în susurul liniștit al vântului de munte și în încrederea deplină în echipamentul pe care îl porți.&quot;
+          </h3>
+          <div className="w-16 h-[1px] bg-white/30 mx-auto mb-10" />
+          <p className="text-xs md:text-sm font-normal leading-loose md:leading-relaxed text-white/90 tracking-[0.14em] md:tracking-[0.18em] uppercase max-w-2xl mx-auto [text-shadow:_0_1px_4px_rgba(0,0,0,0.3)]">
+            Echipamente premium de la branduri de top. Testate în munți.
+            <br className="hidden sm:inline" />
+             Selectate pentru cei care caută poteca deschisă.
           </p>
         </div>
       </section>

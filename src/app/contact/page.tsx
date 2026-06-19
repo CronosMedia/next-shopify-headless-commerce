@@ -43,7 +43,7 @@ function ContactForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
             {status === 'success' && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-none relative">
+                <div className="bg-secondary border border-border text-primary px-4 py-3 rounded-none relative">
                     {message}
                 </div>
             )}
@@ -120,12 +120,12 @@ export default function ContactPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
-                                        <Mail className="w-6 h-6" />
+                                    <div className="p-3 bg-secondary text-primary rounded-lg border border-border">
+                                        <Mail className="w-6 h-6 text-accent" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-foreground">Email</p>
-                                        <a href="mailto:support@nextcommerce.com" className="text-muted-foreground hover:text-primary transition-colors">
+                                        <a href="mailto:support@nextcommerce.com" className="text-muted-foreground hover:text-accent transition-colors">
                                             support@nextcommerce.com
                                         </a>
                                         <p className="text-sm text-gray-500 mt-1">Răspundem în maxim 24h</p>
@@ -133,12 +133,12 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-green-50 text-green-600 rounded-lg">
-                                        <Phone className="w-6 h-6" />
+                                    <div className="p-3 bg-secondary text-primary rounded-lg border border-border">
+                                        <Phone className="w-6 h-6 text-accent" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-foreground">Telefon</p>
-                                        <a href="tel:+40700000000" className="text-muted-foreground hover:text-primary transition-colors">
+                                        <a href="tel:+40700000000" className="text-muted-foreground hover:text-accent transition-colors">
                                             +40 700 000 000
                                         </a>
                                         <p className="text-sm text-gray-500 mt-1">Luni - Vineri: 09:00 - 18:00</p>
@@ -148,8 +148,8 @@ export default function ContactPage() {
 
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-purple-50 text-purple-600 rounded-lg">
-                                        <MapPin className="w-6 h-6" />
+                                    <div className="p-3 bg-secondary text-primary rounded-lg border border-border">
+                                        <MapPin className="w-6 h-6 text-accent" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-foreground">Sediu Central</p>

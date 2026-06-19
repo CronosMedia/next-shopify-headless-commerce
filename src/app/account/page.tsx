@@ -214,7 +214,7 @@ function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: str
               }`}
           >
             <div
-              className={`absolute top-0 h-full w-2 bg-gray-700 -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+              className={`absolute top-0 h-full w-2 bg-accent -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
                 }`}
             ></div>
             <item.icon size={20} className="ml-4" />
@@ -334,7 +334,7 @@ function SettingsTab({ user }: { user: User }) {
         </div>
       )}
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-4">
+        <div className="bg-secondary border border-border text-primary px-4 py-3 rounded-lg relative mb-4">
           {success}
         </div>
       )}
@@ -502,10 +502,10 @@ function ProfileTab({ user }: { user: User }) {
             >
               Anulează
             </button>
-            <button
+             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:opacity-90 text-lg cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? 'Se salvează...' : 'Salvează'}
             </button>
@@ -545,7 +545,7 @@ function ProfileTab({ user }: { user: User }) {
               secțiunea{' '}
               <Link
                 href="/account?tab=settings"
-                className="font-bold text-[var(--link-green)] text-base leading-6 underline hover:text-[var(--link-green-hover)]"
+                className="font-bold text-accent text-base leading-6 underline hover:opacity-90"
               >
                 Securitate și setări
               </Link>
@@ -642,12 +642,12 @@ function OrdersTab() {
                         <div className="mt-2 text-sm text-gray-600">
                           <div className="mb-1">
                             {order.fulfillmentStatus === 'FULFILLED' && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-primary border border-border">
                                 Expediat
                               </span>
                             )}
                             {order.fulfillmentStatus === 'IN_PROGRESS' && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-accent border border-border">
                                 În curs de livrare
                               </span>
                             )}
@@ -660,7 +660,7 @@ function OrdersTab() {
                                   href={fulfillment.trackingInfo[0].url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="hover:underline text-blue-600"
+                                  className="hover:underline text-accent"
                                 >
                                   {fulfillment.trackingInfo[0].number}
                                 </a>
@@ -837,7 +837,7 @@ function AddressesTab({ user }: { user: User }) {
                     {user.defaultAddress?.id === address.id ? (
                       <button
                         disabled
-                        className="flex items-center gap-2 bg-white text-green-600 px-6 py-3 rounded-none border-2 border-green-600 text-lg"
+                        className="flex items-center gap-2 bg-white text-accent px-6 py-3 rounded-none border-2 border-accent text-lg"
                       >
                         <Check size={20} />
                         Adresă preferată
@@ -1138,7 +1138,7 @@ function AddressForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:opacity-90 text-lg cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
           </button>

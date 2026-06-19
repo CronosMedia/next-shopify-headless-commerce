@@ -759,6 +759,24 @@ const productCatalog = [
   }
 ];
 
+function sanitizeHandle(title) {
+  return title
+    .toLowerCase()
+    .replace(/ș/g, 's')
+    .replace(/ț/g, 't')
+    .replace(/ă/g, 'a')
+    .replace(/â/g, 'a')
+    .replace(/î/g, 'i')
+    .replace(/ț/g, 't')
+    .replace(/ș/g, 's')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
 // Helper to create a product and its variants
 async function createProductWithVariants(p) {
   console.log(`Creating product: ${p.title}...`);
@@ -790,6 +808,7 @@ async function createProductWithVariants(p) {
 
   const productInput = {
     title: p.title,
+    handle: sanitizeHandle(p.title),
     descriptionHtml: p.descriptionHtml,
     productType: p.productType,
     vendor: p.vendor,

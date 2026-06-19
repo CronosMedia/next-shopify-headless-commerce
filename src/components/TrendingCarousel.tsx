@@ -34,7 +34,8 @@ export default function TrendingCarousel({ products }: { products: Product[] }) 
         if (!scrollRef.current) return
         const container = scrollRef.current
         const cardWidth = container.querySelector('div')?.offsetWidth || 300
-        const scrollAmount = cardWidth + 24 // card width + gap
+        const gap = window.innerWidth >= 768 ? 24 : 16 // md:gap-6 is 24px, gap-4 is 16px
+        const scrollAmount = cardWidth + gap
         container.scrollBy({
             left: direction === 'left' ? -scrollAmount : scrollAmount,
             behavior: 'smooth',
@@ -43,32 +44,32 @@ export default function TrendingCarousel({ products }: { products: Product[] }) 
 
     return (
         <div className="relative group/carousel">
-            {/* Minimal Navigation Arrows */}
+            {/* Minimal Navigation Arrows - Styled and visible on desktop */}
             <button
                 onClick={() => scroll('left')}
-                className="absolute left-6 top-[40%] -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center text-[#1a1a1a] opacity-0 group-hover/carousel:opacity-100 transition-all duration-500 hover:text-[#8a8a8a]"
+                className="absolute left-4 top-[40%] -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-white/95 border border-[var(--border)] rounded-full text-[#1a1a1a] shadow-sm hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer hidden md:flex"
                 aria-label="Scroll left"
             >
-                <ChevronLeft size={24} strokeWidth={1} />
+                <ChevronLeft size={20} strokeWidth={1.5} />
             </button>
             <button
                 onClick={() => scroll('right')}
-                className="absolute right-6 top-[40%] -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center text-[#1a1a1a] opacity-0 group-hover/carousel:opacity-100 transition-all duration-500 hover:text-[#8a8a8a]"
+                className="absolute right-4 top-[40%] -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-white/95 border border-[var(--border)] rounded-full text-[#1a1a1a] shadow-sm hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer hidden md:flex"
                 aria-label="Scroll right"
             >
-                <ChevronRight size={24} strokeWidth={1} />
+                <ChevronRight size={20} strokeWidth={1.5} />
             </button>
 
             {/* Scrollable Container */}
             <div
                 ref={scrollRef}
-                className="flex gap-12 overflow-x-auto px-6 md:px-10 lg:px-16 pb-12 snap-x snap-mandatory scrollbar-hide"
+                className="flex gap-4 md:gap-6 overflow-x-auto px-5 md:px-10 pb-12 snap-x snap-mandatory scroll-px-5 md:scroll-px-10 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[360px] snap-start"
+                        className="flex-shrink-0 w-[75vw] max-w-[280px] md:w-[300px] lg:w-[360px] snap-center md:snap-start"
                     >
                         <ProductCard product={product} />
                     </div>

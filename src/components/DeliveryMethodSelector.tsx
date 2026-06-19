@@ -21,7 +21,7 @@ export default function DeliveryMethodSelector({
           onClick={() => onSelect(option.handle)}
           className={`p-4 border rounded-lg transition-colors ${
             selectedOptionHandle === option.handle
-              ? 'border-green-600 bg-green-50 cursor-pointer'
+              ? 'border-accent bg-secondary cursor-pointer'
               : 'border-gray-200 hover:border-gray-300 cursor-pointer'
           }`}
         >
@@ -29,7 +29,7 @@ export default function DeliveryMethodSelector({
             <div
               className={`p-2 rounded-full ${
                 selectedOptionHandle === option.handle
-                  ? 'bg-green-100'
+                  ? 'bg-accent/10'
                   : 'bg-gray-100'
               }`}
             >
@@ -37,7 +37,7 @@ export default function DeliveryMethodSelector({
                 size={24}
                 className={
                   selectedOptionHandle === option.handle
-                    ? 'text-green-600'
+                    ? 'text-accent'
                     : 'text-gray-600'
                 }
               />
@@ -47,7 +47,7 @@ export default function DeliveryMethodSelector({
                 <h3 className="font-medium text-gray-900">{option.title}</h3>
                 <span className="font-medium">
                   {parseFloat(option.estimatedCost.amount) === 0 ? (
-                    <span className="text-green-600">Gratuit</span>
+                    <span className="text-accent">Gratuit</span>
                   ) : (
                     `${option.estimatedCost.amount} ${option.estimatedCost.currencyCode}`
                   )}

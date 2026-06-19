@@ -192,15 +192,15 @@ export default function AddressModal({
             </div>
           )}
           {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-600" />
+            <div className="mb-4 p-3 bg-secondary border border-border text-primary text-sm rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
               {success}
             </div>
           )}
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
-              <div className="w-8 h-8 border-4 border-green-600/20 border-t-green-600 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
               <p className="text-gray-500 font-medium font-serif">Se încarcă adresele...</p>
             </div>
           ) : isAdding ? (
@@ -213,7 +213,7 @@ export default function AddressModal({
                     required
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                     placeholder="ex: Mihai"
                   />
                 </div>
@@ -224,7 +224,7 @@ export default function AddressModal({
                     required
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                     placeholder="ex: Popescu"
                   />
                 </div>
@@ -236,7 +236,7 @@ export default function AddressModal({
                   required
                   value={formData.address1}
                   onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                   placeholder="ex: Str. Exemplului nr. 1"
                 />
               </div>
@@ -246,7 +246,7 @@ export default function AddressModal({
                   type="text"
                   value={formData.address2 || ''}
                   onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                   placeholder="ex: Bl. A2, Sc. 1, Ap. 12"
                 />
               </div>
@@ -268,7 +268,7 @@ export default function AddressModal({
                         province: isBuch ? 'Sector 1' : (formData.province.startsWith('Sector') ? 'Alba' : formData.province),
                       })
                     }}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                     placeholder="ex: București"
                   />
                 </div>
@@ -280,7 +280,7 @@ export default function AddressModal({
                     required
                     value={formData.province}
                     onChange={(e) => setFormData({ ...formData, province: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none bg-white font-medium"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none bg-white font-medium"
                   >
                     {isBucuresti
                       ? bucharestSectors.map((sector) => (
@@ -306,7 +306,7 @@ export default function AddressModal({
                     required
                     value={formData.zip}
                     onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                     placeholder="ex: 123456"
                   />
                 </div>
@@ -317,7 +317,7 @@ export default function AddressModal({
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
                     placeholder="ex: 0721 123 456"
                   />
                 </div>
@@ -329,7 +329,7 @@ export default function AddressModal({
                 <div
                   key={address.id}
                   className={`p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.id
-                      ? 'border-green-600 bg-green-50/50'
+                      ? 'border-accent bg-secondary'
                       : 'border-gray-100 hover:border-gray-300'
                     }`}
                   onClick={() => setSelectedAddress(address.id)}
@@ -351,7 +351,7 @@ export default function AddressModal({
                       )}
                     </div>
                     {selectedAddress === address.id && (
-                      <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center text-white">
+                      <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-white">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
@@ -365,7 +365,7 @@ export default function AddressModal({
                   setError(null)
                   setIsAdding(true)
                 }}
-                className="w-full flex items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-green-600 hover:text-green-600 hover:bg-green-50/30 transition-all group"
+                className="w-full flex items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-accent hover:text-accent hover:bg-secondary/30 transition-all group"
               >
                 <Plus size={20} className="group-hover:scale-110 transition-transform" />
                 <span className="font-semibold">Adaugă adresă nouă</span>
@@ -402,7 +402,7 @@ export default function AddressModal({
                 type="submit"
                 form="add-address-form"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center gap-2"
+                className="px-5 py-2.5 rounded-lg bg-primary text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -424,7 +424,7 @@ export default function AddressModal({
                   }
                 }}
                 disabled={!selectedAddress}
-                className="px-5 py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold"
+                className="px-5 py-2.5 rounded-lg bg-accent text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold"
               >
                 {mode === 'shipping' ? 'Confirmă Adresa' : 'Setează ca implicită'}
               </button>

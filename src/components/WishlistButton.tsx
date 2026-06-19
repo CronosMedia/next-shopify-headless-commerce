@@ -31,7 +31,7 @@ export default function WishlistButton({
                     isSaved ? 'text-red-500 hover:bg-red-50' : 'text-gray-600',
                     className
                 )}
-                aria-label={isSaved ? 'Remove from wishlist' : 'Add to wishlist'}
+                aria-label={isSaved ? 'Elimină de la favorite' : 'Adaugă la favorite'}
             >
                 <Heart size={20} fill={isSaved ? 'currentColor' : 'none'} />
             </button>

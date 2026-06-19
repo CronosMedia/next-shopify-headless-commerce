@@ -168,7 +168,7 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                          No Image
+                          Fără imagine
                         </div>
                       )}
                     </div>

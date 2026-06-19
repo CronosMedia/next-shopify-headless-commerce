@@ -2,18 +2,18 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Luxury London palette */
-  --background: #faf9f7;
-  --foreground: #1a1a1a;
-  --primary: #1a1a1a;
-  --primary-foreground: #faf9f7;
-  --accent: #c9a96e;
-  --accent-light: #d4b97a;
-  --secondary: #f5f4f1;
-  --muted: #e8e6e1;
-  --muted-foreground: #8a8780;
+  /* Premium Technical Outdoor palette (Cotswold inspired) */
+  --background: #fbfbfa;
+  --foreground: #0f231a; /* Deep forest green-black */
+  --primary: #0f231a;
+  --primary-foreground: #fbfbfa;
+  --accent: #d13b2e; /* Active Technical Red */
+  --accent-light: #e05448;
+  --secondary: #f2f4f2; /* Soft grey-green stone */
+  --muted: #e2e7e2;
+  --muted-foreground: #637269;
   --card: #ffffff;
-  --border: #e2e0db;
+  --border: #d3ded3;
 }
 
 @theme inline {
@@ -25,28 +25,33 @@
   --color-secondary: var(--secondary);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --font-barlow: var(--font-barlow);
+  --font-sans: var(--font-barlow), var(--font-inter), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), var(--font-barlow), sans-serif;
+  font-family: var(--font-barlow), var(--font-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sticky header transitions */
+/* Sticky header transitions — only GPU-promote on desktop to avoid iOS touch bugs */
 header {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
+  transition: transform 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body.hide-navbar header {
-  transform: translateY(-100%);
+@media (min-width: 768px) {
+  header {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
+    will-change: transform;
+  }
 }
+
+
 
 /* Luxury selection color */
 ::selection {

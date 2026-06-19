@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { Geist_Mono } from 'next/font/google'
 import { Inter, Cormorant_Garamond, Barlow } from 'next/font/google'
 import './globals.css'
@@ -8,17 +7,17 @@ import { AuthProvider } from '@/components/AuthProvider'
 import { WishlistProvider } from '@/components/WishlistProvider'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import QuickViewModal from '@/components/QuickViewModal'
-import SmoothScroll from '@/components/SmoothScroll'
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500', '600'],
   variable: '--font-inter',
 })
 
 const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-cormorant',
   style: ['normal', 'italic'],
@@ -26,14 +25,23 @@ const cormorant = Cormorant_Garamond({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
 })
 
 const barlow = Barlow({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600', '700'], // Common weights for body text
   variable: '--font-barlow',
 })
+import type { Metadata, Viewport } from 'next'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   title: {
@@ -50,24 +58,24 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ro" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${cormorant.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
+        suppressHydrationWarning
       >
-        <SmoothScroll>
-          <AuthProvider>
-            <UIProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <Header />
-                  <main className="min-h-screen pt-24">{children}</main>
-                  <QuickViewModal />
-                  <Footer />
-                </WishlistProvider>
-              </CartProvider>
-            </UIProvider>
-          </AuthProvider>
-        </SmoothScroll>
+        <AuthProvider>
+          <UIProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <Header />
+                <main className="min-h-screen pb-20 lg:pb-0">{children}</main>
+                <QuickViewModal />
+                <Footer />
+                <MobileBottomNav />
+              </WishlistProvider>
+            </CartProvider>
+          </UIProvider>
+        </AuthProvider>
       </body>
     </html>
   )

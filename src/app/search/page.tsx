@@ -67,7 +67,7 @@ function SearchContent() {
     return (
       <div className="max-w-6xl mx-auto p-6 text-center">
         <p className="text-muted-foreground">
-          Searching for &ldquo;{searchQuery}&rdquo;...
+          Se caută &ldquo;{searchQuery}&rdquo;...
         </p>
       </div>
     )
@@ -86,7 +86,7 @@ function SearchContent() {
   if (!searchQuery) {
     return (
       <div className="max-w-6xl mx-auto p-6 text-center">
-        <p className="text-muted-foreground">Please enter a search query.</p>
+        <p className="text-muted-foreground">Vă rugăm să introduceți un termen de căutare.</p>
       </div>
     )
   }
@@ -94,11 +94,11 @@ function SearchContent() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6 text-foreground">
-        Search Results for &ldquo;{searchQuery}&rdquo;
+        Rezultate căutare pentru &ldquo;{searchQuery}&rdquo;
       </h1>
       {products.length === 0 ? (
         <p className="text-muted-foreground">
-          No products found matching your query.
+          Nu s-au găsit produse care să se potrivească cu termenul căutat.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -116,7 +116,7 @@ export default function SearchPage() {
     <Suspense
       fallback={
         <div className="max-w-6xl mx-auto p-6 text-center">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Se încarcă...</p>
         </div>
       }
     >

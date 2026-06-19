@@ -12,15 +12,15 @@ export default function UtilityBar() {
           className="flex items-center gap-2 text-[11px] tracking-[0.12em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
           <Truck size={14} strokeWidth={1.5} />
-          <span>Free Shipping</span>
+          <span>Livrare Gratuită</span>
         </Link>
         <div className="h-3 border-l border-[var(--muted)]" />
         <Link
-          href="/plati-sigure"
+          href="/help-center#payments"
           className="flex items-center gap-2 text-[11px] tracking-[0.12em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
           <Lock size={14} strokeWidth={1.5} />
-          <span>Secure Payment</span>
+          <span>Plată Securizată</span>
         </Link>
         <div className="h-3 border-l border-[var(--muted)]" />
         <Link
@@ -28,7 +28,7 @@ export default function UtilityBar() {
           className="flex items-center gap-2 text-[11px] tracking-[0.12em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
         >
           <RefreshCw size={14} strokeWidth={1.5} />
-          <span>Easy Returns</span>
+          <span>Retur Simplu</span>
         </Link>
       </div>
     </div>

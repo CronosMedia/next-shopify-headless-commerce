@@ -69,7 +69,7 @@ export default function HelpCenterPage() {
                                         onClick={() => setOpenIndex(openIndex === index ? null : index)}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className="p-2 bg-primary/5 text-primary">
+                                            <div className="p-2 bg-secondary text-accent rounded-lg border border-border">
                                                 {faq.icon}
                                             </div>
                                             <span className="font-medium text-lg text-foreground">{faq.question}</span>
@@ -102,10 +102,10 @@ export default function HelpCenterPage() {
                             <div className="grid grid-cols-1 gap-4">
                                 <a
                                     href="mailto:support@nextcommerce.com"
-                                    className="flex items-center gap-4 p-4 border border-gray-300 hover:border-primary transition-colors group"
+                                    className="flex items-center gap-4 p-4 border border-gray-300 hover:border-accent transition-colors group"
                                 >
-                                    <div className="p-3 bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                        <Mail className="w-6 h-6" />
+                                    <div className="p-3 bg-secondary text-primary rounded-lg border border-border group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <Mail className="w-6 h-6 text-accent group-hover:text-white" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-foreground">Trimite-ne un e-mail</p>
@@ -114,10 +114,10 @@ export default function HelpCenterPage() {
                                 </a>
                                 <a
                                     href="tel:+40700000000"
-                                    className="flex items-center gap-4 p-4 border border-gray-300 hover:border-primary transition-colors group"
+                                    className="flex items-center gap-4 p-4 border border-gray-300 hover:border-accent transition-colors group"
                                 >
-                                    <div className="p-3 bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
-                                        <Phone className="w-6 h-6" />
+                                    <div className="p-3 bg-secondary text-primary rounded-lg border border-border group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <Phone className="w-6 h-6 text-accent group-hover:text-white" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-foreground">Sună-ne</p>

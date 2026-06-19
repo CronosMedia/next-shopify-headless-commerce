@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import {ChevronDown, ChevronRight} from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
+import { fetchCollectionsCached } from '@/lib/collections-cache'
 
 type Collection = {
   id: string
@@ -13,9 +14,11 @@ type Collection = {
 export default function MegaMenu({
   title = 'Categorii',
   align = 'left',
+  className,
 }: {
   title?: string
   align?: 'left' | 'right' | 'center'
+  className?: string
 }) {
   const [collections, setCollections] = useState<Collection[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,21 +27,9 @@ export default function MegaMenu({
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await fetch('/api/collections')
-        if (response.ok) {
-          const data = await response.json()
-          setCollections(data.collections || [])
-        }
-      } catch {
-        setCollections([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchCollections()
+    fetchCollectionsCached()
+      .then(setCollections)
+      .finally(() => setLoading(false))
   }, [])
 
   const handleMouseEnter = () => {
@@ -51,7 +42,7 @@ export default function MegaMenu({
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
-    }, 150) // Delay de 150ms pentru a permite mouse-ului să se miște
+    }, 150)
   }
 
   const handleMenuMouseEnter = () => {
@@ -83,7 +74,7 @@ export default function MegaMenu({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="flex items-center gap-1 font-barlow text-base font-normal text-gray-700 leading-normal transition-colors cursor-pointer hover:text-black">
+      <button className={className || "flex items-center gap-1 font-barlow text-base font-normal text-[var(--muted-foreground)] leading-normal transition-colors cursor-pointer hover:text-[var(--foreground)]"}>
         {title}
         <ChevronDown
           size={16}
@@ -96,7 +87,7 @@ export default function MegaMenu({
       {isOpen && (
         <div
           ref={menuRef}
-          className={`absolute mt-2 bg-gray-100 shadow-xl mx-2  z-50 animate-in fade-in-0 zoom-in-95 duration-200 w-[400px] ${
+          className={`absolute mt-2 bg-[var(--card)] shadow-xl z-50 animate-in fade-in-0 zoom-in-95 duration-200 w-[400px] border border-[var(--border)] ${
             align === 'left'
               ? 'left-0'
               : align === 'right'
@@ -112,19 +103,19 @@ export default function MegaMenu({
                 <Link
                   key={c.id}
                   href={`/collections/${c.handle}`}
-                  className="flex items-center justify-between py-4 border-b border-gray-300 last:border-b-0 transition-colors group/link hover:bg-gray-200 px-4"
+                  className="flex items-center justify-between py-4 border-b border-[var(--border)] last:border-b-0 transition-colors group/link hover:bg-[var(--secondary)] px-4"
                 >
                   <div className="flex-1 min-w-0">
-                    <span className="font-barlow text-base font-normal text-gray-700 leading-normal block">
+                    <span className="font-barlow text-base font-normal text-[var(--foreground)] leading-normal block">
                       {c.title}
                     </span>
                     {c.description && (
-                      <span className="text-xs text-gray-500 line-clamp-2 mt-1 block">
+                      <span className="text-xs text-[var(--muted-foreground)] line-clamp-2 mt-1 block">
                         {c.description}
                       </span>
                     )}
                   </div>
-                  <ChevronRight size={20} className="text-gray-500" />
+                  <ChevronRight size={20} className="text-[var(--muted-foreground)]" />
                 </Link>
               )
             })}
