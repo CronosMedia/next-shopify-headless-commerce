@@ -6,6 +6,7 @@ type Product = {
   id: string
   handle: string
   title: string
+  vendor?: string
   description?: string
   featuredImage?: {
     url: string
@@ -52,30 +53,43 @@ export default function NewArrivalsPage() {
   }, [])
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8 text-foreground">Noutăți</h1>
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-12 pb-12 md:pt-24 md:pb-24">
+      {/* Elegant Header */}
+      <div className="text-center mb-16 md:mb-24">
+        <span className="text-xs md:text-sm font-medium tracking-[0.4em] uppercase text-[#8a8a8a] mb-4 block">
+          Maison Outdoor
+        </span>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-[0.15em] uppercase text-[#1a1a1a] leading-tight">
+          Noutăți
+        </h1>
+        <div className="h-[1px] w-12 bg-[#1a1a1a]/20 mx-auto mt-6" />
+      </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="border rounded-lg p-4 animate-pulse">
-              <div className="bg-gray-200 h-48 w-full rounded-lg"></div>
-              <div className="mt-4 h-6 bg-gray-200 rounded w-3/4"></div>
-              <div className="mt-2 h-4 bg-gray-200 rounded w-1/2"></div>
+            <div key={i} className="flex flex-col h-full bg-white animate-pulse">
+              <div className="w-full aspect-[3/4] bg-[#F9F8F6]" />
+              <div className="mt-4 h-4 bg-gray-200 w-1/3" />
+              <div className="mt-2 h-4 bg-gray-200 w-3/4" />
+              <div className="mt-3 h-4 bg-gray-200 w-1/4" />
             </div>
           ))}
         </div>
       ) : products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground">
-          Nu am găsit produse noi în acest moment. Te rugăm să revii mai târziu.
-        </p>
+        <div className="text-center py-20 border border-[var(--border)] bg-gray-50/50">
+          <p className="text-sm font-light text-[var(--muted-foreground)] tracking-wide">
+            Nu am găsit produse noi în acest moment. Te rugăm să revii mai târziu.
+          </p>
+        </div>
       )}
     </div>
   )
 }
+

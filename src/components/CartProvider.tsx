@@ -12,6 +12,7 @@ import type { ReactNode } from 'react'
 import { romanianCounties } from '@/lib/geo-data'
 
 import type { Cart, CartLine } from '@/lib/cart' // Modified: Added CartLine
+import Image from 'next/image'
 import type { Address } from '@/components/AddressModal'
 import type { DeliveryOption } from '@/lib/types'
 
@@ -59,6 +60,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [recentlyRemovedItems, setRecentlyRemovedItems] = useState<RecentlyRemovedItem[]>([]); // Added
+  const [toast, setToast] = useState<{
+    message: string
+    productTitle?: string
+    productImage?: string
+    type: 'success' | 'error'
+  } | null>(null)
 
   const [availableDeliveryOptions, setAvailableDeliveryOptions] = useState<
     DeliveryOption[]
@@ -137,6 +144,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart(c)
   }, [])
 
+  const showAddToCartFeedback = useCallback((productTitle: string, productImage?: string) => {
+    setToast({
+      message: 'Produs adăugat în coș',
+      productTitle,
+      productImage,
+      type: 'success'
+    })
+    
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(80)
+      } catch {}
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('reveal-bottom-nav'))
+    }
+  }, [])
+
   const createCart = useCallback(
     async (lines?: { merchandiseId: string; quantity: number }[]) => {
       setLoading(true)
@@ -146,18 +172,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'create', lines }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
           throw new Error(data.error?.message || 'Failed to create cart')
         }
         setCartId(data.cart.id)
         syncFromCart(data.cart)
+        
+        if (lines && lines.length > 0) {
+          const variantId = lines[0].merchandiseId
+          const addedLine = data.cart.lines.edges.find(
+            ({ node }: { node: CartLine }) => node.merchandise.id === variantId
+          )?.node
+          if (addedLine) {
+            const title = addedLine.merchandise.product?.title || addedLine.merchandise.title || 'Produs'
+            const imgUrl = addedLine.merchandise.image?.url || addedLine.merchandise.product?.featuredImage?.url
+            showAddToCartFeedback(title, imgUrl)
+          }
+        }
+        
         return data.cart
       } finally {
         setLoading(false)
       }
     },
-    [syncFromCart]
+    [syncFromCart, showAddToCartFeedback]
   )
 
   const fetchCart = useCallback(
@@ -169,7 +208,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'get', cartId }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (response.ok && data.cart) {
           syncFromCart(data.cart)
           return data.cart
@@ -235,11 +274,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
             lines: [{ merchandiseId: variantId, quantity }],
           }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
-          throw new Error(data.error?.message || 'Failed to add lines to cart')
+          const errMsg = data.error?.message || ''
+          if (
+            errMsg.includes('does not exist') ||
+            errMsg.includes('not found')
+          ) {
+            localStorage.removeItem('cartId')
+            setCart(null)
+            await createCart([{ merchandiseId: variantId, quantity }])
+            return
+          }
+          throw new Error(errMsg || 'Failed to add lines to cart')
         }
         syncFromCart(data.cart)
+        
+        const addedLine = data.cart.lines.edges.find(
+          ({ node }: { node: CartLine }) => node.merchandise.id === variantId
+        )?.node
+        if (addedLine) {
+          const title = addedLine.merchandise.product?.title || addedLine.merchandise.title || 'Produs'
+          const imgUrl = addedLine.merchandise.image?.url || addedLine.merchandise.product?.featuredImage?.url
+          showAddToCartFeedback(title, imgUrl)
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
         throw err
@@ -247,7 +305,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart, ensureCart, syncFromCart]
+    [cart, ensureCart, syncFromCart, createCart, showAddToCartFeedback]
   )
 
   const updateCartItemQuantity = useCallback(
@@ -266,9 +324,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
             lines: [{ id: lineId, quantity }],
           }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
-          throw new Error(data.error?.message || 'Failed to update cart')
+          const errMsg = data.error?.message || ''
+          if (
+            errMsg.includes('does not exist') ||
+            errMsg.includes('not found')
+          ) {
+            localStorage.removeItem('cartId')
+            setCart(null)
+            return
+          }
+          throw new Error(errMsg || 'Failed to update cart')
         }
         syncFromCart(data.cart)
       } catch (err) {
@@ -303,9 +370,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
             lineIds: [lineId],
           }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
-          throw new Error(data.error?.message || 'Failed to remove lines')
+          const errMsg = data.error?.message || ''
+          if (
+            errMsg.includes('does not exist') ||
+            errMsg.includes('not found')
+          ) {
+            localStorage.removeItem('cartId')
+            setCart(null)
+            return
+          }
+          throw new Error(errMsg || 'Failed to remove lines')
         }
         syncFromCart(data.cart)
 
@@ -385,9 +461,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
               lineIds,
             }),
           })
-          const data = await response.json()
+          const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
           if (!response.ok || !data.cart) {
-            throw new Error(data.error?.message || 'Failed to clear cart')
+            const errMsg = data.error?.message || ''
+            if (
+              errMsg.includes('does not exist') ||
+              errMsg.includes('not found')
+            ) {
+              localStorage.removeItem('cartId')
+              setCart(null)
+              return
+            }
+            throw new Error(errMsg || 'Failed to clear cart')
           }
           syncFromCart(data.cart)
         } else {
@@ -432,7 +517,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             },
           }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
           throw new Error(data.error?.message || 'Failed to update delivery address')
         }
@@ -463,7 +548,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             deliveryOptionHandle: handle,
           }),
         })
-        const data = await response.json()
+        const data = (await response.json()) as { cart?: Cart; error?: { message: string } }
         if (!response.ok || !data.cart) {
           throw new Error(data.error?.message || 'Failed to update delivery option')
         }
@@ -556,11 +641,91 @@ export function CartProvider({ children }: { children: ReactNode }) {
     ]
   )
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      {toast && (
+        <Toast
+          toast={toast}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </CartContext.Provider>
+  )
 }
 
 export function useCart() {
   const ctx = useContext(CartContext)
   if (!ctx) throw new Error('useCart must be used inside CartProvider')
   return ctx
+}
+
+type ToastInfo = {
+  message: string
+  productTitle?: string
+  productImage?: string
+  type: 'success' | 'error'
+}
+
+function Toast({ toast, onClose }: { toast: ToastInfo; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3500)
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes toastSlideIn {
+          from { transform: translate(-50%, -20px); opacity: 0; }
+          to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        @keyframes toastSlideInDesktop {
+          from { transform: translate(20px, 0); opacity: 0; }
+          to { transform: translate(0, 0); opacity: 1; }
+        }
+        .animate-toast {
+          animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @media (min-width: 640px) {
+          .animate-toast {
+            animation: toastSlideInDesktop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+        }
+      `}} />
+      <div className="fixed top-6 left-1/2 sm:left-auto sm:right-6 z-[200] w-[90vw] sm:w-[380px] bg-[var(--background)]/95 backdrop-blur-md border border-[var(--border)] shadow-[0_12px_32px_rgba(0,0,0,0.08)] p-4 flex gap-4 animate-toast select-none">
+        {toast.productImage && (
+          <div className="relative w-16 h-16 border border-[var(--border)] shrink-0 overflow-hidden bg-white">
+            <Image
+              src={toast.productImage}
+              alt={toast.productTitle || 'Product'}
+              fill
+              sizes="64px"
+              className="object-cover"
+            />
+          </div>
+        )}
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-green-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
+            {toast.message}
+          </div>
+          {toast.productTitle && (
+            <p className="text-sm font-medium text-gray-900 mt-1 line-clamp-2 leading-snug">
+              {toast.productTitle}
+            </p>
+          )}
+        </div>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 transition-colors p-1 self-start cursor-pointer"
+          aria-label="Închide"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </>
+  )
 }

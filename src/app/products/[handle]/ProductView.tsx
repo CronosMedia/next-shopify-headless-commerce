@@ -8,7 +8,6 @@ import BuyBox from './BuyBox'
 import Tabs from './Tabs'
 import RelatedProducts from '@/components/RelatedProducts'
 import StickyBuyBox from '@/components/StickyBuyBox'
-import RecentlyViewed from '@/components/RecentlyViewed'
 import { useRecentlyViewed } from '@/lib/useRecentlyViewed'
 
 // Import Lightbox component (will create next)
@@ -66,7 +65,6 @@ export default function ProductView({
 
   const { addProduct } = useRecentlyViewed()
   const [isStickyVisible, setIsStickyVisible] = useState(false)
-  const [isDesktop, setIsDesktop] = useState(false)
 
   const firstVariant = variants[0]
   const price = firstVariant?.price?.amount || '0'
@@ -85,15 +83,6 @@ export default function ProductView({
       })
     }
   }, [addProduct, currency, images, price, product])
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)')
-    const updateViewport = () => setIsDesktop(mediaQuery.matches)
-
-    updateViewport()
-    mediaQuery.addEventListener('change', updateViewport)
-    return () => mediaQuery.removeEventListener('change', updateViewport)
-  }, [])
 
   // Intersection Observer to toggle sticky header
   useEffect(() => {
@@ -118,23 +107,20 @@ export default function ProductView({
   return (
     <>
       <main className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 pt-16 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
-          {/* Left Column: Visual Gallery Stack + Content */}
-          <div className="lg:col-span-1 space-y-24">
+        {/* Top Section: Gallery + BuyBox (Non-Sticky Grid) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 lg:items-start pb-16 md:pb-24">
+          {/* Left Column: Gallery */}
+          <div className="lg:col-span-1">
             <Gallery
               images={images}
               mainImage={mainImage}
-              onThumbnailClick={() => { }} // Vertical stack doesn't need thumbnail clicks
+              onThumbnailClick={(img) => setMainImage(img)}
               onMainImageClick={openLightbox}
             />
-
-            <div id="overview" className="max-w-2xl">
-              <Tabs descriptionHtml={product.descriptionHtml} />
-            </div>
           </div>
 
-          {/* Right Column: Sticky Purchase Details */}
-          <div className="lg:col-span-1 lg:sticky lg:top-32 lg:h-fit">
+          {/* Right Column: BuyBox Details */}
+          <div className="lg:col-span-1">
             <div id="main-buy-box">
               <BuyBox
                 title={product.title}
@@ -146,13 +132,16 @@ export default function ProductView({
             </div>
           </div>
         </div>
+
+        {/* Bottom Section: Details & Tabs (Full Width Below Gallery + BuyBox) */}
+        <div id="overview" className="border-t border-[#f0efed] pt-12 md:pt-16">
+          <Tabs descriptionHtml={product.descriptionHtml} />
+        </div>
       </main>
 
       <div id="recommended" className="bg-[#F9F8F6] py-24 md:py-32">
         <RelatedProducts currentProductId={product.id} />
       </div>
-
-      <RecentlyViewed currentProductId={product.id} />
 
       <StickyBuyBox
         product={{
@@ -163,7 +152,7 @@ export default function ProductView({
           featuredImage: product.featuredImage || images[0] || null
         }}
         variantId={firstVariant?.id}
-        isVisible={isStickyVisible && !isDesktop}
+        isVisible={isStickyVisible}
       />
 
       {/* Lightbox component */}

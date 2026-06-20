@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {ShoppingCart} from 'lucide-react'
 import { useCart } from './CartProvider'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { cn, formatMoney } from '@/lib/utils'
+import { useScrollDirection } from '@/hooks/useScrollDirection'
 
 type StickyBuyBoxProps = {
     product: {
@@ -21,198 +22,146 @@ type StickyBuyBoxProps = {
     isVisible: boolean
 }
 
-function ScrollspyNav() {
-    const [activeSection, setActiveSection] = useState<string>('')
-
-    useEffect(() => {
-        // Hide Main Navbar when Sticky Bar is visible (Argos Style)
-        // We do this by checking if ANY sticky bar instance is visible (controlled by parent)
-        // But here we are inside the component. The parent controls 'isVisible'.
-        // It's cleaner to do it in the main component.
-    }, [])
-
-    useEffect(() => {
-        const sections = ['overview', 'specifications', 'reviews', 'recommended']
-        const observerOptions = {
-            root: null,
-            rootMargin: '-100px 0px -40% 0px', // Offset for sticky header
-            threshold: 0
-        }
-
-        const observerCallback: IntersectionObserverCallback = (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    setActiveSection(entry.target.id)
-                }
-            })
-        }
-
-        const observer = new IntersectionObserver(observerCallback, observerOptions)
-
-        sections.forEach(id => {
-            const element = document.getElementById(id)
-            if (element) observer.observe(element)
-        })
-
-        return () => observer.disconnect()
-    }, [])
-
-    const navItems = [
-        { id: 'overview', label: 'Descriere' },
-        { id: 'specifications', label: 'Specificații' },
-        { id: 'reviews', label: 'Recenzii' },
-        { id: 'recommended', label: 'Recomandări' },
-    ]
-
-    return (
-        <ul className="flex items-center gap-8 text-sm font-medium text-gray-600">
-            {navItems.map(item => (
-                <li key={item.id}>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault()
-                            const element = document.getElementById(item.id)
-                            if (element) {
-                                const offset = 100 // Height of sticky bar + buffer
-                                const elementPosition = element.getBoundingClientRect().top
-                                const offsetPosition = elementPosition + window.pageYOffset - offset
-                                window.scrollTo({
-                                    top: offsetPosition,
-                                    behavior: "smooth"
-                                })
-                            }
-                        }}
-                        className={cn(
-                            "py-4 border-b-2 transition-colors",
-                            activeSection === item.id
-                                ? "text-black border-black"
-                                : "border-transparent hover:text-black hover:border-gray-300"
-                        )}
-                    >
-                        {item.label}
-                    </button>
-                </li>
-            ))}
-        </ul>
-    )
-}
-
 export default function StickyBuyBox({
     product,
     variantId,
     isVisible
 }: StickyBuyBoxProps) {
-    const {addToCart, loading} = useCart()
+    const {cart, addToCart, loading} = useCart()
+    const router = useRouter()
+    const { scrollDirection, isTop } = useScrollDirection()
+    const [isFooterVisible, setIsFooterVisible] = useState(false)
+    const [forceShowBottomNav, setForceShowBottomNav] = useState(false)
 
-    // Toggle body class to hide main navbar
+    // Sync bottom nav pop-up visibility
     useEffect(() => {
-        if (isVisible) {
-            document.body.classList.add('hide-navbar')
-        } else {
-            document.body.classList.remove('hide-navbar')
+        let timer: NodeJS.Timeout
+        const handleReveal = () => {
+            setForceShowBottomNav(true)
+            if (timer) clearTimeout(timer)
+            timer = setTimeout(() => {
+                setForceShowBottomNav(false)
+            }, 4000)
         }
-        return () => document.body.classList.remove('hide-navbar')
-    }, [isVisible])
+        window.addEventListener('reveal-bottom-nav', handleReveal)
+        return () => {
+            window.removeEventListener('reveal-bottom-nav', handleReveal)
+            if (timer) clearTimeout(timer)
+        }
+    }, [])
 
-    const handleAddToCart = async (quantity: number) => {
+    const isBottomNavVisible = scrollDirection === 'up' || isTop || forceShowBottomNav
+    const shouldBeVisible = isVisible && !isFooterVisible
+
+    // Observe when the footer enters the viewport to hide the sticky buy box
+    useEffect(() => {
+        const footer = document.querySelector('footer')
+        if (!footer) return
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsFooterVisible(entry.isIntersecting)
+            },
+            {
+                threshold: 0,
+            }
+        )
+
+        observer.observe(footer)
+        return () => observer.disconnect()
+    }, [])
+
+    const isItemInCart = cart?.lines.edges.some(
+        ({ node }) => node.merchandise.id === variantId
+    )
+
+    const handleButtonClick = async () => {
+        if (isItemInCart) {
+            router.push('/cart')
+            return
+        }
         if (!variantId) return
-        await addToCart(variantId, quantity)
+        await addToCart(variantId, 1)
     }
 
+    const bottomClass = isBottomNavVisible 
+        ? "bottom-16 lg:bottom-0" 
+        : "bottom-0"
+
+    const buttonText = isItemInCart
+        ? (loading ? '...' : (
+            <>
+                <span className="hidden sm:inline">Vezi Coșul</span>
+                <span className="sm:hidden">Coș</span>
+            </>
+        ))
+        : (loading ? '...' : (
+            <>
+                <span className="hidden sm:inline">Adaugă în coș</span>
+                <span className="sm:hidden">Adaugă</span>
+            </>
+        ))
+
+    const buttonClass = isItemInCart
+        ? 'bg-transparent text-black border-black hover:bg-neutral-50 cursor-pointer'
+        : (product.availableForSale && !loading
+            ? 'bg-black text-white border-black hover:bg-neutral-800 cursor-pointer'
+            : 'bg-neutral-100 text-neutral-300 cursor-not-allowed border border-neutral-200/50')
+
     return (
-        <>
-            {/* Desktop Sticky Bar (Argos Style - Top) */}
-            <div className={cn(
-                "hidden md:flex fixed top-0 left-0 right-0 bg-white shadow-md z-[100] transform transition-transform duration-500 ease-in-out",
-                isVisible ? "translate-y-0" : "-translate-y-full"
-            )}>
-                <div className="max-w-6xl mx-auto w-full px-6 h-[88px] flex items-center justify-between gap-6">
-
-                    {/* Left: Product Info */}
-                    <div className="flex items-center gap-4 min-w-0 w-1/3">
-                        {product.featuredImage && (
-                            <div className="relative w-12 h-12 rounded-md overflow-hidden border border-gray-100 shrink-0">
-                                <Image
-                                    src={product.featuredImage.url}
-                                    alt={product.featuredImage.altText || product.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                        )}
-                        <div className="min-w-0">
-                            <h3 className="font-medium text-gray-900 line-clamp-1 text-sm">{product.title}</h3>
-                            <div className="flex items-baseline gap-2">
-                                <span className="font-bold text-gray-900">{formatMoney(product.price, product.currency)}</span>
-                                {product.availableForSale ?
-                                    <span className="text-xs text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded">In Stoc</span> :
-                                    <span className="text-xs text-red-600 font-medium bg-red-50 px-1.5 py-0.5 rounded">Stoc Epuizat</span>
-                                }
-                            </div>
+        <div className={cn(
+            "fixed left-0 right-0 bg-[var(--background)]/95 backdrop-blur-md border-t border-[var(--border)] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-40 transition-all duration-300 ease-in-out",
+            shouldBeVisible ? "translate-y-0" : "translate-y-full",
+            bottomClass
+        )}>
+            <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 h-20 flex items-center justify-between gap-6">
+                {/* Left: Product Info with Image */}
+                <div className="flex items-center gap-4 min-w-0">
+                    {product.featuredImage && (
+                        <div className="relative w-12 h-12 border border-[var(--border)] shrink-0 overflow-hidden bg-white hidden sm:block">
+                            <Image
+                                src={product.featuredImage.url}
+                                alt={product.featuredImage.altText || product.title}
+                                fill
+                                className="object-cover"
+                            />
                         </div>
-                    </div>
-
-                    {/* Center: Navigation Links (Scrollspy) */}
-                    <nav className="flex-1 flex justify-center">
-                        <ScrollspyNav />
-                    </nav>
-
-                    {/* Right: Add to Cart */}
-                    <div className="flex items-center gap-3 w-1/3 justify-end">
-                        <button
-                            onClick={() => handleAddToCart(1)}
-                            disabled={!product.availableForSale || loading}
-                            className={cn(
-                                "h-12 px-6 rounded-lg font-bold text-lg transition-all flex items-center gap-2 shadow-lg", // Updated based on user feedback
-                                product.availableForSale && !loading
-                                    ? 'bg-black text-white hover:bg-gray-800 hover:scale-[1.01] active:scale-[0.99] hover:shadow-xl' // Exact BuyBox style
-                                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                            )}
-                        >
-                            {loading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <>
-                                    <ShoppingCart size={20} />
-                                    <span>Adaugă în coș</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile Sticky Bar */}
-            <div className={cn(
-                "fixed bottom-0 left-0 right-0 bg-white border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 md:hidden transition-transform duration-300 ease-in-out",
-                isVisible ? "translate-y-0" : "translate-y-full"
-            )}>
-                <div className="flex items-center justify-between p-4">
-                    <div className="flex-1 min-w-0 pr-4">
-                        <div className="text-sm font-medium text-gray-900 truncate">
+                    )}
+                    <div className="min-w-0">
+                        <h3 className="font-medium text-gray-900 line-clamp-1 text-sm md:text-base">
                             {product.title}
-                        </div>
-                        <div className="text-lg font-bold text-gray-900">
-                            {formatMoney(product.price, product.currency)}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                        <button
-                            onClick={() => handleAddToCart(1)}
-                            disabled={!product.availableForSale || loading}
-                            className={cn(
-                                "px-6 py-3 rounded-lg font-medium transition-colors shadow-sm",
-                                product.availableForSale && !loading
-                                    ? 'bg-black text-white hover:bg-gray-800'
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        </h3>
+                        <div className="flex items-center gap-3 mt-0.5">
+                            <span className="font-bold text-gray-900 text-sm md:text-base">
+                                {formatMoney(product.price, product.currency)}
+                            </span>
+                            {product.availableForSale ? (
+                                <span className="text-[10px] md:text-xs text-green-700 font-semibold bg-green-50 px-1.5 py-0.5 uppercase tracking-wider">
+                                    În Stoc
+                                </span>
+                            ) : (
+                                <span className="text-[10px] md:text-xs text-red-700 font-semibold bg-red-50 px-1.5 py-0.5 uppercase tracking-wider">
+                                    Stoc Epuizat
+                                </span>
                             )}
-                        >
-                            {loading ? '...' : 'Adaugă'}
-                        </button>
+                        </div>
                     </div>
                 </div>
+
+                {/* Right: Add to Cart Button */}
+                <div className="flex items-center gap-3 shrink-0">
+                    <button
+                        onClick={handleButtonClick}
+                        disabled={(!product.availableForSale && !isItemInCart) || loading}
+                        className={cn(
+                            "h-12 px-6 flex items-center justify-center text-xs md:text-sm font-semibold tracking-[0.2em] uppercase transition-all duration-300 border",
+                            buttonClass
+                        )}
+                    >
+                        {buttonText}
+                    </button>
+                </div>
             </div>
-        </>
+        </div>
     )
 }

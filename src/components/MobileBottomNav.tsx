@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Search, Heart, ShoppingBag, User } from 'lucide-react'
@@ -12,9 +13,26 @@ export default function MobileBottomNav() {
   const { count: wishlistCount } = useWishlist()
   const cartCount = cart?.totalQuantity || 0
   const { scrollDirection, isTop } = useScrollDirection()
+  const [forceShow, setForceShow] = useState(false)
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    const handleReveal = () => {
+      setForceShow(true)
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        setForceShow(false)
+      }, 4000)
+    }
+    window.addEventListener('reveal-bottom-nav', handleReveal)
+    return () => {
+      window.removeEventListener('reveal-bottom-nav', handleReveal)
+      if (timer) clearTimeout(timer)
+    }
+  }, [])
 
   // Bottom Nav visibility logic
-  const isBottomNavVisible = scrollDirection === 'up' || isTop
+  const isBottomNavVisible = scrollDirection === 'up' || isTop || forceShow
 
   const navItems = [
     {

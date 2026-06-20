@@ -1,39 +1,33 @@
 'use client'
-import { useEffect, useState, useRef, MouseEvent } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn, formatMoney } from '@/lib/utils'
+import { useEffect, useState } from 'react'
+import ProductCard from './ProductCard'
 
 type ProductNode = {
   id: string
   handle: string
   title: string
+  vendor?: string
+  description?: string
   featuredImage?: {
     url: string
     altText: string | null
+    width: number
+    height: number
   } | null
   priceRange?: { minVariantPrice: { amount: string; currencyCode: string } }
   variants?: {
-    edges: {
+    edges: Array<{
       node: {
-        price: { amount: string; currencyCode: string }
+        id: string
         availableForSale: boolean
       }
-    }[]
+    }>
   }
 }
 
 export default function RelatedProducts({ currentProductId }: { currentProductId?: string }) {
   const [products, setProducts] = useState<ProductNode[]>([])
   const [loading, setLoading] = useState(true)
-
-  // Carousel State
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
-  const [hasMoved, setHasMoved] = useState(false)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -61,10 +55,10 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
           }
         }
 
-        // Filter out current product and unavailable
+        // Filter out current product and slice to up to 8 items
         const validProducts = finalProducts
           .filter(p => p.id !== currentProductId) // Exclude current
-          .slice(0, 8) // Limit to 8 items
+          .slice(0, 8)
 
         setProducts(validProducts)
       } catch {
@@ -77,115 +71,32 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
     fetchProducts()
   }, [currentProductId])
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 300
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      })
-    }
-  }
-
-  const startDragging = (e: MouseEvent) => {
-    setIsDragging(true)
-    setHasMoved(false)
-    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0))
-    setScrollLeft(scrollRef.current?.scrollLeft || 0)
-  }
-
-  const stopDragging = () => {
-    setIsDragging(false)
-  }
-
-  const onDrag = (e: MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return
-    e.preventDefault()
-    const x = e.pageX - (scrollRef.current.offsetLeft || 0)
-    const walk = (x - startX) * 1.5
-    scrollRef.current.scrollLeft = scrollLeft - walk
-    if (Math.abs(walk) > 5) setHasMoved(true)
-  }
-
   if (loading || products.length === 0) return null
 
   return (
-    <section className="py-12 border-t border-gray-100 relative group/section">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-2xl font-bold mb-8">Poate te interesează și...</h2>
+    <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 animate-fadeIn overflow-hidden lg:overflow-visible">
+      {/* Left Aligned Header - Thicker font on mobile */}
+      <h2 className="text-[15px] md:text-2xl font-semibold md:font-light tracking-[0.16em] md:tracking-[0.25em] uppercase text-neutral-900 mb-10 md:mb-16 text-left leading-relaxed">
+        Poate te interesează și...
+      </h2>
 
-        <div className="relative group">
-          <button
-            onClick={() => scroll('left')}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg border border-gray-100 rounded-full flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <button
-            onClick={() => scroll('right')}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg border border-gray-100 rounded-full flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={20} />
-          </button>
-
+      {/* Responsive Container: 
+          - Mobile/Tablet: Horizontal edge-to-edge scrollable carousel
+          - Desktop (lg): Static 4-column grid
+      */}
+      <div 
+        className="flex lg:grid gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pb-8 lg:pb-0 snap-x snap-mandatory lg:snap-none scroll-px-6 lg:scroll-px-0 -mx-6 px-6 md:-mx-12 md:px-12 lg:mx-0 lg:px-0 lg:grid-cols-4 scrollbar-hide"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {products.map((product) => (
           <div
-            ref={scrollRef}
-            className={cn(
-              "flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide select-none",
-              isDragging ? "cursor-grabbing scroll-auto" : "cursor-grab scroll-smooth"
-            )}
-            onMouseDown={startDragging}
-            onMouseLeave={stopDragging}
-            onMouseUp={stopDragging}
-            onMouseMove={onDrag}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            key={product.id}
+            className="flex-shrink-0 w-[75vw] max-w-[260px] md:w-[280px] lg:w-auto lg:max-w-none lg:flex-shrink snap-center md:snap-start lg:snap-align-none"
           >
-            {products.map((product) => {
-              const variant = product.variants?.edges[0]?.node
-              const price = variant?.price?.amount || product.priceRange?.minVariantPrice?.amount || '0'
-              return (
-                <div key={product.id} className="min-w-[200px] w-[200px]" onClick={(e) => {
-                  if (hasMoved) e.preventDefault()
-                }}>
-                  <Link
-                    href={`/products/${product.handle}`}
-                    className="group block"
-                    onClick={(e) => { if (hasMoved) { e.preventDefault() } }}
-                    draggable={false}
-                  >
-                    <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 mb-3">
-                      {product.featuredImage ? (
-                        <Image
-                          src={product.featuredImage.url}
-                          alt={product.featuredImage.altText || product.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="200px"
-                          draggable={false}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                          Fără imagine
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="text-sm font-medium text-gray-900 group-hover:underline decoration-1 underline-offset-2 truncate">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {formatMoney(price, variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode)}
-                    </p>
-                  </Link>
-                </div>
-              )
-            })}
+            <ProductCard product={product} />
           </div>
-        </div>
+        ))}
       </div>
-    </section>
+    </div>
   )
 }
-

@@ -293,7 +293,7 @@ async function shopifyRequest<T>(
   }
 
   const result = Object.values(data)[0]
-  if (!result) {
+  if (result === undefined) {
     throw new Error('No data returned from Shopify API')
   }
 

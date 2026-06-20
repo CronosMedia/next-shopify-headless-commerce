@@ -6,6 +6,9 @@ import Swatch from './Swatch' // Import the new Swatch component
 import WishlistButton from '@/components/WishlistButton'
 import { formatMoney } from '@/lib/utils'
 
+
+
+
 type Option = { name: string; values: string[] }
 export type Variant = {
   id: string
@@ -30,6 +33,7 @@ export default function BuyBox({
   variants,
   onVariantChange,
   onAddToCartSuccess,
+  showTitle = true,
 }: {
   title: string
   handle: string
@@ -37,6 +41,7 @@ export default function BuyBox({
   variants: Variant[]
   onVariantChange?: (variant: Variant) => void
   onAddToCartSuccess?: () => void
+  showTitle?: boolean
 }) {
   const [quantity, setQuantity] = useState(1)
   const [selection, setSelection] = useState<Record<string, string>>(() => {
@@ -54,6 +59,8 @@ export default function BuyBox({
       ) || variants[0]
     )
   }, [selection, variants])
+
+
 
   useEffect(() => {
     if (selectedVariant) {
@@ -74,32 +81,47 @@ export default function BuyBox({
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Product Information */}
-      <div className="space-y-4">
-        <h1 className="text-3xl md:text-4xl font-extralight tracking-[0.1em] uppercase text-[#1a1a1a] leading-tight">
-          {title}
-        </h1>
-        <div className="flex items-baseline gap-4 pt-2">
-          <span className="text-xl font-light text-[#1a1a1a]">
-            {formatMoney(selectedVariant?.price.amount || 0, selectedVariant?.price.currencyCode)}
-          </span>
-          {selectedVariant?.compareAtPrice?.amount ? (
-            <span className="text-sm line-through text-[#8a8a8a] font-light">
-              {formatMoney(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
+      {showTitle ? (
+        <div className="space-y-3 border-b border-[var(--border)] pb-6">
+          <h1 className="text-xl md:text-2xl lg:text-[26px] font-medium tracking-[0.06em] uppercase text-neutral-900 leading-snug">
+            {title}
+          </h1>
+          <div className="flex items-baseline gap-3 pt-1">
+            <span className="font-[family:var(--font-geist-mono)] font-semibold text-xl md:text-2xl text-[var(--accent)] tracking-wider">
+              {formatMoney(selectedVariant?.price.amount || 0, selectedVariant?.price.currencyCode)}
             </span>
-          ) : null}
+            {selectedVariant?.compareAtPrice?.amount ? (
+              <span className="font-[family:var(--font-geist-mono)] font-light text-neutral-400 line-through text-sm md:text-base ml-2">
+                {formatMoney(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
+              </span>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex items-baseline gap-3">
+            <span className="font-[family:var(--font-geist-mono)] font-semibold text-2xl md:text-3xl text-[var(--accent)] tracking-wider">
+              {formatMoney(selectedVariant?.price.amount || 0, selectedVariant?.price.currencyCode)}
+            </span>
+            {selectedVariant?.compareAtPrice?.amount ? (
+              <span className="font-[family:var(--font-geist-mono)] font-light text-neutral-400 line-through text-base md:text-lg ml-2">
+                {formatMoney(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
+              </span>
+            ) : null}
+          </div>
+        </div>
+      )}
 
       {/* Variant Selection */}
       {variants.length > 1 ? (
-        <div className="space-y-10 pt-4">
+        <div className="space-y-8 pt-2">
           {options.map((opt) => (
-            <div key={opt.name} className="space-y-4">
+            <div key={opt.name} className="space-y-3.5">
               {opt.name !== 'Title' && (
-                <div className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#8a8a8a]">
-                  Select {opt.name}
+                <div className="text-[11px] md:text-xs font-semibold tracking-[0.25em] uppercase text-neutral-400">
+                  Alege {opt.name}
                 </div>
               )}
               <div className="flex flex-wrap gap-4">
@@ -129,21 +151,21 @@ export default function BuyBox({
       ) : null}
 
       {/* Purchase Actions */}
-      <div className="pt-8 space-y-8">
-        <div className="flex flex-col gap-8">
+      <div className="pt-6 space-y-6">
+        <div className="flex flex-col gap-6">
           {/* Quantity Selector - Minimalist Luxury */}
           <div className="flex items-center gap-6">
-            <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#8a8a8a]">Quantity</span>
-            <div className="flex items-center border border-[#e5e4e0] rounded-sm">
+            <span className="text-[11px] md:text-xs font-semibold tracking-[0.2em] uppercase text-neutral-400">Cantitate</span>
+            <div className="flex items-center border border-[var(--border)] rounded-none bg-white">
               <button
-                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors"
+                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors cursor-pointer"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 aria-label="Decrease quantity"
               >
                 <Minus size={14} className="text-[#1a1a1a]" />
               </button>
               <input
-                className="w-10 text-center outline-none text-sm font-light bg-transparent"
+                className="w-10 text-center outline-none text-sm font-light bg-transparent border-0 focus:ring-0"
                 type="number"
                 min={1}
                 value={quantity}
@@ -152,7 +174,7 @@ export default function BuyBox({
                 }
               />
               <button
-                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors"
+                className="w-10 h-10 flex items-center justify-center hover:bg-[#f9f8f6] transition-colors cursor-pointer"
                 onClick={() => setQuantity((q) => q + 1)}
                 aria-label="Increase quantity"
               >
@@ -161,21 +183,23 @@ export default function BuyBox({
             </div>
           </div>
 
-          {/* Add to Bag - Solid Coherent Button */}
-          <button
-            disabled={!canAdd}
-            className={`w-full group h-14 flex items-center justify-center text-[12px] font-semibold tracking-[0.2em] uppercase transition-all duration-300 ${canAdd
-              ? 'bg-[#1a1a1a] text-white hover:bg-[#333333]'
-              : 'bg-[#f0efed] text-[#cbcbcb] cursor-not-allowed'
-              }`}
-            onClick={handleAddToCart}
-          >
-            <span>
-              {loading ? 'Adding...' : selectedVariant?.availableForSale ? 'Add to Bag' : 'Out of Stock'}
-            </span>
-          </button>
+          {/* Action Buttons Group */}
+          <div className="flex flex-col gap-3">
+            {/* Add to Bag - Solid Coherent Button */}
+            <button
+              disabled={!canAdd}
+              className={`w-full group h-14 flex items-center justify-center text-[13px] md:text-sm font-semibold tracking-[0.2em] uppercase transition-all duration-300 cursor-pointer ${canAdd
+                ? 'bg-black text-white hover:bg-neutral-800'
+                : 'bg-neutral-100 text-neutral-300 cursor-not-allowed border border-neutral-200/50'
+                }`}
+              onClick={handleAddToCart}
+            >
+              <span>
+                {loading ? 'Se adaugă...' : selectedVariant?.availableForSale ? 'Adaugă în coș' : 'Stoc epuizat'}
+              </span>
+            </button>
 
-          <div className="flex justify-start">
+            {/* Wishlist Button - eMAG style but luxury brand aesthetics */}
             <WishlistButton
               item={{
                 id: selectedVariant?.id,
@@ -189,33 +213,9 @@ export default function BuyBox({
                   minVariantPrice: selectedVariant?.price
                 }
               }}
-              variant="icon"
-              className="text-[#8a8a8a] hover:text-[#1a1a1a] transition-colors p-0"
             />
-          </div>
-        </div>
 
-        {/* Product Highlights / Useful Info */}
-        <div className="pt-8 space-y-6 border-t border-[#f0efed]">
-          <div className="space-y-4">
-            <h4 className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1a1a1a]">Product Highlights</h4>
-            <ul className="space-y-3">
-              {[
-                { label: 'Craftsmanship', value: 'Handcrafted in limited runs' },
-                { label: 'Sustainability', value: '100% recycled core materials' },
-                { label: 'Warranty', value: '2-year limited manufacturer warranty' }
-              ].map((item, i) => (
-                <li key={i} className="flex justify-between items-baseline gap-4">
-                  <span className="text-[10px] uppercase tracking-wider text-[#8a8a8a]">{item.label}</span>
-                  <span className="text-[11px] text-[#4a4a4a] text-right">{item.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <div className="text-[10px] font-normal leading-relaxed text-[#b1b1b1] tracking-wider max-w-xs">
-            Complimentary shipping on all orders over £200.
-            Estimated delivery 2-4 business days.
           </div>
         </div>
       </div>

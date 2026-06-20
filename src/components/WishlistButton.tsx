@@ -42,15 +42,21 @@ export default function WishlistButton({
         <button
             onClick={handleClick}
             className={cn(
-                'flex items-center gap-2 px-4 py-2 border rounded transition-colors',
+                'w-full h-14 flex items-center justify-center gap-3 text-[13px] md:text-sm font-semibold tracking-[0.2em] uppercase transition-all duration-300 cursor-pointer rounded-none border',
                 isSaved
-                    ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50',
+                    ? 'border-red-500 bg-red-50/40 text-red-600 hover:bg-red-50'
+                    : 'border-[var(--border)] text-neutral-800 hover:bg-neutral-50 hover:border-black',
                 className
             )}
         >
-            <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} />
-            <span>{isSaved ? 'Salvat' : 'Wishlist'}</span>
+            <Heart
+                size={16}
+                className={cn(
+                    "transition-transform duration-300",
+                    isSaved ? "fill-red-500 text-red-500 scale-110" : "fill-transparent text-current"
+                )}
+            />
+            <span>{isSaved ? 'Salvat la favorite' : 'Adaugă la favorite'}</span>
         </button>
     )
 }
