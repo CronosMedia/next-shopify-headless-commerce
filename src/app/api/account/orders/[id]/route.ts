@@ -18,6 +18,7 @@ type TrackingInfo = {
 }
 
 type OrderLine = {
+  id?: string
   title: string
   quantity: number
   variant: {
@@ -33,6 +34,53 @@ type OrderLine = {
     }
   } | null
   discountedTotalPrice: Money
+}
+
+type AdminOrderLineItemNode = {
+  id: string
+  title: string
+  quantity: number
+  variant: {
+    price: string
+  } | null
+  taxLines: Array<{
+    rate: number
+  }>
+}
+
+type AdminOrderDetails = {
+  id: string
+  name: string
+  processedAt: string
+  displayFinancialStatus: string
+  displayFulfillmentStatus: string
+  totalPriceSet: {shopMoney: Money}
+  subtotalPriceSet: {shopMoney: Money}
+  totalTaxSet: {shopMoney: Money}
+  totalShippingPriceSet: {shopMoney: Money}
+  customAttributes: Array<{key: string; value: string}>
+  successfulFulfillments: StorefrontOrder['successfulFulfillments']
+  lineItems: {
+    edges: Array<{
+      node: AdminOrderLineItemNode
+    }>
+  }
+  billingAddress: StorefrontOrder['billingAddress']
+  shippingAddress: StorefrontOrder['shippingAddress']
+}
+
+type AdminOrderDetailsData = {
+  order: AdminOrderDetails | null
+}
+
+type OrderAdminInfoData = {
+  order: {
+    tags: string[]
+    invoicePdfUrl: {value: string} | null
+    invoiceNumber: {value: string} | null
+    awbCode: {value: string} | null
+    courierName: {value: string} | null
+  } | null
 }
 
 type StorefrontOrder = {
@@ -66,12 +114,6 @@ type OrderDetailsData = {
   } | null
 }
 
-type OrderTagsData = {
-  order: {
-    tags: string[]
-  } | null
-}
-
 function normalizeOrderId(orderId: string) {
   return orderId.split('?')[0]
 }
@@ -82,8 +124,9 @@ export async function GET(req: NextRequest) {
     const customerAccessToken = cookieStore.get(
       'customer-access-token'
     )?.value
+    const adminSession = cookieStore.get('admin_session')?.value
 
-    if (!customerAccessToken) {
+    if (!customerAccessToken && adminSession !== 'true') {
       return NextResponse.json(
         {error: {message: 'Not authenticated.'}},
         {status: 401}
@@ -99,24 +142,147 @@ export async function GET(req: NextRequest) {
     }
 
     const requestedOrderId = `gid://shopify/Order/${orderIdNumeric}`
-    const response = await shopifyClient.request<OrderDetailsData>(
-      GET_ORDER_DETAILS_QUERY,
-      {customerAccessToken, first: 100}
-    )
+    let storefrontOrder: StorefrontOrder | null = null
 
-    if (response.errors?.length) {
-      return NextResponse.json(
-        {error: {message: response.errors[0].message}},
-        {status: 400}
+    if (customerAccessToken) {
+      const response = await shopifyClient.request<OrderDetailsData>(
+        GET_ORDER_DETAILS_QUERY,
+        {customerAccessToken, first: 100}
       )
+
+      if (response.errors?.length) {
+        return NextResponse.json(
+          {error: {message: response.errors[0].message}},
+          {status: 400}
+        )
+      }
+
+      storefrontOrder = response.data.customer?.orders.edges
+        .map(({node}) => node)
+        .find(
+          ({id}) =>
+            normalizeOrderId(id) === normalizeOrderId(requestedOrderId)
+        ) ?? null
+    } else if (adminSession === 'true') {
+      const adminOrderQuery = `#graphql
+        query GetOrderDetailsAdmin($id: ID!) {
+          order(id: $id) {
+            id
+            name
+            processedAt
+            displayFinancialStatus
+            displayFulfillmentStatus
+            totalPriceSet { shopMoney { amount currencyCode } }
+            subtotalPriceSet { shopMoney { amount currencyCode } }
+            totalTaxSet { shopMoney { amount currencyCode } }
+            totalShippingPriceSet { shopMoney { amount currencyCode } }
+            customAttributes { key value }
+            successfulFulfillments: fulfillments(first: 5) {
+              trackingCompany
+              trackingInfo {
+                number
+                url
+              }
+            }
+            lineItems(first: 100) {
+              edges {
+                node {
+                  id
+                  title
+                  quantity
+                  variant {
+                    price
+                  }
+                  taxLines {
+                    rate
+                  }
+                }
+              }
+            }
+            billingAddress {
+              firstName
+              lastName
+              company
+              address1
+              address2
+              city
+              province
+              zip
+              country
+              phone
+            }
+            shippingAddress {
+              firstName
+              lastName
+              company
+              address1
+              address2
+              city
+              province
+              zip
+              country
+              phone
+            }
+          }
+        }
+      `
+      const adminResponse = await shopifyAdminRequest<AdminOrderDetailsData>(
+        adminOrderQuery,
+        {id: requestedOrderId}
+      )
+      if (adminResponse.errors?.length) {
+        return NextResponse.json(
+          {error: {message: adminResponse.errors[0].message}},
+          {status: 400}
+        )
+      }
+      
+      const adminOrder = adminResponse.data?.order
+      if (adminOrder) {
+        // Map lineItems shape from connections edges to nodes array expected by storefront mapping
+        const storefrontLineItems = {
+          edges: adminOrder.lineItems.edges.map((edge) => ({
+            node: {
+              ...edge.node,
+              variant: edge.node.variant
+                ? {
+                    price: {
+                      amount: edge.node.variant.price,
+                      currencyCode: adminOrder.totalPriceSet.shopMoney.currencyCode,
+                    },
+                    image: null,
+                    product: {
+                      handle: '',
+                    },
+                  }
+                : null,
+              discountedTotalPrice: {
+                amount: edge.node.variant?.price || '0',
+                currencyCode: adminOrder.totalPriceSet.shopMoney.currencyCode,
+              },
+            },
+          })),
+        }
+
+        storefrontOrder = {
+          id: adminOrder.id,
+          name: adminOrder.name,
+          orderNumber: Number(orderIdNumeric),
+          processedAt: adminOrder.processedAt,
+          financialStatus: adminOrder.displayFinancialStatus,
+          fulfillmentStatus: adminOrder.displayFulfillmentStatus,
+          totalPrice: adminOrder.totalPriceSet.shopMoney,
+          subtotalPrice: adminOrder.subtotalPriceSet.shopMoney,
+          totalShippingPrice: adminOrder.totalShippingPriceSet.shopMoney,
+          totalTax: adminOrder.totalTaxSet.shopMoney,
+          shippingAddress: adminOrder.shippingAddress,
+          billingAddress: adminOrder.billingAddress,
+          customAttributes: adminOrder.customAttributes,
+          successfulFulfillments: adminOrder.successfulFulfillments || [],
+          lineItems: storefrontLineItems,
+        }
+      }
     }
-
-    const storefrontOrder = response.data.customer?.orders.edges
-      .map(({node}) => node)
-      .find(
-        ({id}) =>
-          normalizeOrderId(id) === normalizeOrderId(requestedOrderId)
-      )
 
     if (!storefrontOrder) {
       return NextResponse.json(
@@ -126,20 +292,42 @@ export async function GET(req: NextRequest) {
     }
 
     let orderTags: string[] = []
+    let invoicePdfUrl: string | null = null
+    let invoiceNumber: string | null = null
+    let awbCode: string | null = null
+    let courierName: string | null = null
+
     try {
-      const tagsResponse = await shopifyAdminRequest<OrderTagsData>(
+      const adminInfoResponse = await shopifyAdminRequest<OrderAdminInfoData>(
         `#graphql
-          query OrderTags($id: ID!) {
+          query OrderAdminInfo($id: ID!) {
             order(id: $id) {
               tags
+              invoicePdfUrl: metafield(namespace: "custom", key: "invoice_pdf_url") {
+                value
+              }
+              invoiceNumber: metafield(namespace: "custom", key: "invoice_number") {
+                value
+              }
+              awbCode: metafield(namespace: "custom", key: "awb_code") {
+                value
+              }
+              courierName: metafield(namespace: "custom", key: "courier_name") {
+                value
+              }
             }
           }
         `,
         {id: normalizeOrderId(storefrontOrder.id)}
       )
-      orderTags = tagsResponse.data?.order?.tags ?? []
+      const adminOrder = adminInfoResponse.data?.order
+      orderTags = adminOrder?.tags ?? []
+      invoicePdfUrl = adminOrder?.invoicePdfUrl?.value ?? null
+      invoiceNumber = adminOrder?.invoiceNumber?.value ?? null
+      awbCode = adminOrder?.awbCode?.value ?? null
+      courierName = adminOrder?.courierName?.value ?? null
     } catch (error: unknown) {
-      serverLogger.warn('account.order.tags.failed', error)
+      serverLogger.warn('account.order.adminInfo.failed', error)
     }
 
     const firstFulfillment = storefrontOrder.successfulFulfillments[0]
@@ -148,6 +336,10 @@ export async function GET(req: NextRequest) {
     const mappedOrder = {
       ...storefrontOrder,
       tags: orderTags,
+      invoicePdfUrl,
+      invoiceNumber,
+      awbCode,
+      courierName,
       displayFinancialStatus: storefrontOrder.financialStatus || 'UNKNOWN',
       displayFulfillmentStatus:
         storefrontOrder.fulfillmentStatus || 'UNFULFILLED',
@@ -165,7 +357,7 @@ export async function GET(req: NextRequest) {
       totalPriceSet: {shopMoney: storefrontOrder.totalPrice},
       legacyResourceId: orderIdNumeric,
       lineItems: {
-        nodes: storefrontOrder.lineItems.edges.map(({node}, index) => ({
+        nodes: storefrontOrder.lineItems.edges.map(({node}, index: number) => ({
           id: `line-item-${index}`,
           ...node,
           variant: node.variant

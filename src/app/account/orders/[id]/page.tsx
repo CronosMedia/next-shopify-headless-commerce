@@ -77,6 +77,10 @@ type AdminOrder = {
       url: string
     }
   } | null
+  invoicePdfUrl?: string | null
+  invoiceNumber?: string | null
+  awbCode?: string | null
+  courierName?: string | null
 }
 
 export default function OrderDetailsPage() {
@@ -423,6 +427,19 @@ export default function OrderDetailsPage() {
                   </p>
                 )
               })()}
+              {order.invoicePdfUrl && (
+                <div className="mt-4 pt-3 border-t border-gray-200">
+                  <a
+                    href={order.invoicePdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center bg-black text-white hover:bg-neutral-800 text-xs uppercase font-barlow tracking-wider font-semibold py-2.5 px-4 transition-all no-underline"
+                    style={{ fontFamily: 'Barlow, sans-serif' }}
+                  >
+                    Descarcă factură ({order.invoiceNumber || 'PDF'})
+                  </a>
+                </div>
+              )}
             </div>
           </div>
           <div className="text-left md:text-right">
