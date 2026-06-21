@@ -12,8 +12,8 @@ import type { ReactNode } from 'react'
 import { romanianCounties } from '@/lib/geo-data'
 
 import type { Cart, CartLine } from '@/lib/cart' // Modified: Added CartLine
-import Image from 'next/image'
 import type { Address } from '@/components/AddressModal'
+import { useToast } from '@/components/ToastProvider'
 import type { DeliveryOption } from '@/lib/types'
 
 const LOCAL_STORAGE_RECENTLY_REMOVED_KEY = 'recentlyRemovedItems'; // New constant
@@ -42,7 +42,9 @@ type CartContextType = {
   clearCart: () => Promise<void>
   setSelectedDeliveryOption: (option: DeliveryOption | null) => Promise<void>
   setSelectedDeliveryAddress: (address: Address | null) => Promise<void>
+  setSelectedBillingAddress: (address: Address | null) => Promise<void>
   selectedDeliveryAddress: Address | null
+  selectedBillingAddress: Address | null
   selectedDeliveryOption: DeliveryOption | null
   availableDeliveryOptions: DeliveryOption[]
   shippingCost: number
@@ -60,12 +62,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [recentlyRemovedItems, setRecentlyRemovedItems] = useState<RecentlyRemovedItem[]>([]); // Added
-  const [toast, setToast] = useState<{
-    message: string
-    productTitle?: string
-    productImage?: string
-    type: 'success' | 'error'
-  } | null>(null)
+  const { showToast } = useToast()
 
   const [availableDeliveryOptions, setAvailableDeliveryOptions] = useState<
     DeliveryOption[]
@@ -74,6 +71,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     useState<DeliveryOption | null>(null)
   const [selectedDeliveryAddress, setSelectedDeliveryAddress] =
     useState<Address | null>(null)
+  const [selectedBillingAddress, setSelectedBillingAddress] =
+    useState<Address | null>(null)
 
   // New: Load recently removed items from localStorage on mount
   useEffect(() => {
@@ -81,10 +80,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const storedItems = localStorage.getItem(LOCAL_STORAGE_RECENTLY_REMOVED_KEY);
       if (storedItems) {
         try {
-          setRecentlyRemovedItems(JSON.parse(storedItems));
+          const parsed = JSON.parse(storedItems) as RecentlyRemovedItem[];
+          if (Array.isArray(parsed)) {
+            // Deduplicate items on load to clean up any legacy duplicates in cache
+            const seen = new Set<string>();
+            const unique: RecentlyRemovedItem[] = [];
+            for (const item of parsed) {
+              if (item && item.merchandiseId && !seen.has(item.merchandiseId)) {
+                seen.add(item.merchandiseId);
+                unique.push(item);
+              }
+            }
+            setRecentlyRemovedItems(unique);
+          }
         } catch {
           localStorage.removeItem(LOCAL_STORAGE_RECENTLY_REMOVED_KEY);
         }
+      }
+    }
+  }, []);
+
+  // Load selected billing address from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('selectedBillingAddress');
+      if (stored) {
+        try {
+          setSelectedBillingAddress(JSON.parse(stored));
+        } catch {}
       }
     }
   }, []);
@@ -102,6 +125,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(LOCAL_STORAGE_RECENTLY_REMOVED_KEY);
     }
   }, [recentlyRemovedItems]);
+
+  // Save selected billing address to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (selectedBillingAddress) {
+        localStorage.setItem('selectedBillingAddress', JSON.stringify(selectedBillingAddress));
+      } else {
+        localStorage.removeItem('selectedBillingAddress');
+      }
+    }
+  }, [selectedBillingAddress]);
 
   const syncFromCart = useCallback((c: Cart | null) => {
     if (!c) return
@@ -142,10 +176,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       })
     }
     setCart(c)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cartLineCount', String(c.lines.edges.length))
+    }
   }, [])
 
   const showAddToCartFeedback = useCallback((productTitle: string, productImage?: string) => {
-    setToast({
+    showToast({
       message: 'Produs adăugat în coș',
       productTitle,
       productImage,
@@ -161,7 +198,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('reveal-bottom-nav'))
     }
-  }, [])
+  }, [showToast])
 
   const createCart = useCallback(
     async (lines?: { merchandiseId: string; quantity: number }[]) => {
@@ -394,8 +431,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
               title: removedLine.merchandise.product.title,
               image: removedLine.merchandise.image || removedLine.merchandise.product.featuredImage,
             };
-            // Add new item to the beginning and limit array size
-            return [newItem, ...prev].slice(0, MAX_RECENTLY_REMOVED_ITEMS);
+            // Filter out any existing item with the same merchandiseId to avoid duplicates
+            const filtered = prev.filter((item) => item.merchandiseId !== newItem.merchandiseId);
+            return [newItem, ...filtered].slice(0, MAX_RECENTLY_REMOVED_ITEMS);
           });
         }
 
@@ -416,7 +454,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         await addToCart(itemToRestore.merchandiseId, itemToRestore.quantity);
         setRecentlyRemovedItems((prev) =>
-          prev.filter((item) => item.id !== itemToRestore.id)
+          prev.filter((item) => item.merchandiseId !== itemToRestore.merchandiseId)
         );
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -429,7 +467,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const removeRecentlyRemovedItem = useCallback((itemId: string) => {
-    setRecentlyRemovedItems((prev) => prev.filter((item) => item.id !== itemId));
+    setRecentlyRemovedItems((prev) => {
+      const targetItem = prev.find((item) => item.id === itemId);
+      if (!targetItem) return prev;
+      return prev.filter((item) => item.merchandiseId !== targetItem.merchandiseId);
+    });
   }, []);
 
   const clearCart = useCallback(
@@ -450,7 +492,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
             title: node.merchandise.product.title,
             image: node.merchandise.image || node.merchandise.product.featuredImage,
           }));
-          setRecentlyRemovedItems((prev) => [...removedItems, ...prev].slice(0, MAX_RECENTLY_REMOVED_ITEMS));
+          setRecentlyRemovedItems((prev) => {
+            const seen = new Set<string>();
+            const merged: RecentlyRemovedItem[] = [];
+            // Add new items first to keep them at the top
+            for (const item of removedItems) {
+              if (!seen.has(item.merchandiseId)) {
+                seen.add(item.merchandiseId);
+                merged.push(item);
+              }
+            }
+            // Add existing items that don't duplicate merchandiseId
+            for (const item of prev) {
+              if (!seen.has(item.merchandiseId)) {
+                seen.add(item.merchandiseId);
+                merged.push(item);
+              }
+            }
+            return merged.slice(0, MAX_RECENTLY_REMOVED_ITEMS);
+          });
 
           const response = await fetch('/api/cart', {
             method: 'POST',
@@ -479,6 +539,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           // If cart is already empty, just set it to null or an empty cart structure
           setCart(null) // Or an empty cart object if preferred
           localStorage.removeItem('cartId') // Clear cartId from localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('cartLineCount', '0')
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
@@ -530,6 +593,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     },
     [cart, ensureCart, syncFromCart]
+  )
+
+  const updateBillingAddress = useCallback(
+    async (address: Address) => {
+      setSelectedBillingAddress(address)
+    },
+    []
   )
 
   const updateDeliveryOption = useCallback(
@@ -609,7 +679,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (address) await updateDeliveryAddress(address)
         else setSelectedDeliveryAddress(null)
       },
+      setSelectedBillingAddress: async (address: Address | null) => {
+        if (address) await updateBillingAddress(address)
+        else setSelectedBillingAddress(null)
+      },
       selectedDeliveryAddress,
+      selectedBillingAddress,
       selectedDeliveryOption,
       availableDeliveryOptions,
       shippingCost,
@@ -628,12 +703,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateCartItemQuantity,
       clearCart,
       selectedDeliveryAddress,
+      selectedBillingAddress,
       selectedDeliveryOption,
       availableDeliveryOptions,
       shippingCost,
       subtotal,
       total,
       updateDeliveryAddress,
+      updateBillingAddress,
       updateDeliveryOption,
       recentlyRemovedItems,
       restoreCartItem,
@@ -644,12 +721,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider value={value}>
       {children}
-      {toast && (
-        <Toast
-          toast={toast}
-          onClose={() => setToast(null)}
-        />
-      )}
     </CartContext.Provider>
   )
 }
@@ -658,74 +729,4 @@ export function useCart() {
   const ctx = useContext(CartContext)
   if (!ctx) throw new Error('useCart must be used inside CartProvider')
   return ctx
-}
-
-type ToastInfo = {
-  message: string
-  productTitle?: string
-  productImage?: string
-  type: 'success' | 'error'
-}
-
-function Toast({ toast, onClose }: { toast: ToastInfo; onClose: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3500)
-    return () => clearTimeout(timer)
-  }, [onClose])
-
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes toastSlideIn {
-          from { transform: translate(-50%, -20px); opacity: 0; }
-          to { transform: translate(-50%, 0); opacity: 1; }
-        }
-        @keyframes toastSlideInDesktop {
-          from { transform: translate(20px, 0); opacity: 0; }
-          to { transform: translate(0, 0); opacity: 1; }
-        }
-        .animate-toast {
-          animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @media (min-width: 640px) {
-          .animate-toast {
-            animation: toastSlideInDesktop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          }
-        }
-      `}} />
-      <div className="fixed top-6 left-1/2 sm:left-auto sm:right-6 z-[200] w-[90vw] sm:w-[380px] bg-[var(--background)]/95 backdrop-blur-md border border-[var(--border)] shadow-[0_12px_32px_rgba(0,0,0,0.08)] p-4 flex gap-4 animate-toast select-none">
-        {toast.productImage && (
-          <div className="relative w-16 h-16 border border-[var(--border)] shrink-0 overflow-hidden bg-white">
-            <Image
-              src={toast.productImage}
-              alt={toast.productTitle || 'Product'}
-              fill
-              sizes="64px"
-              className="object-cover"
-            />
-          </div>
-        )}
-        <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-green-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
-            {toast.message}
-          </div>
-          {toast.productTitle && (
-            <p className="text-sm font-medium text-gray-900 mt-1 line-clamp-2 leading-snug">
-              {toast.productTitle}
-            </p>
-          )}
-        </div>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors p-1 self-start cursor-pointer"
-          aria-label="Închide"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </>
-  )
 }

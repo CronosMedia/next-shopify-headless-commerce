@@ -1,7 +1,14 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { X, Plus, ArrowLeft } from 'lucide-react'
-import { romanianCounties, bucharestSectors } from '@/lib/geo-data'
+import { SearchableSelect } from '@/components/common/SearchableSelect'
+import {
+  getCanonicalCounty,
+  getCanonicalLocality,
+  getLocalitiesForCounty,
+  getPostalCodeForCountyAndLocality,
+  RO_COUNTIES,
+} from '@/lib/ro-address'
 
 export type Address = {
   id: string
@@ -23,7 +30,7 @@ type AddressModalProps = {
   isOpen: boolean
   onClose: () => void
   onAddressSelect?: (address: Address) => void
-  mode?: 'default' | 'shipping'
+  mode?: 'default' | 'shipping' | 'billing'
 }
 
 export default function AddressModal({
@@ -46,7 +53,7 @@ export default function AddressModal({
     address1: '',
     address2: '',
     city: '',
-    province: 'București',
+    province: '',
     zip: '',
     country: 'Romania',
     phone: '',
@@ -99,28 +106,10 @@ export default function AddressModal({
     setSuccess(null)
 
     try {
-      // Map Sector to București for Shopify validation if needed
-      const isBucharest =
-        formData.city.trim().toLowerCase() === 'bucuresti' ||
-        formData.city.trim().toLowerCase() === 'bucurești'
-
-      const submissionData = {
-        ...formData,
-        // We send "București" as province but keep the city as București.
-        // The sector info can be kept in province for our display, 
-        // but for Shopify creation let's see if we need a valid province.
-        province: isBucharest ? 'București' : formData.province,
-        // Keep the sector in address2 or notes if we want to preserve it?
-        // Actually, if we use "București" it's valid. 
-        // Let's prepend the sector to address1 if it's there to not lose it, 
-        // or just rely on the zip code.
-        address1: isBucharest ? `${formData.province}, ${formData.address1}` : formData.address1
-      }
-
       const response = await fetch('/api/account/addresses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address: submissionData }),
+        body: JSON.stringify({ address: formData }),
       })
 
       if (!response.ok) {
@@ -163,17 +152,15 @@ export default function AddressModal({
     }
   }
 
+  const localities = useMemo(() => getLocalitiesForCounty(formData.province), [formData.province])
+
   if (!isOpen) {
     return null
   }
 
-  const isBucuresti =
-    formData.city.trim().toLowerCase() === 'bucuresti' ||
-    formData.city.trim().toLowerCase() === 'bucurești'
-
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-none border border-neutral-300 shadow-2xl max-w-2xl w-full flex flex-col max-h-[90vh] overflow-hidden">
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900">
             {isAdding ? 'Adaugă adresă nouă' : 'Selectează adresa'}
@@ -186,25 +173,35 @@ export default function AddressModal({
         <div className="p-6 overflow-y-auto custom-scrollbar">
           {/* Status Messages */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-none flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
               <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-4 p-3 bg-secondary border border-border text-primary text-sm rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <div className="mb-4 p-3 bg-secondary border border-border text-primary text-sm rounded-none flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-black" />
               {success}
             </div>
           )}
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
-              <div className="w-8 h-8 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-black/20 border-t-black rounded-full animate-spin" />
               <p className="text-gray-500 font-medium font-serif">Se încarcă adresele...</p>
             </div>
           ) : isAdding ? (
             <form id="add-address-form" onSubmit={handleSaveAddress} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-sm font-semibold text-gray-700">Companie / Nume firmă (opțional)</label>
+                <input
+                  type="text"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
+                  placeholder="ex: Compania Ta SRL (opțional pentru facturare)"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-sm font-semibold text-gray-700">Prenume</label>
@@ -213,7 +210,7 @@ export default function AddressModal({
                     required
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                     placeholder="ex: Mihai"
                   />
                 </div>
@@ -224,7 +221,7 @@ export default function AddressModal({
                     required
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                     placeholder="ex: Popescu"
                   />
                 </div>
@@ -236,7 +233,7 @@ export default function AddressModal({
                   required
                   value={formData.address1}
                   onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                  className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                   placeholder="ex: Str. Exemplului nr. 1"
                 />
               </div>
@@ -246,56 +243,59 @@ export default function AddressModal({
                   type="text"
                   value={formData.address2 || ''}
                   onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                  className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                   placeholder="ex: Bl. A2, Sc. 1, Ap. 12"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-sm font-semibold text-gray-700">Oraș</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.city}
-                    onChange={(e) => {
-                      const newCity = e.target.value
-                      const isBuch =
-                        newCity.trim().toLowerCase() === 'bucuresti' ||
-                        newCity.trim().toLowerCase() === 'bucurești'
-                      setFormData({
-                        ...formData,
-                        city: newCity,
-                        province: isBuch ? 'Sector 1' : (formData.province.startsWith('Sector') ? 'Alba' : formData.province),
-                      })
+                  <label className="text-sm font-semibold text-gray-700">Județ</label>
+                  <SearchableSelect
+                    value={formData.province}
+                    options={RO_COUNTIES}
+                    placeholder="Alege județul"
+                    onChange={(nextProvince) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        province: nextProvince,
+                        city: prev.province !== nextProvince ? '' : prev.city,
+                        zip: prev.province !== nextProvince ? '' : prev.zip,
+                      }))
                     }}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
-                    placeholder="ex: București"
+                    onSelect={(nextProvince) => {
+                      const canonical = getCanonicalCounty(nextProvince)
+                      setFormData((prev) => ({
+                        ...prev,
+                        province: canonical,
+                        city: '',
+                        zip: '',
+                      }))
+                    }}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-semibold text-gray-700">
-                    {isBucuresti ? 'Sector' : 'Județ'}
-                  </label>
-                  <select
-                    required
-                    value={formData.province}
-                    onChange={(e) => setFormData({ ...formData, province: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none bg-white font-medium"
-                  >
-                    {isBucuresti
-                      ? bucharestSectors.map((sector) => (
-                        <option key={sector.code} value={sector.name}>
-                          {sector.name}
-                        </option>
-                      ))
-                      : romanianCounties
-                        .filter((c) => c.name !== 'București')
-                        .map((county) => (
-                          <option key={county.code} value={county.name}>
-                            {county.name}
-                          </option>
-                        ))}
-                  </select>
+                  <label className="text-sm font-semibold text-gray-700">Localitate</label>
+                  <SearchableSelect
+                    value={formData.city}
+                    options={localities.map((locality) => locality.name)}
+                    disabled={!formData.province}
+                    placeholder={formData.province ? "Alege localitatea" : "Selectează județul întâi"}
+                    onChange={(nextCity) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        city: nextCity,
+                      }))
+                    }}
+                    onSelect={(nextCity) => {
+                      const canonical = getCanonicalLocality(formData.province, nextCity)
+                      const code = getPostalCodeForCountyAndLocality(formData.province, canonical)
+                      setFormData((prev) => ({
+                        ...prev,
+                        city: canonical,
+                        zip: code || prev.zip,
+                      }))
+                    }}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -306,7 +306,7 @@ export default function AddressModal({
                     required
                     value={formData.zip}
                     onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                     placeholder="ex: 123456"
                   />
                 </div>
@@ -317,7 +317,7 @@ export default function AddressModal({
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all outline-none"
+                    className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
                     placeholder="ex: 0721 123 456"
                   />
                 </div>
@@ -328,9 +328,9 @@ export default function AddressModal({
               {addresses.map((address) => (
                 <div
                   key={address.id}
-                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.id
-                      ? 'border-accent bg-secondary'
-                      : 'border-gray-100 hover:border-gray-300'
+                  className={`p-4 border-2 rounded-none cursor-pointer transition-all hover:shadow-sm ${selectedAddress === address.id
+                      ? 'border-black bg-[#F9F8F6]'
+                      : 'border-neutral-200 hover:border-neutral-400'
                     }`}
                   onClick={() => setSelectedAddress(address.id)}
                 >
@@ -340,18 +340,18 @@ export default function AddressModal({
                         {address.firstName} {address.lastName}
                       </p>
                       <p className="text-gray-600">{address.address1}</p>
-                      {address.address2 && <p className="text-gray-500 text-xs italic">{address.address2}</p>}
+                      {address.address2 && <p className="text-gray-500 text-xs">{address.address2}</p>}
                       <p className="text-gray-700 font-medium">
                         {address.city}, {address.province} • {address.zip}
                       </p>
                       {address.phone && (
                         <p className="text-gray-600 flex items-center gap-1 mt-2">
-                          <span className="text-gray-400">Tel:</span> {address.phone}
+                           <span className="text-gray-400">Tel:</span> {address.phone}
                         </p>
                       )}
                     </div>
                     {selectedAddress === address.id && (
-                      <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-white">
+                      <div className="w-5 h-5 rounded-none bg-black flex items-center justify-center text-white">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
@@ -364,8 +364,20 @@ export default function AddressModal({
                 onClick={() => {
                   setError(null)
                   setIsAdding(true)
+                  setFormData({
+                    firstName: '',
+                    lastName: '',
+                    address1: '',
+                    address2: '',
+                    city: '',
+                    province: '',
+                    zip: '',
+                    country: 'Romania',
+                    phone: '',
+                    company: '',
+                  })
                 }}
-                className="w-full flex items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-accent hover:text-accent hover:bg-secondary/30 transition-all group"
+                className="w-full flex items-center justify-center gap-2 p-5 border-2 border-dashed border-neutral-300 rounded-none text-neutral-500 hover:border-black hover:text-black hover:bg-neutral-50 transition-all group"
               >
                 <Plus size={20} className="group-hover:scale-110 transition-transform" />
                 <span className="font-semibold">Adaugă adresă nouă</span>
@@ -393,7 +405,7 @@ export default function AddressModal({
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-white hover:shadow-sm transition-all text-sm font-semibold"
+              className="px-5 py-2.5 rounded-none border border-neutral-300 text-neutral-700 hover:bg-neutral-50 transition-all text-sm font-semibold"
             >
               Anulează
             </button>
@@ -402,7 +414,7 @@ export default function AddressModal({
                 type="submit"
                 form="add-address-form"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-lg bg-primary text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center gap-2"
+                className="px-5 py-2.5 rounded-none bg-black text-white hover:bg-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -424,9 +436,9 @@ export default function AddressModal({
                   }
                 }}
                 disabled={!selectedAddress}
-                className="px-5 py-2.5 rounded-lg bg-accent text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold"
+                className="px-5 py-2.5 rounded-none bg-black text-white hover:bg-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold"
               >
-                {mode === 'shipping' ? 'Confirmă Adresa' : 'Setează ca implicită'}
+                {mode === 'shipping' || mode === 'billing' ? 'Confirmă Adresa' : 'Setează ca implicită'}
               </button>
             )}
           </div>

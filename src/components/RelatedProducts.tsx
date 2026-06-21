@@ -25,7 +25,13 @@ type ProductNode = {
   }
 }
 
-export default function RelatedProducts({ currentProductId }: { currentProductId?: string }) {
+export default function RelatedProducts({ 
+  currentProductId,
+  limit = 4
+}: { 
+  currentProductId?: string
+  limit?: number
+}) {
   const [products, setProducts] = useState<ProductNode[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -55,7 +61,7 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
           }
         }
 
-        // Filter out current product and slice to up to 8 items
+        // Filter out current product and slice to up to 8 items in state cache
         const validProducts = finalProducts
           .filter(p => p.id !== currentProductId) // Exclude current
           .slice(0, 8)
@@ -71,7 +77,9 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
     fetchProducts()
   }, [currentProductId])
 
-  if (loading || products.length === 0) return null
+  const displayedProducts = products.slice(0, limit)
+
+  if (loading || displayedProducts.length === 0) return null
 
   return (
     <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 animate-fadeIn overflow-hidden lg:overflow-visible">
@@ -88,7 +96,7 @@ export default function RelatedProducts({ currentProductId }: { currentProductId
         className="flex lg:grid gap-4 md:gap-6 lg:gap-8 overflow-x-auto lg:overflow-x-visible pb-8 lg:pb-0 snap-x snap-mandatory lg:snap-none scroll-px-6 lg:scroll-px-0 -mx-6 px-6 md:-mx-12 md:px-12 lg:mx-0 lg:px-0 lg:grid-cols-4 scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {products.map((product) => (
+        {displayedProducts.map((product) => (
           <div
             key={product.id}
             className="flex-shrink-0 w-[75vw] max-w-[260px] md:w-[280px] lg:w-auto lg:max-w-none lg:flex-shrink snap-center md:snap-start lg:snap-align-none"

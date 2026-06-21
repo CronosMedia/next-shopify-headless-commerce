@@ -9,6 +9,7 @@ import React, {
     useMemo,
     ReactNode,
 } from 'react'
+import { useToast } from '@/components/ToastProvider'
 
 export type WishlistItem = {
     id: string
@@ -42,6 +43,7 @@ const LOCAL_STORAGE_KEY = 'wishlist_items'
 export function WishlistProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<WishlistItem[]>([])
     const [isInitialized, setIsInitialized] = useState(false)
+    const { showToast } = useToast()
 
     // Load from local storage on mount
     useEffect(() => {
@@ -79,15 +81,36 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         [items]
     )
 
+    const showWishlistFeedback = useCallback((message: string, productTitle: string, productImage?: string) => {
+        showToast({
+            message,
+            productTitle,
+            productImage,
+            type: 'success'
+        })
+        
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(80)
+            } catch {}
+        }
+
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('reveal-bottom-nav'))
+        }
+    }, [showToast])
+
     const toggleItem = useCallback(
         (item: WishlistItem) => {
             if (isInWishlist(item.id)) {
                 removeItem(item.id)
+                showWishlistFeedback('Eliminat de la favorite', item.title, item.featuredImage?.url)
             } else {
                 addItem(item)
+                showWishlistFeedback('Salvat la favorite', item.title, item.featuredImage?.url)
             }
         },
-        [isInWishlist, addItem, removeItem]
+        [isInWishlist, addItem, removeItem, showWishlistFeedback]
     )
 
     const value = useMemo(

@@ -3,7 +3,7 @@ import { Truck, Lock, RefreshCw } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F9F8F6] text-[#1a1a1a] border-t border-[#e5e4e0]">
+    <footer className="bg-[#F9F8F6] text-[#1a1a1a] border-t border-[#e5e4e0] pb-20 lg:pb-0">
       {/* Trust/Assurance Row */}
       <div className="border-b border-[#e5e4e0] pt-6 pb-10 md:py-16 bg-white">
         <div className="max-w-full mx-auto px-6 md:px-10 lg:px-16">

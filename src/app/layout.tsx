@@ -52,6 +52,8 @@ export const metadata: Metadata = {
     'Maison Outdoor - Echipament tehnic și îmbrăcăminte premium pentru expediții și drumeții.',
 }
 
+import { ToastProvider } from '@/components/ToastProvider'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,17 +66,19 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
-          <UIProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <Header />
-                <main className="min-h-screen pb-20 lg:pb-0">{children}</main>
-                <QuickViewModal />
-                <Footer />
-                <MobileBottomNav />
-              </WishlistProvider>
-            </CartProvider>
-          </UIProvider>
+          <ToastProvider>
+            <UIProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <Header />
+                  <main className="min-h-screen">{children}</main>
+                  <QuickViewModal />
+                  <Footer />
+                  <MobileBottomNav />
+                </WishlistProvider>
+              </CartProvider>
+            </UIProvider>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

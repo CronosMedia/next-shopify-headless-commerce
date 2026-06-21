@@ -16,6 +16,7 @@ import {
   Settings, // Added for Security & Settings
   HelpCircle, // Added for Help Center
   Check, // Added for checked icon
+  Receipt,
 } from 'lucide-react'
 import {
   useAuth,
@@ -27,7 +28,10 @@ import {
 } from '@/components/AuthProvider'
 import { useCart } from '@/components/CartProvider'
 import { romanianCounties } from '@/lib/geo-data'
+import { SearchableSelect } from '@/components/common/SearchableSelect'
+import { getLocalitiesForCounty, RO_COUNTIES, getCanonicalCounty, getCanonicalLocality, getPostalCodeForCountyAndLocality } from '@/lib/ro-address'
 import ConfirmationModal from '@/components/ConfirmationModal'
+import { useToast } from '@/components/ToastProvider'
 
 export default function AccountPage() {
   return (
@@ -78,7 +82,7 @@ function LoadingSpinner() {
   return (
     <div className="max-w-md mx-auto p-6">
       <div className="bg-background rounded-lg shadow-lg p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto"></div>
         <p className="mt-4 text-muted-foreground">Se încarcă...</p>
       </div>
     </div>
@@ -163,7 +167,7 @@ function AuthForm() {
           <button
             type="submit"
             disabled={isSubmitting || loading}
-            className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50"
+            className="w-full bg-black text-white py-2 px-4 rounded-none border border-black hover:bg-neutral-900 transition-all disabled:opacity-50"
           >
             {isSubmitting
               ? 'Vă rugăm așteptați...'
@@ -194,6 +198,7 @@ function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: str
     { id: 'orders', label: 'Istoric comenzi', icon: Package },
     { id: 'payment', label: 'Metode de plată', icon: CreditCard },
     { id: 'addresses', label: 'Adrese', icon: MapPin },
+    { id: 'billing', label: 'Date de facturare', icon: Receipt },
     { id: 'settings', label: 'Securitate și setări', icon: Settings },
   ]
 
@@ -214,7 +219,7 @@ function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: str
               }`}
           >
             <div
-              className={`absolute top-0 h-full w-2 bg-accent -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+              className={`absolute top-0 h-full w-2 bg-black -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
                 }`}
             ></div>
             <item.icon size={20} className="ml-4" />
@@ -257,6 +262,7 @@ function MainContent({ activeTab, user }: { activeTab: string; user: User }) {
         {renderedActiveTab === 'profile' && <ProfileTab user={user} />}
         {renderedActiveTab === 'orders' && <OrdersTab />}
         {renderedActiveTab === 'addresses' && <AddressesTab user={user} />}
+        {renderedActiveTab === 'billing' && <BillingTab />}
         {renderedActiveTab === 'payment' && <PaymentTab />}
         {renderedActiveTab === 'settings' && <SettingsTab user={user} />}
       </div>
@@ -266,18 +272,17 @@ function MainContent({ activeTab, user }: { activeTab: string; user: User }) {
 
 function SettingsTab({ user }: { user: User }) {
   const { refetchUser } = useAuth();
+  const { showToast } = useToast();
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const handleEmailChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
     try {
       const response = await fetch('/api/account', {
         method: 'PUT',
@@ -288,7 +293,7 @@ function SettingsTab({ user }: { user: User }) {
       if (!response.ok) {
         throw new Error(data.error?.message || 'A apărut o eroare.');
       }
-      setSuccess('Adresa de email a fost schimbată cu succes.');
+      showToast('Adresa de email a fost schimbată cu succes.');
       setIsEditingEmail(false);
       refetchUser();
     } catch (err: unknown) {
@@ -299,7 +304,6 @@ function SettingsTab({ user }: { user: User }) {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
     if (password !== confirmPassword) {
       setError('Parolele nu se potrivesc.');
       return;
@@ -316,7 +320,7 @@ function SettingsTab({ user }: { user: User }) {
       }
       setPassword('');
       setConfirmPassword('');
-      setSuccess('Parola a fost schimbată cu succes.');
+      showToast('Parola a fost schimbată cu succes.');
       setIsEditingPassword(false);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'A apărut o eroare.');
@@ -331,11 +335,6 @@ function SettingsTab({ user }: { user: User }) {
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
           {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-secondary border border-border text-primary px-4 py-3 rounded-lg relative mb-4">
-          {success}
         </div>
       )}
       <div className="space-y-8">
@@ -360,7 +359,7 @@ function SettingsTab({ user }: { user: User }) {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
                 >
                   Salvează
                 </button>
@@ -406,7 +405,7 @@ function SettingsTab({ user }: { user: User }) {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:bg-primary-dark text-lg cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
                 >
                   Salvează
                 </button>
@@ -505,7 +504,7 @@ function ProfileTab({ user }: { user: User }) {
              <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:opacity-90 text-lg cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? 'Se salvează...' : 'Salvează'}
             </button>
@@ -545,7 +544,7 @@ function ProfileTab({ user }: { user: User }) {
               secțiunea{' '}
               <Link
                 href="/account?tab=settings"
-                className="font-bold text-accent text-base leading-6 underline hover:opacity-90"
+                className="font-bold text-black text-base leading-6 underline hover:opacity-80"
               >
                 Securitate și setări
               </Link>
@@ -647,7 +646,7 @@ function OrdersTab() {
                               </span>
                             )}
                             {order.fulfillmentStatus === 'IN_PROGRESS' && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-accent border border-border">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-black border border-border">
                                 În curs de livrare
                               </span>
                             )}
@@ -660,7 +659,7 @@ function OrdersTab() {
                                   href={fulfillment.trackingInfo[0].url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="hover:underline text-accent"
+                                  className="hover:underline text-black font-semibold"
                                 >
                                   {fulfillment.trackingInfo[0].number}
                                 </a>
@@ -696,9 +695,9 @@ function OrdersTab() {
                   <button
                     key={index}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`mx-1 px-3 py-1 rounded-md ${currentPage === index + 1
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground'
+                    className={`mx-1 px-3 py-1 rounded-none border transition-colors ${currentPage === index + 1
+                      ? 'bg-black text-white border-black'
+                      : 'bg-white text-neutral-800 border-gray-300 hover:border-black hover:text-black'
                       }`}
                   >
                     {index + 1}
@@ -837,7 +836,7 @@ function AddressesTab({ user }: { user: User }) {
                     {user.defaultAddress?.id === address.id ? (
                       <button
                         disabled
-                        className="flex items-center gap-2 bg-white text-accent px-6 py-3 rounded-none border-2 border-accent text-lg"
+                        className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-none border-2 border-black text-lg"
                       >
                         <Check size={20} />
                         Adresă preferată
@@ -1138,7 +1137,7 @@ function AddressForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-none border-2 border-primary hover:opacity-90 text-lg cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
           </button>
@@ -1178,7 +1177,7 @@ function InputField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:bg-secondary ${error ? 'border-red-500' : 'border-muted'
+        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-black/20 focus:border-black disabled:opacity-50 disabled:bg-secondary ${error ? 'border-red-500' : 'border-muted'
           }`}
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
@@ -1199,6 +1198,553 @@ function PaymentTab() {
           sau șterse în timpul procesului de finalizare a comenzii.
         </p>
       </div>
+    </div>
+  )
+}
+
+type BillingType = 'personal' | 'business'
+type BillingProfile = {
+  id?: string
+  alias: string
+  type: BillingType
+  firstName?: string
+  lastName?: string
+  companyName?: string
+  cui?: string
+  regCom?: string
+  address: string
+  city: string
+  province: string
+  zip: string
+  phone: string
+  isVatPayer?: boolean
+  isEInvoiceActive?: boolean
+}
+
+function BillingTab() {
+  const [profiles, setProfiles] = useState<BillingProfile[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isAdding, setIsAdding] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isAnafLoading, setIsAnafLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [profileIdToDelete, setProfileIdToDelete] = useState<string | null>(null)
+  const { showToast } = useToast()
+
+  const [formData, setFormData] = useState<BillingProfile>({
+    alias: '',
+    type: 'personal',
+    firstName: '',
+    lastName: '',
+    companyName: '',
+    cui: '',
+    regCom: '',
+    address: '',
+    city: '',
+    province: '',
+    zip: '',
+    phone: '',
+    isVatPayer: false,
+    isEInvoiceActive: false,
+  })
+
+  const fetchProfiles = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch('/api/account/billing')
+      if (!res.ok) throw new Error('Nu am putut încărca datele de facturare.')
+      const data = await res.json()
+      setProfiles(data.billingProfiles || [])
+    } catch {
+      // Fallback to localStorage
+      const local = localStorage.getItem('local_billing_profiles')
+      if (local) {
+        try {
+          setProfiles(JSON.parse(local))
+        } catch {
+          setProfiles([])
+        }
+      } else {
+        setProfiles([])
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProfiles()
+  }, [])
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setError(null)
+
+    if (!formData.alias.trim()) {
+      setError('Denumirea profilului este obligatorie.')
+      setIsSubmitting(false)
+      return
+    }
+    if (formData.type === 'personal') {
+      if (!formData.firstName || !formData.lastName) {
+        setError('Prenumele și numele sunt obligatorii.')
+        setIsSubmitting(false)
+        return
+      }
+    } else {
+      if (!formData.companyName || !formData.cui) {
+        setError('Numele companiei și CUI-ul sunt obligatorii.')
+        setIsSubmitting(false)
+        return
+      }
+    }
+    if (!formData.address || !formData.city || !formData.province || !formData.zip) {
+      setError('Adresa completă este obligatorie.')
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/account/billing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save',
+          profile: formData,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error?.message || 'Eroare la salvare.')
+
+      showToast('Datele de facturare au fost salvate cu succes!')
+      setProfiles(data.billingProfiles || [])
+      setIsAdding(false)
+    } catch {
+      // Fallback: Save to localStorage instead
+      let nextProfiles = [...profiles]
+      if (formData.id) {
+        nextProfiles = nextProfiles.map((p) => (p.id === formData.id ? formData : p))
+      } else {
+        const newProfile = {
+          ...formData,
+          id: `billing_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        }
+        nextProfiles.push(newProfile)
+      }
+      localStorage.setItem('local_billing_profiles', JSON.stringify(nextProfiles))
+      setProfiles(nextProfiles)
+      showToast('Datele de facturare au fost salvate cu succes!')
+      setIsAdding(false)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!profileIdToDelete) return
+    const id = profileIdToDelete
+    setIsDeleteModalOpen(false)
+    setProfileIdToDelete(null)
+    setError(null)
+    try {
+      const res = await fetch('/api/account/billing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete',
+          profileId: id,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error?.message || 'Eroare la ștergere.')
+
+      showToast('Profilul de facturare a fost șters.')
+      setProfiles(data.billingProfiles || [])
+    } catch {
+      // Fallback: Delete from localStorage
+      const nextProfiles = profiles.filter((p) => p.id !== id)
+      localStorage.setItem('local_billing_profiles', JSON.stringify(nextProfiles))
+      setProfiles(nextProfiles)
+      showToast('Profilul de facturare a fost șters.')
+    }
+  }
+
+  const handleAnafLookup = async () => {
+    const cleanCui = formData.cui?.replace(/\s+/g, '')
+    if (!cleanCui || !/^\d{2,10}$/.test(cleanCui)) {
+      setError('CUI invalid. Completează cu un cod cifric valid.')
+      return
+    }
+
+    setIsAnafLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/anaf/cui', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cui: cleanCui }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Nu s-au putut prelua datele din ANAF.')
+
+      const { parseAnafAddress } = await import('@/lib/ro-address')
+      const parsed = parseAnafAddress(data.adresa || '')
+
+      setFormData((prev) => ({
+        ...prev,
+        companyName: data.denumire || prev.companyName,
+        regCom: data.nrRegCom || prev.regCom,
+        address: parsed.addressLine || prev.address,
+        province: parsed.province || prev.province,
+        city: parsed.city || prev.city,
+        zip: parsed.postalCode || prev.zip,
+        isVatPayer: typeof data.platitorTva === 'boolean' ? data.platitorTva : prev.isVatPayer,
+        isEInvoiceActive: typeof data.statusRO_e_Factura === 'boolean' ? data.statusRO_e_Factura : prev.isEInvoiceActive,
+      }))
+      showToast('Datele firmei au fost preluate din ANAF.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Nu s-au putut prelua datele.')
+    } finally {
+      setIsAnafLoading(false)
+    }
+  }
+
+  const startNew = (type: BillingType) => {
+    setError(null)
+    setFormData({
+      alias: '',
+      type,
+      firstName: '',
+      lastName: '',
+      companyName: '',
+      cui: '',
+      regCom: '',
+      address: '',
+      city: '',
+      province: '',
+      zip: '',
+      phone: '',
+      isVatPayer: false,
+      isEInvoiceActive: false,
+    })
+    setIsAdding(true)
+  }
+
+  const startEdit = (profile: BillingProfile) => {
+    setError(null)
+    setFormData(profile)
+    setIsAdding(true)
+  }
+
+  const localities = useMemo(() => getLocalitiesForCounty(formData.province), [formData.province])
+
+  return (
+    <div className="bg-card p-6 border border-gray-300 rounded-none">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-foreground">Date de facturare</h2>
+        {!isAdding && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => startNew('personal')}
+              className="flex items-center gap-2 bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer transition-all"
+            >
+              <PlusCircle size={16} /> Persoană Fizică
+            </button>
+            <button
+              onClick={() => startNew('business')}
+              className="flex items-center gap-2 bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer transition-all"
+            >
+              <PlusCircle size={16} /> Persoană Juridică
+            </button>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative mb-4 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+        </div>
+      ) : isAdding ? (
+        <form onSubmit={handleSave} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Nume profil facturare (ex. Factura mea, Firma mea) *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.alias}
+                onChange={(e) => setFormData({ ...formData, alias: e.target.value })}
+                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                placeholder="ex. Factură Principală"
+              />
+            </div>
+
+            {formData.type === 'personal' ? (
+              <>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Prenume *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.firstName || ''}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nume *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.lastName || ''}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">CUI / CIF *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.cui || ''}
+                      onChange={(e) => setFormData({ ...formData, cui: e.target.value })}
+                      className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                      placeholder="Fără RO"
+                    />
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      disabled={isAnafLoading || !formData.cui}
+                      onClick={handleAnafLookup}
+                      className="w-full bg-black text-white py-2 px-4 border-2 border-black hover:bg-neutral-900 transition-all text-base font-bold disabled:opacity-50 cursor-pointer h-[46px] flex items-center justify-center rounded-none"
+                    >
+                      {isAnafLoading ? 'Se verifică...' : 'Preia din ANAF'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nume Companie *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.companyName || ''}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Registrul Comerțului</label>
+                  <input
+                    type="text"
+                    value={formData.regCom || ''}
+                    onChange={(e) => setFormData({ ...formData, regCom: e.target.value })}
+                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    placeholder="J40/12345/2026"
+                  />
+                </div>
+
+                <div className="flex items-center gap-6 pt-6">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={formData.isVatPayer || false}
+                      onChange={(e) => setFormData({ ...formData, isVatPayer: e.target.checked })}
+                      className="h-5 w-5 border-gray-400 text-primary focus:ring-primary"
+                    />
+                    <span className="text-sm text-gray-700 font-semibold">Plătitor TVA</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={formData.isEInvoiceActive || false}
+                      onChange={(e) => setFormData({ ...formData, isEInvoiceActive: e.target.checked })}
+                      className="h-5 w-5 border-gray-400 text-primary focus:ring-primary"
+                    />
+                    <span className="text-sm text-gray-700 font-semibold">RO e-Factura activ</span>
+                  </label>
+                </div>
+              </>
+            )}
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Adresă de facturare *</label>
+              <input
+                type="text"
+                required
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                placeholder="Strada, număr, bloc, ap."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Județ *</label>
+              <SearchableSelect
+                value={formData.province}
+                options={RO_COUNTIES}
+                placeholder="Alege județul"
+                inputClassName="px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                onChange={(nextProvince) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    province: nextProvince,
+                    city: prev.province !== nextProvince ? '' : prev.city,
+                    zip: prev.province !== nextProvince ? '' : prev.zip,
+                  }))
+                }}
+                onSelect={(nextProvince) => {
+                  const canonical = getCanonicalCounty(nextProvince)
+                  setFormData((prev) => ({
+                    ...prev,
+                    province: canonical,
+                    city: '',
+                    zip: '',
+                  }))
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Localitate *</label>
+              <SearchableSelect
+                value={formData.city}
+                options={localities.map((l) => l.name)}
+                disabled={!formData.province}
+                placeholder={formData.province ? "Alege localitatea" : "Selectează județul întâi"}
+                inputClassName="px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                onChange={(nextCity) => {
+                  setFormData((prev) => ({ ...prev, city: nextCity }))
+                }}
+                onSelect={(nextCity) => {
+                  const canonical = getCanonicalLocality(formData.province, nextCity)
+                  const code = getPostalCodeForCountyAndLocality(formData.province, canonical)
+                  setFormData((prev) => ({
+                    ...prev,
+                    city: canonical,
+                    zip: code || prev.zip,
+                  }))
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Cod Poștal *</label>
+              <input
+                type="text"
+                required
+                value={formData.zip}
+                onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Telefon *</label>
+              <input
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-base font-semibold cursor-pointer"
+            >
+              Anulează
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-base font-bold cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? 'Se salvează...' : 'Salvează Profilul'}
+            </button>
+          </div>
+        </form>
+      ) : profiles.length === 0 ? (
+        <p className="text-muted-foreground">Nu ai niciun profil de facturare salvat.</p>
+      ) : (
+        <div className="space-y-4">
+          {profiles.map((profile) => (
+            <div key={profile.id} className="border border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div>
+                <p className="font-semibold text-foreground text-lg">{profile.alias}</p>
+                <div className="text-sm text-muted-foreground mt-1 space-y-0.5">
+                  <p>Tip: {profile.type === 'personal' ? 'Persoană Fizică' : 'Persoană Juridică'}</p>
+                  {profile.type === 'personal' ? (
+                    <p>{profile.firstName} {profile.lastName}</p>
+                  ) : (
+                    <>
+                      <p>{profile.companyName} (CUI: {profile.cui}{profile.regCom ? `, RegCom: ${profile.regCom}` : ''})</p>
+                      <p>
+                        {profile.isVatPayer ? 'Plătitor TVA' : 'Neplătitor TVA'}
+                        {profile.isEInvoiceActive ? ' • RO e-Factura activ' : ''}
+                      </p>
+                    </>
+                  )}
+                  <p>{profile.address}, {profile.city}, {profile.province} • {profile.zip}</p>
+                  <p>Tel: {profile.phone}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4 md:mt-0">
+                <button
+                  onClick={() => startEdit(profile)}
+                  className="flex items-center gap-1.5 bg-white text-gray-800 px-4 py-2 border border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer"
+                >
+                  <Edit size={14} /> Editează
+                </button>
+                <button
+                  onClick={() => {
+                    setProfileIdToDelete(profile.id!)
+                    setIsDeleteModalOpen(true)
+                  }}
+                  className="flex items-center gap-1.5 bg-red-500 text-white px-4 py-2 border border-red-600 hover:bg-red-600 text-sm font-semibold cursor-pointer"
+                >
+                  <Trash2 size={14} /> Șterge
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false)
+          setProfileIdToDelete(null)
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Confirmă ștergerea"
+        message="Ești sigur că vrei să ștergi acest profil de facturare?"
+      />
     </div>
   )
 }

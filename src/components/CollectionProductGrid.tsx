@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, X, ArrowUpDown } from 'lucide-react'
 import { cn, formatMoney } from '@/lib/utils'
@@ -50,8 +50,6 @@ const SORT_OPTIONS: SortOption[] = [
     { label: 'Cele mai vândute', value: 'best-selling' },
 ]
 
-type ActivePanel = 'sort' | 'availability' | 'price' | 'vendor' | 'type' | 'tags' | 'all' | null
-
 export default function CollectionProductGrid({
     initialProducts,
 }: {
@@ -71,8 +69,8 @@ export default function CollectionProductGrid({
 
     const [products, setProducts] = useState<Product[]>(initialProducts)
     const [loading, setLoading] = useState(false)
-    const [activePanel, setActivePanel] = useState<ActivePanel>(null)
-    const panelRef = useRef<HTMLDivElement>(null)
+    const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
+    const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
 
     // Dynamic price range
     const prices = useMemo(() => products.map(p => parseFloat(p.priceRange.minVariantPrice.amount)), [products])
@@ -113,20 +111,24 @@ export default function CollectionProductGrid({
         setPriceRange([absoluteMin, absoluteMax])
     }, [absoluteMax, absoluteMin, initialProducts])
 
-    // Close panel on outside click
+    // Lock body scroll when drawer is open
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-                setActivePanel(null)
-            }
+        if (isFilterDrawerOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = ''
         }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+        return () => {
+            document.body.style.overflow = ''
+        }
+    }, [isFilterDrawerOpen])
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setActivePanel(null)
+            if (e.key === 'Escape') {
+                setIsFilterDrawerOpen(false)
+                setIsSortDropdownOpen(false)
+            }
         }
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
@@ -137,17 +139,13 @@ export default function CollectionProductGrid({
         params.set('sort', value)
         router.push(`?${params.toString()}`, { scroll: false })
         setLoading(true)
-        setActivePanel(null)
+        setIsSortDropdownOpen(false)
     }
 
     useEffect(() => {
         setProducts(initialProducts)
         setLoading(false)
     }, [initialProducts])
-
-    const togglePanel = useCallback((panel: ActivePanel) => {
-        setActivePanel(prev => prev === panel ? null : panel)
-    }, [])
 
     const toggleSetItem = (set: Set<string>, setFn: React.Dispatch<React.SetStateAction<Set<string>>>, item: string) => {
         setFn(prev => {
@@ -189,7 +187,7 @@ export default function CollectionProductGrid({
         emptyMessage: string
     ) => {
         if (items.length === 0) {
-            return <p className="text-xs text-[var(--muted-foreground)] italic">{emptyMessage}</p>
+            return <p className="text-xs text-neutral-500 italic">{emptyMessage}</p>
         }
         return (
             <div className="flex flex-wrap gap-2">
@@ -200,10 +198,10 @@ export default function CollectionProductGrid({
                             key={item}
                             onClick={() => toggleSetItem(selected, setSelected, item)}
                             className={cn(
-                                "h-9 px-5 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300",
+                                "h-9 px-5 text-[11px] font-semibold tracking-[0.1em] uppercase border transition-all duration-300 cursor-pointer",
                                 isActive
-                                    ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                    : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
+                                    ? "bg-black text-white border-black"
+                                    : "bg-transparent text-neutral-800 border-neutral-300 hover:border-black hover:text-black"
                             )}
                         >
                             {item}
@@ -222,398 +220,250 @@ export default function CollectionProductGrid({
         <div className="relative min-h-screen bg-[var(--background)]">
 
             {/* ─── FILTER BAR ─── */}
-            <div className="sticky top-[72px] z-30 bg-[var(--background)] border-b border-[var(--border)]" ref={panelRef}>
+            <div className="relative border-b border-[var(--border)] py-4 bg-[var(--background)] z-30">
                 <div className="w-full px-4 md:px-8 lg:px-12">
-                    <div className="flex items-center justify-between h-[52px]">
-                        {/* Left: Results count */}
-                        <div className="text-[11px] tracking-[0.1em] uppercase text-[var(--muted-foreground)] hidden md:block">
-                            <span className="text-[var(--foreground)] font-medium">{filteredProducts.length}</span> produse
+                    <div className="flex items-center justify-between gap-4">
+                        {/* Left: Filter Toggle Button */}
+                        <button
+                            onClick={() => setIsFilterDrawerOpen(true)}
+                            className="flex-shrink-0 flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-2.5 text-[11px] font-semibold tracking-[0.15em] uppercase border border-neutral-300 hover:border-black transition-colors bg-white cursor-pointer"
+                        >
+                            <SlidersHorizontal size={12} strokeWidth={1.5} />
+                            <span>Filtre</span>
+                            {activeFilterCount > 0 && (
+                                <span className="ml-1 flex items-center justify-center min-w-[16px] h-[16px] bg-black text-white text-[9px] font-bold px-1 rounded-full">
+                                    {activeFilterCount}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Middle/Left: Results Count (on desktop) */}
+                        <div className="text-[11px] tracking-[0.1em] uppercase text-neutral-500 hidden md:block">
+                            <span className="text-black font-semibold">{filteredProducts.length}</span> {filteredProducts.length === 1 ? 'produs' : 'produse'}
                         </div>
 
-                        {/* Right: Filter controls */}
-                        <div className="flex items-center gap-2 ml-auto overflow-x-auto scrollbar-none">
-
-                            {/* Sort */}
+                        {/* Right: Sort Dropdown Trigger */}
+                        <div className="relative flex-shrink-0">
                             <button
-                                onClick={() => togglePanel('sort')}
-                                className={cn(
-                                    "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                    activePanel === 'sort'
-                                        ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                        : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                )}
+                                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                                className="flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-2.5 text-[11px] font-semibold tracking-[0.15em] uppercase border border-neutral-300 hover:border-black transition-colors bg-white cursor-pointer"
                             >
                                 <ArrowUpDown size={12} strokeWidth={1.5} />
-                                <span className="hidden sm:inline">{currentSortLabel}</span>
-                                <span className="sm:hidden">Sortare</span>
+                                <span>Sortare<span className="hidden md:inline">: {currentSortLabel}</span></span>
                             </button>
 
-                            <div className="w-px h-4 bg-[var(--border)] mx-1 hidden sm:block shrink-0" />
-
-                            {/* Availability */}
-                            <button
-                                onClick={() => togglePanel('availability')}
-                                className={cn(
-                                    "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                    inStockOnly
-                                        ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                        : activePanel === 'availability'
-                                            ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                            : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                )}
-                            >
-                                Disponibilitate
-                            </button>
-
-                            {/* Price */}
-                            <button
-                                onClick={() => togglePanel('price')}
-                                className={cn(
-                                    "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                    isPriceFiltered
-                                        ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                        : activePanel === 'price'
-                                            ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                            : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                )}
-                            >
-                                Preț
-                            </button>
-
-                            {/* Brand */}
-                            {showVendorFilter && (
-                                <button
-                                    onClick={() => togglePanel('vendor')}
-                                    className={cn(
-                                        "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                        selectedVendors.size > 0
-                                            ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                            : activePanel === 'vendor'
-                                                ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                                : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                    )}
-                                >
-                                    Brand
-                                    {selectedVendors.size > 0 && (
-                                        <span className="ml-1 text-[10px]">({selectedVendors.size})</span>
-                                    )}
-                                </button>
+                            {/* Sort Dropdown Panel */}
+                            {isSortDropdownOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsSortDropdownOpen(false)} />
+                                    <div className="absolute right-0 mt-1 w-56 bg-white border border-[var(--border)] shadow-lg z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                                        <div className="py-1">
+                                            {SORT_OPTIONS.map((option) => (
+                                                <button
+                                                    key={option.value}
+                                                    onClick={() => {
+                                                        handleSortChange(option.value)
+                                                        setIsSortDropdownOpen(false)
+                                                    }}
+                                                    className={cn(
+                                                        "w-full text-left px-4 py-2.5 text-[11px] font-medium tracking-[0.1em] uppercase hover:bg-neutral-50 transition-colors",
+                                                        currentSort === option.value ? "text-[var(--accent)] font-semibold text-left" : "text-neutral-700 text-left"
+                                                    )}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
                             )}
-
-                            {/* Type */}
-                            {showTypeFilter && (
-                                <button
-                                    onClick={() => togglePanel('type')}
-                                    className={cn(
-                                        "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                        selectedTypes.size > 0
-                                            ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                            : activePanel === 'type'
-                                                ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                                : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                    )}
-                                >
-                                    Categorie
-                                    {selectedTypes.size > 0 && (
-                                        <span className="ml-1 text-[10px]">({selectedTypes.size})</span>
-                                    )}
-                                </button>
-                            )}
-
-                            {/* Tags */}
-                            {showTagsFilter && (
-                                <button
-                                    onClick={() => togglePanel('tags')}
-                                    className={cn(
-                                        "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                        selectedTags.size > 0
-                                            ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                            : activePanel === 'tags'
-                                                ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                                : "bg-transparent text-[var(--muted-foreground)] border(--border) hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                    )}
-                                >
-                                    Etichete
-                                    {selectedTags.size > 0 && (
-                                        <span className="ml-1 text-[10px]">({selectedTags.size})</span>
-                                    )}
-                                </button>
-                            )}
-
-                            <div className="w-px h-4 bg-[var(--border)] mx-1 hidden sm:block shrink-0" />
-
-                            {/* All Filters */}
-                            <button
-                                onClick={() => togglePanel('all')}
-                                className={cn(
-                                    "relative flex items-center gap-2 h-8 px-4 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300 shrink-0",
-                                    activePanel === 'all'
-                                        ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                        : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                )}
-                            >
-                                <SlidersHorizontal size={12} strokeWidth={1.5} />
-                                Toate filtrele
-                                {activeFilterCount > 0 && (
-                                    <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-[var(--accent)] text-white text-[9px] font-medium px-1">
-                                        {activeFilterCount}
-                                    </span>
-                                )}
-                            </button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* ─── INLINE PANELS ─── */}
+            {/* ─── FILTER DRAWER ─── */}
+            {isFilterDrawerOpen && (
+                <>
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[100] transition-opacity duration-300 animate-in fade-in"
+                        onClick={() => setIsFilterDrawerOpen(false)}
+                    />
 
-                {/* Sort */}
-                {activePanel === 'sort' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-5">
-                            <div className="flex flex-wrap gap-2">
-                                {SORT_OPTIONS.map((option) => (
-                                    <button
-                                        key={option.value}
-                                        onClick={() => handleSortChange(option.value)}
-                                        className={cn(
-                                            "h-9 px-5 text-[11px] font-medium tracking-[0.1em] uppercase border transition-all duration-300",
-                                            currentSort === option.value
-                                                ? "bg-[var(--foreground)] text-[var(--primary-foreground)] border-[var(--foreground)]"
-                                                : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-                                        )}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
+                    {/* Drawer Container */}
+                    <div className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-[110] shadow-2xl flex flex-col transform transition-transform duration-300 animate-in slide-in-from-right">
+                        
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-200">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[12px] font-bold tracking-[0.15em] uppercase text-neutral-900">Filtrează produsele</span>
+                                {activeFilterCount > 0 && (
+                                    <span className="text-[10px] font-medium text-neutral-500 lowercase tracking-normal normal-case">
+                                        ({activeFilterCount} {activeFilterCount === 1 ? 'filtru activ' : 'filtre active'})
+                                    </span>
+                                )}
                             </div>
+                            <button
+                                onClick={() => setIsFilterDrawerOpen(false)}
+                                className="text-neutral-500 hover:text-black transition-colors cursor-pointer p-1"
+                                aria-label="Închide filtrele"
+                            >
+                                <X size={20} strokeWidth={1.5} />
+                            </button>
                         </div>
-                    </div>
-                )}
 
-                {/* Availability */}
-                {activePanel === 'availability' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-5">
-                            <label className="inline-flex items-center gap-3 cursor-pointer select-none group">
-                                <div className="relative">
-                                    <input
-                                        type="checkbox"
-                                        checked={inStockOnly}
-                                        onChange={(e) => setInStockOnly(e.target.checked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-[var(--muted)] peer peer-checked:bg-[var(--foreground)] transition-colors duration-300" />
-                                    <div className="absolute left-[3px] top-[3px] w-[18px] h-[18px] bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5" />
-                                </div>
-                                <span className="text-sm font-light text-[var(--foreground)] tracking-wide">
-                                    Doar în stoc
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                )}
+                        {/* Content (Scrollable) */}
+                        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-10 custom-scrollbar">
+                            
+                            {/* Disponibilitate (In Stock Only) */}
+                            <div className="space-y-4">
+                                <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-neutral-900 block">Disponibilitate</span>
+                                <label className="inline-flex items-center gap-3 cursor-pointer select-none group w-full">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            checked={inStockOnly}
+                                            onChange={(e) => setInStockOnly(e.target.checked)}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-10 h-5.5 bg-neutral-200 border border-neutral-300 peer peer-checked:bg-black peer-checked:border-black transition-colors duration-300" />
+                                        <div className="absolute left-[2px] top-[2px] w-[18px] h-[18px] bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-[18px]" />
+                                    </div>
+                                    <span className="text-[13px] font-semibold text-neutral-900 tracking-wide select-none">
+                                        Doar în stoc
+                                    </span>
+                                </label>
+                            </div>
 
-                {/* Price */}
-                {activePanel === 'price' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-6">
-                            <div className="max-w-md">
-                                <div className="flex items-center justify-between mb-5">
-                                    <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Interval de Preț</span>
+                            {/* Preț (Price Slider) */}
+                            <div className="space-y-5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-neutral-900">Preț ({currencySymbol})</span>
                                     {isPriceFiltered && (
-                                        <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
-                                            className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">
+                                        <button
+                                            onClick={() => setPriceRange([absoluteMin, absoluteMax])}
+                                            className="text-[10px] tracking-wider uppercase text-neutral-600 font-bold hover:text-black transition-colors cursor-pointer"
+                                        >
                                             Resetează
                                         </button>
                                     )}
                                 </div>
-                                <div className="px-1 mb-6">
+                                <div className="px-1 py-2">
                                     <DualRangeSlider min={absoluteMin} max={absoluteMax} value={priceRange} onChange={setPriceRange} />
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="flex-1">
                                         <div className="relative">
-                                            <input type="number" value={priceRange[0]}
-                                                onChange={(e) => { const val = Math.min(Number(e.target.value), priceRange[1] - 1); setPriceRange([val, priceRange[1]]); }}
-                                                className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
+                                            <input
+                                                type="number"
+                                                value={priceRange[0]}
+                                                onChange={(e) => {
+                                                    const val = Math.min(Number(e.target.value), priceRange[1] - 1)
+                                                    setPriceRange([val, priceRange[1]])
+                                                }}
+                                                className="w-full h-10 px-3 pr-8 text-xs font-semibold bg-transparent border border-neutral-300 text-neutral-900 focus:border-black outline-none transition-all"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-neutral-500 font-semibold">{currencySymbol}</span>
                                         </div>
                                     </div>
-                                    <span className="text-[var(--muted)] text-sm">—</span>
+                                    <span className="text-neutral-400 text-xs">—</span>
                                     <div className="flex-1">
                                         <div className="relative">
-                                            <input type="number" value={priceRange[1]}
-                                                onChange={(e) => { const val = Math.max(Number(e.target.value), priceRange[0] + 1); setPriceRange([priceRange[0], val]); }}
-                                                className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
+                                            <input
+                                                type="number"
+                                                value={priceRange[1]}
+                                                onChange={(e) => {
+                                                    const val = Math.max(Number(e.target.value), priceRange[0] + 1)
+                                                    setPriceRange([priceRange[0], val])
+                                                }}
+                                                className="w-full h-10 px-3 pr-8 text-xs font-semibold bg-transparent border border-neutral-300 text-neutral-900 focus:border-black outline-none transition-all"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-neutral-500 font-semibold">{currencySymbol}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                )}
 
-                {/* Brand */}
-                {activePanel === 'vendor' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Brand</span>
-                                {selectedVendors.size > 0 && (
-                                    <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                )}
-                            </div>
-                            {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, 'Nu există branduri disponibile.')}
-                        </div>
-                    </div>
-                )}
-
-                {/* Category */}
-                {activePanel === 'type' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Categorie</span>
-                                {selectedTypes.size > 0 && (
-                                    <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                )}
-                            </div>
-                            {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, 'Nu există categorii disponibile.')}
-                        </div>
-                    </div>
-                )}
-
-                {/* Tags */}
-                {activePanel === 'tags' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Etichete</span>
-                                {selectedTags.size > 0 && (
-                                    <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                )}
-                            </div>
-                            {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, 'Nu există etichete disponibile.')}
-                        </div>
-                    </div>
-                )}
-
-                {/* All Filters */}
-                {activePanel === 'all' && (
-                    <div className="absolute left-0 right-0 top-full bg-[var(--background)] border-b border-[var(--border)] shadow-sm z-50 animate-in slide-in-from-top-1 fade-in duration-200">
-                        <div className="w-full px-4 md:px-8 lg:px-12 py-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-
-                                {/* Availability */}
-                                <div>
-                                    <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)] mb-5">Disponibilitate</h3>
-                                    <label className="inline-flex items-center gap-3 cursor-pointer select-none group">
-                                        <div className="relative">
-                                            <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="sr-only peer" />
-                                            <div className="w-11 h-6 bg-[var(--muted)] peer peer-checked:bg-[var(--foreground)] transition-colors duration-300" />
-                                            <div className="absolute left-[3px] top-[3px] w-[18px] h-[18px] bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5" />
-                                        </div>
-                                        <span className="text-sm font-light text-[var(--foreground)]">Doar în stoc</span>
-                                    </label>
-                                </div>
-
-                                {/* Price */}
-                                <div>
-                                    <div className="flex items-center justify-between mb-5">
-                                        <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Preț ({currencySymbol})</h3>
-                                        {isPriceFiltered && (
-                                            <button onClick={() => setPriceRange([absoluteMin, absoluteMax])}
-                                                className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
+                            {/* Brand */}
+                            {showVendorFilter && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-neutral-900">Brand</span>
+                                        {selectedVendors.size > 0 && (
+                                            <button
+                                                onClick={() => setSelectedVendors(new Set())}
+                                                className="text-[10px] tracking-wider uppercase text-neutral-600 font-bold hover:text-black transition-colors cursor-pointer"
+                                            >
+                                                Resetează
+                                            </button>
                                         )}
                                     </div>
-                                    <div className="px-1 mb-5">
-                                        <DualRangeSlider min={absoluteMin} max={absoluteMax} value={priceRange} onChange={setPriceRange} />
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1">
-                                            <div className="relative">
-                                                <input type="number" value={priceRange[0]}
-                                                    onChange={(e) => { const val = Math.min(Number(e.target.value), priceRange[1] - 1); setPriceRange([val, priceRange[1]]); }}
-                                                    className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
-                                                />
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-[var(--muted)] text-sm">—</span>
-                                        <div className="flex-1">
-                                            <div className="relative">
-                                                <input type="number" value={priceRange[1]}
-                                                    onChange={(e) => { const val = Math.max(Number(e.target.value), priceRange[0] + 1); setPriceRange([priceRange[0], val]); }}
-                                                    className="w-full h-10 px-3 pr-8 text-sm font-light bg-transparent border border-[var(--border)] text-[var(--foreground)] focus:border-[var(--foreground)] outline-none transition-all"
-                                                />
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted-foreground)]">{currencySymbol}</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, 'Nu există branduri.')}
                                 </div>
+                            )}
 
-                                {/* Brand */}
-                                {showVendorFilter && (
-                                    <div>
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Brand</h3>
-                                            {selectedVendors.size > 0 && (
-                                                <button onClick={() => setSelectedVendors(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                            )}
-                                        </div>
-                                        {renderChipPanel(uniqueVendors, selectedVendors, setSelectedVendors, '')}
+                            {/* Category */}
+                            {showTypeFilter && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-neutral-900">Categorie</span>
+                                        {selectedTypes.size > 0 && (
+                                            <button
+                                                onClick={() => setSelectedTypes(new Set())}
+                                                className="text-[10px] tracking-wider uppercase text-neutral-600 font-bold hover:text-black transition-colors cursor-pointer"
+                                            >
+                                                Resetează
+                                            </button>
+                                        )}
                                     </div>
-                                )}
+                                    {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, 'Nu există categorii.')}
+                                </div>
+                            )}
 
-                                {/* Category */}
-                                {showTypeFilter && (
-                                    <div>
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Categorie</h3>
-                                            {selectedTypes.size > 0 && (
-                                                <button onClick={() => setSelectedTypes(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                            )}
-                                        </div>
-                                        {renderChipPanel(uniqueTypes, selectedTypes, setSelectedTypes, '')}
+                            {/* Tags */}
+                            {showTagsFilter && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-neutral-900">Etichete</span>
+                                        {selectedTags.size > 0 && (
+                                            <button
+                                                onClick={() => setSelectedTags(new Set())}
+                                                className="text-[10px] tracking-wider uppercase text-neutral-600 font-bold hover:text-black transition-colors cursor-pointer"
+                                            >
+                                                Resetează
+                                            </button>
+                                        )}
                                     </div>
-                                )}
+                                    {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, 'Nu există etichete.')}
+                                </div>
+                            )}
+                        </div>
 
-                                {/* Tags */}
-                                {showTagsFilter && (
-                                    <div>
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h3 className="text-[11px] font-medium tracking-[0.15em] uppercase text-[var(--muted-foreground)]">Etichete</h3>
-                                            {selectedTags.size > 0 && (
-                                                <button onClick={() => setSelectedTags(new Set())} className="text-[11px] tracking-wider uppercase text-[var(--accent)] font-medium hover:underline underline-offset-4">Resetează</button>
-                                            )}
-                                        </div>
-                                        {renderChipPanel(uniqueTags, selectedTags, setSelectedTags, '')}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center justify-between mt-8 pt-6 border-t border-[var(--border)]">
-                                <button onClick={clearAllFilters}
-                                    className="text-[11px] tracking-[0.1em] uppercase text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium transition-colors underline underline-offset-4">
-                                    Șterge tot
+                        {/* Footer Actions */}
+                        <div className="px-6 py-5 border-t border-neutral-200 bg-neutral-50 flex flex-col gap-3">
+                            <button
+                                onClick={() => {
+                                    setIsFilterDrawerOpen(false)
+                                }}
+                                className="w-full h-12 bg-black text-white text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-neutral-900 transition-colors cursor-pointer text-center flex items-center justify-center"
+                            >
+                                Afișează {filteredProducts.length} {filteredProducts.length === 1 ? 'produs' : 'produse'}
+                            </button>
+                            {activeFilterCount > 0 && (
+                                <button
+                                    onClick={() => {
+                                        clearAllFilters()
+                                        setIsFilterDrawerOpen(false)
+                                    }}
+                                    className="w-full py-2 text-[10px] tracking-[0.15em] uppercase text-neutral-700 hover:text-black font-bold transition-colors cursor-pointer text-center underline"
+                                >
+                                    Resetează toate filtrele
                                 </button>
-                                <button onClick={() => setActivePanel(null)}
-                                    className="h-10 px-10 bg-[var(--foreground)] text-[var(--primary-foreground)] text-[11px] font-medium tracking-[0.15em] uppercase hover:bg-black transition-colors">
-                                    Afișează {filteredProducts.length} produse
-                                </button>
-                            </div>
+                            )}
                         </div>
                     </div>
-                )}
-            </div>
-
-            {/* Overlay */}
-            {activePanel && (
-                <div className="fixed inset-0 bg-black/5 z-20 transition-opacity" onClick={() => setActivePanel(null)} />
+                </>
             )}
 
             {/* ─── ACTIVE FILTER CHIPS ─── */}

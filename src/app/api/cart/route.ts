@@ -7,6 +7,7 @@ import {
   cartLinesUpdate,
   cartLinesRemove,
   cartSelectedDeliveryOptionUpdate,
+  cartAttributesUpdate,
 } from '@/lib/cart'
 import {serverLogger} from '@/lib/logger.server'
 
@@ -106,6 +107,11 @@ async function handler(req: NextRequest) {
         const optionCart = await cartSelectedDeliveryOptionUpdate(cartId, body.deliveryOptionHandle)
         return Response.json({ cart: optionCart })
 
+      case 'update_attributes':
+        if (!cartId || !body.attributes)
+          throw new Error('cartId and attributes required')
+        const attributesCart = await cartAttributesUpdate(cartId, body.attributes)
+        return Response.json({ cart: attributesCart })
 
       default:
         throw new Error('Invalid action')

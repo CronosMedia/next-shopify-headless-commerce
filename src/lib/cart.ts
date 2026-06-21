@@ -178,6 +178,17 @@ const CART_SELECTED_DELIVERY_OPTION_UPDATE_MUTATION = `#graphql
   }
 `
 
+const CART_ATTRIBUTES_UPDATE_MUTATION = `#graphql
+  ${CART_FRAGMENT}
+  ${USER_ERROR_FRAGMENT}
+  mutation CartAttributesUpdate($attributes: [AttributeInput!]!, $cartId: ID!) {
+    cartAttributesUpdate(attributes: $attributes, cartId: $cartId) {
+      cart { ...CartFields }
+      userErrors { ...UserErrorFragment }
+    }
+  }
+`
+
 
 export type CartLine = {
   id: string
@@ -279,17 +290,33 @@ function hasUserErrors(
   )
 }
 
+type ShopifyGraphQLError = { message?: string }
+type ShopifyErrorObject = { graphQLErrors?: ShopifyGraphQLError[]; message?: string }
+
 async function shopifyRequest<T>(
   query: string,
   variables: Record<string, unknown>
 ): Promise<T> {
-  const {data, errors} = await shopifyClient.request<Record<string, T>>(
-    query,
-    variables
-  )
+  const response = await shopifyClient.request<Record<string, T>>(query, variables)
+  const {data, errors} = response || {}
 
-  if (errors?.length) {
-    throw new Error(errors.map(({message}) => message).join(', '))
+  if (errors) {
+    if (Array.isArray(errors)) {
+      throw new Error(errors.map((e) => (typeof e === 'object' && e !== null && 'message' in e ? (e as Record<string, unknown>).message : String(e))).join(', '))
+    } else if (typeof errors === 'object') {
+      const errObj = errors as ShopifyErrorObject
+      const graphQLErrors = errObj.graphQLErrors
+      if (Array.isArray(graphQLErrors) && graphQLErrors.length > 0) {
+        throw new Error(graphQLErrors.map((e) => e.message || String(e)).join(', '));
+      }
+      throw new Error(errObj.message || JSON.stringify(errors));
+    } else {
+      throw new Error(String(errors));
+    }
+  }
+
+  if (!data) {
+    throw new Error('No data returned from Shopify API')
   }
 
   const result = Object.values(data)[0]
@@ -312,10 +339,15 @@ export async function cartGet(cartId: string): Promise<Cart | null> {
   return result;
 }
 
-export async function cartCreate(lines: { merchandiseId: string; quantity: number }[] = []): Promise<Cart> {
+export async function cartCreate(lines?: { merchandiseId: string; quantity: number }[]): Promise<Cart> {
+  const sanitizedLines = lines ? lines.map(line => ({
+    merchandiseId: line.merchandiseId,
+    quantity: line.quantity
+  })) : []
+
   const result = await shopifyRequest<CartMutationResult>(
     CART_CREATE_MUTATION,
-    {input: {lines}}
+    { input: { lines: sanitizedLines } }
   )
   if (!result || !result.cart) {
     throw new Error('Cart creation failed - no cart returned from Shopify');
@@ -390,3 +422,16 @@ export async function cartSelectedDeliveryOptionUpdate(
   return result.cart;
 }
 
+export async function cartAttributesUpdate(
+  cartId: string,
+  attributes: { key: string; value: string }[]
+): Promise<Cart> {
+  const result = await shopifyRequest<CartMutationResult>(
+    CART_ATTRIBUTES_UPDATE_MUTATION,
+    { cartId, attributes }
+  )
+  if (!result || !result.cart) {
+    throw new Error('Failed to update cart attributes');
+  }
+  return result.cart;
+}
