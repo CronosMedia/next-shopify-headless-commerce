@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { requireAdminSession } from '@/lib/admin-session'
 import { shopifyAdminRequest } from '@/lib/shopify/admin.server'
 
 const GET_FULFILLMENT_ORDERS = `#graphql
@@ -100,15 +100,10 @@ type MetafieldMutationResponse = {
 
 export async function POST(req: NextRequest) {
   try {
-    // Authenticate admin session
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admin_session')?.value
+    const adminSession = await requireAdminSession()
 
-    if (session !== 'true') {
-      return NextResponse.json(
-        { error: 'Not authenticated.' },
-        { status: 401 }
-      )
+    if (!adminSession.authenticated) {
+      return adminSession.response
     }
 
     const { orderId } = await req.json()

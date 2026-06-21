@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { requireAdminSession } from '@/lib/admin-session'
 import { shopifyAdminRequest } from '@/lib/shopify/admin.server'
 
 export const fetchCache = 'force-no-store'
@@ -81,15 +81,10 @@ type ShopifyAdminOrdersResponse = {
 
 export async function GET() {
   try {
-    // Authenticate admin session
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admin_session')?.value
+    const adminSession = await requireAdminSession()
 
-    if (session !== 'true') {
-      return NextResponse.json(
-        { error: 'Not authenticated.' },
-        { status: 401 }
-      )
+    if (!adminSession.authenticated) {
+      return adminSession.response
     }
 
     // Call Shopify Admin API

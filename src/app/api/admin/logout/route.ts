@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
+import { getAdminSession } from '@/lib/admin-session'
 
 export async function POST() {
-  const response = NextResponse.json({ success: true })
-  
-  // Clear the admin session cookie by setting its Max-Age to 0
-  response.headers.append(
-    'Set-Cookie',
-    `admin_session=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`
-  )
-  
-  return response
+  const session = await getAdminSession()
+
+  if (session) {
+    session.destroy()
+  }
+
+  return NextResponse.json({ success: true })
 }

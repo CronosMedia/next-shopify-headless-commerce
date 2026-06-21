@@ -4,6 +4,7 @@ import {GET_ORDER_DETAILS_QUERY} from '@/lib/queries'
 import {shopifyClient} from '@/lib/shopify'
 import {shopifyAdminRequest} from '@/lib/shopify/admin.server'
 import {serverLogger} from '@/lib/logger.server'
+import {getAdminSession, isValidAdminSession} from '@/lib/admin-session'
 
 export const fetchCache = 'force-no-store'
 
@@ -124,9 +125,10 @@ export async function GET(req: NextRequest) {
     const customerAccessToken = cookieStore.get(
       'customer-access-token'
     )?.value
-    const adminSession = cookieStore.get('admin_session')?.value
+    const adminSession = await getAdminSession()
+    const hasAdminSession = isValidAdminSession(adminSession)
 
-    if (!customerAccessToken && adminSession !== 'true') {
+    if (!customerAccessToken && !hasAdminSession) {
       return NextResponse.json(
         {error: {message: 'Not authenticated.'}},
         {status: 401}
@@ -163,7 +165,7 @@ export async function GET(req: NextRequest) {
           ({id}) =>
             normalizeOrderId(id) === normalizeOrderId(requestedOrderId)
         ) ?? null
-    } else if (adminSession === 'true') {
+    } else if (hasAdminSession) {
       const adminOrderQuery = `#graphql
         query GetOrderDetailsAdmin($id: ID!) {
           order(id: $id) {
