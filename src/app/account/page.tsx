@@ -886,6 +886,8 @@ function AddressesTab({ user }: { user: User }) {
   )
 }
 
+
+
 function AddressForm({
   user,
   address,
@@ -934,6 +936,8 @@ function AddressForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+
+
   useEffect(() => {
     if (address?.province) {
       const matchingCounty = romanianCounties.find(
@@ -955,6 +959,25 @@ function AddressForm({
     if (!formData.province) newErrors.province = 'Județul este obligatoriu.'
     if (!formData.zip) newErrors.zip = 'Codul poștal este obligatoriu.'
     if (!formData.country) newErrors.country = 'Țara este obligatorie.'
+
+    if (formData.province) {
+      const currentCountyObj = romanianCounties.find(c => c.code === formData.province)
+      const countyName = currentCountyObj ? getCanonicalCounty(currentCountyObj.name) : ''
+      if (!countyName || !RO_COUNTIES.includes(countyName)) {
+        newErrors.province = 'Te rugăm să selectezi un județ valid.'
+      } else {
+        const localitiesList = getLocalitiesForCounty(countyName)
+        const canonicalCity = getCanonicalLocality(countyName, formData.city || '')
+        if (!localitiesList.some(l => l.name === canonicalCity)) {
+          newErrors.city = 'Te rugăm să selectezi o localitate validă.'
+        }
+      }
+    }
+
+    if (formData.zip && !/^[0-9]{6}$/.test(formData.zip)) {
+      newErrors.zip = 'Codul poștal trebuie să fie compus din exact 6 cifre.'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -1055,6 +1078,7 @@ function AddressForm({
             error={errors.streetNo}
             required
           />
+
           <InputField
             placeholder="Bloc (Opțional)"
             value={formData.building}
@@ -1079,23 +1103,23 @@ function AddressForm({
             onChange={(val) => setFormData({ ...formData, apartment: val })}
             error={errors.apartment}
           />
-          <InputField
-            placeholder="Localitate"
-            value={formData.city}
-            onChange={(val) => setFormData({ ...formData, city: val })}
-            error={errors.city}
-            required
-          />
+
           <div className="md:col-span-1">
             <label className="block text-sm font-medium text-muted-foreground mb-1">
               Județ <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.province}
-              onChange={(e) =>
-                setFormData({ ...formData, province: e.target.value })
-              }
-              className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+              onChange={(e) => {
+                const nextProvince = e.target.value
+                setFormData((prev) => ({
+                  ...prev,
+                  province: nextProvince,
+                  city: '',
+                  zip: '',
+                }))
+              }}
+              className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary h-[48px]"
             >
               <option value="" disabled>
                 Selectează un județ
@@ -1110,6 +1134,45 @@ function AddressForm({
               <p className="text-sm text-red-600 mt-1">{errors.province}</p>
             )}
           </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
+              Localitate <span className="text-red-500">*</span>
+            </label>
+            <SearchableSelect
+              value={formData.city}
+              options={(() => {
+                const currentCountyObj = romanianCounties.find(c => c.code === formData.province)
+                const countyName = currentCountyObj ? getCanonicalCounty(currentCountyObj.name) : ''
+                return countyName ? getLocalitiesForCounty(countyName).map(l => l.name) : []
+              })()}
+              disabled={!formData.province}
+              placeholder={formData.province ? "Alege localitatea" : "Selectează județul întâi"}
+              inputClassName="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-black/20 focus:border-black h-[48px]"
+              onChange={(nextCity) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  city: nextCity,
+                }))
+              }}
+              onSelect={(nextCity) => {
+                const currentCountyObj = romanianCounties.find(c => c.code === formData.province)
+                const countyName = currentCountyObj ? getCanonicalCounty(currentCountyObj.name) : ''
+                if (countyName) {
+                  const canonical = getCanonicalLocality(countyName, nextCity)
+                  const code = getPostalCodeForCountyAndLocality(countyName, canonical)
+                  setFormData((prev) => ({
+                    ...prev,
+                    city: canonical,
+                    zip: code || prev.zip,
+                  }))
+                }
+              }}
+            />
+            {errors.city && (
+              <p className="text-sm text-red-600 mt-1">{errors.city}</p>
+            )}
+          </div>
+
           <InputField
             placeholder="Cod Poștal"
             value={formData.zip}

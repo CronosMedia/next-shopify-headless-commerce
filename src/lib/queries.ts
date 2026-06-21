@@ -389,7 +389,25 @@ export const GET_ORDER_DETAILS_QUERY = `#graphql
               amount
               currencyCode
             }
+            customAttributes {
+              key
+              value
+            }
             shippingAddress {
+              id
+              firstName
+              lastName
+              name
+              company
+              address1
+              address2
+              city
+              province
+              zip
+              country
+              phone
+            }
+            billingAddress {
               id
               firstName
               lastName

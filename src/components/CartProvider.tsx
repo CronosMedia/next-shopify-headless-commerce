@@ -141,9 +141,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!c) return
     // delivery options
     const dg = c.deliveryGroups?.edges?.[0]?.node
-    if (dg?.deliveryOptions) setAvailableDeliveryOptions(dg.deliveryOptions)
-    if (dg?.selectedDeliveryOption)
-      setSelectedDeliveryOption(dg.selectedDeliveryOption)
+    if (dg?.deliveryOptions) {
+      setAvailableDeliveryOptions(dg.deliveryOptions)
+    } else {
+      setAvailableDeliveryOptions([])
+    }
+    setSelectedDeliveryOption(dg?.selectedDeliveryOption || null)
     if (dg?.deliveryAddress) {
       const addr = dg.deliveryAddress
 
@@ -567,6 +570,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             action: 'updateDeliveryAddress',
             cartId: currentCart.id,
             address: {
+              id: address.id,
               address1: address.address1,
               address2: address.address2 ?? undefined,
               city: address.city,
@@ -609,12 +613,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const currentCart = cart ?? (await ensureCart())
         if (!currentCart) throw new Error('No cart available')
+        const deliveryGroupId = currentCart.deliveryGroups?.edges?.[0]?.node?.id
+        if (!deliveryGroupId) throw new Error('No delivery group available')
         const response = await fetch('/api/cart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'update_delivery_option',
             cartId: currentCart.id,
+            deliveryGroupId,
             deliveryOptionHandle: handle,
           }),
         })
@@ -633,12 +640,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [cart, ensureCart, syncFromCart]
   )
 
-  const shippingCost = useMemo(() => {
-    const amount = selectedDeliveryOption?.estimatedCost?.amount
-      ? parseFloat(selectedDeliveryOption.estimatedCost.amount)
-      : 0
-    return Math.max(0, amount)
-  }, [selectedDeliveryOption])
+  useEffect(() => {
+    if (cart && availableDeliveryOptions.length > 0 && !selectedDeliveryOption && !loading) {
+      const firstOption = availableDeliveryOptions[0]
+      updateDeliveryOption(firstOption.handle).catch(() => {
+        // Safe catch for auto-select
+      })
+    }
+  }, [availableDeliveryOptions, selectedDeliveryOption, cart, loading, updateDeliveryOption])
 
   const subtotal = useMemo(() => {
     const amount = cart?.cost?.subtotalAmount?.amount
@@ -647,12 +656,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return Math.max(0, amount)
   }, [cart?.cost?.subtotalAmount?.amount])
 
+  const shippingCost = useMemo(() => {
+    if (subtotal === 0) return 0
+    if (selectedDeliveryAddress && selectedDeliveryOption) {
+      const amount = selectedDeliveryOption.estimatedCost?.amount
+        ? parseFloat(selectedDeliveryOption.estimatedCost.amount)
+        : 0
+      return Math.max(0, amount)
+    }
+    return subtotal >= 500 ? 0 : 25
+  }, [selectedDeliveryAddress, selectedDeliveryOption, subtotal])
+
   const total = useMemo(() => {
-    const amount = cart?.cost?.totalAmount?.amount
-      ? parseFloat(cart.cost.totalAmount.amount)
-      : 0
-    return Math.max(0, amount)
-  }, [cart?.cost?.totalAmount?.amount])
+    if (subtotal === 0) return 0
+    if (selectedDeliveryAddress && selectedDeliveryOption) {
+      const amount = cart?.cost?.totalAmount?.amount
+        ? parseFloat(cart.cost.totalAmount.amount)
+        : 0
+      return Math.max(0, amount)
+    }
+    return subtotal + (subtotal >= 500 ? 0 : 25)
+  }, [selectedDeliveryAddress, selectedDeliveryOption, cart?.cost?.totalAmount?.amount, subtotal])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

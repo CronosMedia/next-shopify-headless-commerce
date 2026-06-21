@@ -65,6 +65,7 @@ const CART_FRAGMENT = `#graphql
     deliveryGroups(first: 1) {
       edges {
         node {
+          id
           deliveryAddress {
             address1
             address2
@@ -170,8 +171,8 @@ const CART_BUYER_IDENTITY_UPDATE_MUTATION = `#graphql
 const CART_SELECTED_DELIVERY_OPTION_UPDATE_MUTATION = `#graphql
   ${CART_FRAGMENT}
   ${USER_ERROR_FRAGMENT}
-  mutation CartSelectedDeliveryOptionUpdate($cartId: ID!, $selectedDeliveryOptionHandle: String!) {
-    cartSelectedDeliveryOptionUpdate(cartId: $cartId, selectedDeliveryOptionHandle: $selectedDeliveryOptionHandle) {
+  mutation cartSelectedDeliveryOptionsUpdate($cartId: ID!, $selectedDeliveryOptions: [CartSelectedDeliveryOptionInput!]!) {
+    cartSelectedDeliveryOptionsUpdate(cartId: $cartId, selectedDeliveryOptions: $selectedDeliveryOptions) {
       cart { ...CartFields }
       userErrors { ...UserErrorFragment }
     }
@@ -241,6 +242,7 @@ export type Cart = {
   deliveryGroups: {
     edges: Array<{
       node: {
+        id: string
         deliveryAddress?: {
           address1?: string
           address2?: string
@@ -410,11 +412,20 @@ export async function cartBuyerIdentityUpdate(
 
 export async function cartSelectedDeliveryOptionUpdate(
   cartId: string,
+  deliveryGroupId: string,
   selectedDeliveryOptionHandle: string
 ): Promise<Cart> {
   const result = await shopifyRequest<CartMutationResult>(
     CART_SELECTED_DELIVERY_OPTION_UPDATE_MUTATION,
-    {cartId, selectedDeliveryOptionHandle}
+    {
+      cartId,
+      selectedDeliveryOptions: [
+        {
+          deliveryGroupId,
+          deliveryOptionHandle: selectedDeliveryOptionHandle,
+        },
+      ],
+    }
   )
   if (!result || !result.cart) {
     throw new Error('Failed to update selected delivery option');

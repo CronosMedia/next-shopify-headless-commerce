@@ -24,7 +24,20 @@ type AdminOrder = {
     province: string
     zip: string
     country: string
+    company?: string
   } | null
+  billingAddress: {
+    firstName: string
+    lastName: string
+    address1: string
+    address2?: string
+    city: string
+    province: string
+    zip: string
+    country: string
+    company?: string
+  } | null
+  customAttributes: Array<{ key: string; value: string }>
   subtotalPriceSet: { shopMoney: { amount: string; currencyCode: string } }
   totalShippingPriceSet: { shopMoney: { amount: string; currencyCode: string } }
   totalTaxSet: { shopMoney: { amount: string; currencyCode: string } }
@@ -169,6 +182,10 @@ export default function OrderDetailsPage() {
     )
   }
 
+  const getAttr = (key: string) => order.customAttributes?.find((a) => a.key === key)?.value || ''
+  const hasCustomBilling = getAttr('Factură solicitată') === 'Da'
+  const isFirm = getAttr('Facturare pe firmă') === 'Da'
+
   const formattedDate = new Intl.DateTimeFormat('ro-RO', {
     weekday: 'long',
     year: 'numeric',
@@ -249,13 +266,16 @@ export default function OrderDetailsPage() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-2">
               Adresa de livrare
             </h2>
             {order.shippingAddress ? (
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-sm space-y-1">
+                {order.shippingAddress.company && (
+                  <p className="font-semibold text-gray-900">{order.shippingAddress.company}</p>
+                )}
                 <p>
                   {order.shippingAddress.firstName}{' '}
                   {order.shippingAddress.lastName}
@@ -275,6 +295,135 @@ export default function OrderDetailsPage() {
                 Nu a fost furnizată nicio adresă de expediere.
               </p>
             )}
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-foreground mb-2">
+              Detalii facturare
+            </h2>
+            <div className="text-muted-foreground text-sm space-y-1">
+              {(() => {
+                if (hasCustomBilling) {
+                  const tipFacturare = getAttr('Tip Facturare')
+                  const companyName = getAttr('Denumire Firmă')
+                  const cui = getAttr('Cod Unic de Înregistrare (CUI)')
+                  const regCom = getAttr('Număr Registrul Comerțului')
+                  const tva = getAttr('TVA')
+                  const eInvoice = getAttr('e-Invoice')
+                  const numeFacturare = getAttr('Nume Facturare')
+                  const adresaFacturare = getAttr('Adresă Facturare')
+
+                  if (isFirm) {
+                    return (
+                      <>
+                        <p><span className="font-medium text-gray-900">Tip factură:</span> Persoană Juridică</p>
+                        {companyName && (
+                          <p><span className="font-medium text-gray-900">Firma:</span> {companyName}</p>
+                        )}
+                        {cui && (
+                          <p><span className="font-medium text-gray-900">CUI:</span> {cui}</p>
+                        )}
+                        {regCom && (
+                          <p><span className="font-medium text-gray-900">Reg. Com.:</span> {regCom}</p>
+                        )}
+                        {tva && (
+                          <p><span className="font-medium text-gray-900">Plătitor TVA:</span> {tva}</p>
+                        )}
+                        {eInvoice && (
+                          <p><span className="font-medium text-gray-900">e-Factura:</span> {eInvoice === 'Da' ? 'Da' : 'Nu'}</p>
+                        )}
+                        {adresaFacturare && (
+                          <p><span className="font-medium text-gray-900">Adresă facturare:</span> {adresaFacturare}</p>
+                        )}
+                      </>
+                    )
+                  } else if (tipFacturare === 'Persoană Fizică (Adresă Livrare)') {
+                    return (
+                      <>
+                        <p><span className="font-medium text-gray-900">Tip factură:</span> Persoană Fizică</p>
+                        <p className="italic text-xs text-neutral-500">(Coincide cu adresa de livrare)</p>
+                        {order.shippingAddress ? (
+                          <>
+                            <p>
+                              {order.shippingAddress.firstName}{' '}
+                              {order.shippingAddress.lastName}
+                            </p>
+                            <p>{order.shippingAddress.address1}</p>
+                            {order.shippingAddress.address2 && (
+                              <p>{order.shippingAddress.address2}</p>
+                            )}
+                            <p>
+                              {order.shippingAddress.city}, {order.shippingAddress.province}{' '}
+                              {order.shippingAddress.zip}
+                            </p>
+                            <p>{order.shippingAddress.country}</p>
+                          </>
+                        ) : order.billingAddress ? (
+                          <>
+                            <p>
+                              {order.billingAddress.firstName}{' '}
+                              {order.billingAddress.lastName}
+                            </p>
+                            <p>{order.billingAddress.address1}</p>
+                            {order.billingAddress.address2 && (
+                              <p>{order.billingAddress.address2}</p>
+                            )}
+                            <p>
+                              {order.billingAddress.city}, {order.billingAddress.province}{' '}
+                              {order.billingAddress.zip}
+                            </p>
+                            <p>{order.billingAddress.country}</p>
+                          </>
+                        ) : (
+                          <p>Aceleași detalii ca la livrare.</p>
+                        )}
+                      </>
+                    )
+                  } else {
+                    return (
+                      <>
+                        <p><span className="font-medium text-gray-900">Tip factură:</span> Persoană Fizică</p>
+                        {numeFacturare && (
+                          <p><span className="font-medium text-gray-900">Nume:</span> {numeFacturare}</p>
+                        )}
+                        {adresaFacturare && (
+                          <p><span className="font-medium text-gray-900">Adresă facturare:</span> {adresaFacturare}</p>
+                        )}
+                      </>
+                    )
+                  }
+                }
+
+                // Fallback to Shopify billingAddress if custom attributes are not set or not matching "Da"
+                if (order.billingAddress) {
+                  return (
+                    <>
+                      {order.billingAddress.company && (
+                        <p className="font-semibold text-gray-900">{order.billingAddress.company}</p>
+                      )}
+                      <p>
+                        {order.billingAddress.firstName}{' '}
+                        {order.billingAddress.lastName}
+                      </p>
+                      <p>{order.billingAddress.address1}</p>
+                      {order.billingAddress.address2 && (
+                        <p>{order.billingAddress.address2}</p>
+                      )}
+                      <p>
+                        {order.billingAddress.city}, {order.billingAddress.province}{' '}
+                        {order.billingAddress.zip}
+                      </p>
+                      <p>{order.billingAddress.country}</p>
+                    </>
+                  )
+                }
+
+                return (
+                  <p className="text-muted-foreground text-sm">
+                    Nu au fost furnizate detalii de facturare.
+                  </p>
+                )
+              })()}
+            </div>
           </div>
           <div className="text-left md:text-right">
             <h2 className="text-lg font-semibold text-foreground mb-2">

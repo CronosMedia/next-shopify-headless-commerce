@@ -68,6 +68,7 @@ export default async function Home() {
                   src="/images/hero/editorial-outdoor.png"
                   alt="Maison Outdoor Technical Gear"
                   fill
+                  sizes="(max-width: 768px) 100vw, 60vw"
                   className="object-cover"
                 />
               </div>
@@ -159,6 +160,7 @@ export default async function Home() {
                   src="/images/hero/campaign-outdoor.jpg"
                   alt="Maison Outdoor Campaign - Friends hiking on trail at sunset"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
                   className="object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
                 />
               </div>
@@ -201,7 +203,7 @@ export default async function Home() {
             fill
             className="object-cover"
             sizes="100vw"
-            quality={90}
+            quality={75}
           />
           {/* Dark Overlay similar to Hero Section */}
           <div className="absolute inset-0 bg-black/45" />

@@ -1,6 +1,7 @@
 'use client'
 import { Truck } from 'lucide-react'
 import type { DeliveryOption } from '@/lib/types'
+import { formatMoney } from '@/lib/utils'
 
 type DeliveryMethodSelectorProps = {
   options: DeliveryOption[]
@@ -49,7 +50,7 @@ export default function DeliveryMethodSelector({
                   {parseFloat(option.estimatedCost.amount) === 0 ? (
                     <span className="text-black">Gratuit</span>
                   ) : (
-                    `${option.estimatedCost.amount} ${option.estimatedCost.currencyCode}`
+                    formatMoney(option.estimatedCost.amount, option.estimatedCost.currencyCode)
                   )}
                 </span>
               </div>

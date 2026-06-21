@@ -47,6 +47,8 @@ type StorefrontOrder = {
   totalShippingPrice: Money
   totalTax: Money
   shippingAddress: Record<string, string | null> | null
+  billingAddress: Record<string, string | null> | null
+  customAttributes: Array<{ key: string; value: string }>
   successfulFulfillments: Array<{
     trackingCompany: string
     trackingInfo: TrackingInfo[]

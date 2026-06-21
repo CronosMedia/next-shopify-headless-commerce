@@ -8,6 +8,7 @@ import {
   getLocalitiesForCounty,
   getPostalCodeForCountyAndLocality,
   RO_COUNTIES,
+  POSTAL_CODE_REGEX_RO,
 } from '@/lib/ro-address'
 
 export type Address = {
@@ -60,6 +61,8 @@ export default function AddressModal({
     company: '',
   })
 
+
+
   useEffect(() => {
     if (isOpen) {
       fetchAddresses()
@@ -101,6 +104,35 @@ export default function AddressModal({
 
   const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Client-side validations
+    if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
+      setError('Numele și prenumele sunt obligatorii.')
+      return
+    }
+    if (!formData.address1?.trim()) {
+      setError('Adresa este obligatorie.')
+      return
+    }
+
+    const canonicalProvince = getCanonicalCounty(formData.province || '')
+    if (!RO_COUNTIES.includes(canonicalProvince)) {
+      setError('Te rugăm să selectezi un județ valid din listă.')
+      return
+    }
+
+    const localitiesList = getLocalitiesForCounty(canonicalProvince)
+    const canonicalCity = getCanonicalLocality(canonicalProvince, formData.city || '')
+    if (!localitiesList.some(l => l.name === canonicalCity)) {
+      setError('Te rugăm să selectezi o localitate validă din listă.')
+      return
+    }
+
+    if (!formData.zip || !POSTAL_CODE_REGEX_RO.test(formData.zip)) {
+      setError('Codul poștal trebuie să fie compus din exact 6 cifre.')
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
     setSuccess(null)

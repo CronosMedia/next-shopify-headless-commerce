@@ -62,11 +62,25 @@ async function handler(req: NextRequest) {
         if (!cartId || !body.address)
           throw new Error('cartId and address required')
         try {
+          const isSavedAddress = body.address.id?.startsWith('gid://shopify/CustomerAddress/')
           const deliveryCart = await cartBuyerIdentityUpdate(cartId, {
             deliveryAddressPreferences: [
-              {
-                ...body.address,
-              },
+              isSavedAddress
+                ? { customerAddressId: body.address.id }
+                : {
+                    deliveryAddress: {
+                      address1: body.address.address1,
+                      address2: body.address.address2 || undefined,
+                      city: body.address.city,
+                      company: body.address.company || undefined,
+                      country: body.address.country,
+                      firstName: body.address.firstName,
+                      lastName: body.address.lastName,
+                      phone: body.address.phone || undefined,
+                      province: body.address.province,
+                      zip: body.address.zip,
+                    },
+                  },
             ],
           })
           if (!deliveryCart)
@@ -102,9 +116,13 @@ async function handler(req: NextRequest) {
         return Response.json({ cart: buyerCart })
 
       case 'update_delivery_option':
-        if (!cartId || !body.deliveryOptionHandle)
-          throw new Error('cartId and deliveryOptionHandle required')
-        const optionCart = await cartSelectedDeliveryOptionUpdate(cartId, body.deliveryOptionHandle)
+        if (!cartId || !body.deliveryOptionHandle || !body.deliveryGroupId)
+          throw new Error('cartId, deliveryGroupId and deliveryOptionHandle required')
+        const optionCart = await cartSelectedDeliveryOptionUpdate(
+          cartId,
+          body.deliveryGroupId,
+          body.deliveryOptionHandle
+        )
         return Response.json({ cart: optionCart })
 
       case 'update_attributes':
