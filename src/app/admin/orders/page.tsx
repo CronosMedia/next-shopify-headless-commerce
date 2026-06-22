@@ -590,26 +590,7 @@ function AdminOrdersPageContent() {
       subtitle="Status plată, facturi și AWB pentru comenzile Shopify."
     >
       <div className="space-y-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-[22px] font-bold tracking-tight text-[#202223]">
-              Comenzi
-            </h2>
-            <div className="mt-0.5 flex h-5 items-center gap-1 text-[15px] text-[#6d7175]">
-              {isRefreshing ? (
-                <>
-                  <AdminMicroSkeleton className="h-3 w-8" />
-                  <span>rezultate din</span>
-                  <AdminMicroSkeleton className="h-3 w-8" />
-                  <span>comenzi.</span>
-                </>
-              ) : (
-                <span>
-                  {filteredOrders.length} rezultate din {orders.length} comenzi.
-                </span>
-              )}
-            </div>
-          </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6d7175]" />

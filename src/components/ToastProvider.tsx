@@ -89,8 +89,8 @@ function Toast({ toast, onClose }: { toast: ToastOptions; onClose: () => void })
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes toastIn {
-            from { transform: translate(-50%, -24px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+            from { transform: translateY(-24px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
           }
           @keyframes toastInDesktop {
             from { transform: translate(32px, 0); opacity: 0; }
@@ -106,41 +106,43 @@ function Toast({ toast, onClose }: { toast: ToastOptions; onClose: () => void })
           }
         `
       }} />
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[200] w-[90vw] sm:w-[380px] bg-white/95 backdrop-blur-md border border-neutral-200 shadow-[0_16px_36px_rgba(0,0,0,0.08)] p-4 flex gap-4 animate-global-toast select-none rounded-none">
-        {toast.productImage ? (
-          <div className="relative w-16 h-16 border border-neutral-200 shrink-0 overflow-hidden bg-white">
-            <Image
-              src={toast.productImage}
-              alt={toast.productTitle || 'Produs'}
-              fill
-              sizes="64px"
-              className="object-cover"
-            />
-          </div>
-        ) : (
-          <div className="pt-0.5">
-            {iconMap[type]}
-          </div>
-        )}
-
-        <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <p className={`text-xs font-bold uppercase tracking-wider ${titleColorMap[type]}`}>
-            {toast.message}
-          </p>
-          {toast.productTitle && (
-            <p className="text-xs font-semibold text-neutral-800 mt-1 line-clamp-2 leading-snug">
-              {toast.productTitle}
-            </p>
+      <div className="pointer-events-none fixed inset-x-0 top-[calc(env(safe-area-inset-top)_+_1rem)] z-[999] flex justify-center px-4 sm:inset-x-auto sm:right-6 sm:top-6 sm:block sm:px-0">
+        <div className="pointer-events-auto flex w-full max-w-[420px] select-none gap-4 rounded-none border border-neutral-200 bg-white/95 p-4 shadow-[0_16px_36px_rgba(0,0,0,0.08)] backdrop-blur-md sm:w-[380px] animate-global-toast">
+          {toast.productImage ? (
+            <div className="relative w-16 h-16 border border-neutral-200 shrink-0 overflow-hidden bg-white">
+              <Image
+                src={toast.productImage}
+                alt={toast.productTitle || 'Produs'}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="pt-0.5">
+              {iconMap[type]}
+            </div>
           )}
-        </div>
 
-        <button
-          onClick={onClose}
-          className="text-neutral-400 hover:text-neutral-900 transition-colors shrink-0 self-start p-0.5"
-          aria-label="Închide"
-        >
-          <X size={16} />
-        </button>
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <p className={`text-xs font-bold uppercase tracking-wider ${titleColorMap[type]}`}>
+              {toast.message}
+            </p>
+            {toast.productTitle && (
+              <p className="text-xs font-semibold text-neutral-800 mt-1 line-clamp-2 leading-snug">
+                {toast.productTitle}
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={onClose}
+            className="text-neutral-400 hover:text-neutral-900 transition-colors shrink-0 self-start p-0.5"
+            aria-label="Închide"
+          >
+            <X size={16} />
+          </button>
+        </div>
       </div>
     </>
   )

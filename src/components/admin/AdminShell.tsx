@@ -5,13 +5,11 @@ import {usePathname, useRouter} from 'next/navigation'
 import {useEffect, useMemo, useState} from 'react'
 import {
   ArrowRight,
-  FileText,
   Home,
   LayoutDashboard,
   LogOut,
   Package,
   Search,
-  Truck,
   X,
 } from 'lucide-react'
 
@@ -110,24 +108,6 @@ export function AdminShell({children, title, subtitle}: AdminShellProps) {
                 })}
               </nav>
               <div className="border-t border-[#f1f2f3] p-2">
-                <div className="flex flex-col rounded-lg border border-transparent px-3 py-2.5 text-[#8c9196]">
-                  <span className="flex items-center gap-2 text-[15px] font-semibold leading-snug">
-                    <FileText className="h-3.5 w-3.5" />
-                    Facturi
-                  </span>
-                  <span className="mt-0.5 text-[13px] leading-snug">
-                    SmartBill / Oblio
-                  </span>
-                </div>
-                <div className="flex flex-col rounded-lg border border-transparent px-3 py-2.5 text-[#8c9196]">
-                  <span className="flex items-center gap-2 text-[15px] font-semibold leading-snug">
-                    <Truck className="h-3.5 w-3.5" />
-                    Logistică
-                  </span>
-                  <span className="mt-0.5 text-[13px] leading-snug">
-                    AWB și fulfillment
-                  </span>
-                </div>
                 <button
                   type="button"
                   onClick={handleLogout}
