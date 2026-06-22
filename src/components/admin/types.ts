@@ -19,6 +19,7 @@ export type AdminOrder = {
   invoice: {
     url: string
     number: string
+    series: string
     provider: string
     status: 'issued' | 'simulated' | 'error'
   } | null

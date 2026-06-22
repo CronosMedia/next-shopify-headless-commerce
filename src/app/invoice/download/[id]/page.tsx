@@ -4,6 +4,7 @@ import {
   type InvoiceDocumentData,
   type InvoiceSearchParams,
 } from '@/lib/invoice-document.server'
+import {CloseWindowButton} from './CloseWindowButton'
 import {PrintButton} from './PrintButton'
 
 export const dynamic = 'force-dynamic'
@@ -70,12 +71,7 @@ function InvoiceDocument({
   return (
     <main className="min-h-screen bg-[#eef0f2] px-4 py-6 text-[#1f2933] [font-family:var(--font-geist),Arial,sans-serif] print:bg-white print:px-0 print:py-0">
       <div className="mx-auto mb-4 flex w-full max-w-[210mm] items-center justify-between gap-3 print:hidden">
-        <Link
-          href="/admin/orders"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-[#c8ccd0] bg-white px-4 text-sm font-semibold text-[#374151] transition hover:bg-[#f7f8f9]"
-        >
-          Înapoi la admin
-        </Link>
+        <CloseWindowButton />
         <div className="flex flex-col items-end gap-1 text-right">
           <div className="flex flex-wrap justify-end gap-2">
             <Link

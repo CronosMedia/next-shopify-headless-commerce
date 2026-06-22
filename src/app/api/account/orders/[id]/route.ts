@@ -14,6 +14,7 @@ type Money = {
 }
 
 type TrackingInfo = {
+  company?: string | null
   number: string
   url: string
 }
@@ -60,7 +61,9 @@ type AdminOrderDetails = {
   totalTaxSet: {shopMoney: Money}
   totalShippingPriceSet: {shopMoney: Money}
   customAttributes: Array<{key: string; value: string}>
-  successfulFulfillments: StorefrontOrder['successfulFulfillments']
+  successfulFulfillments: Array<{
+    trackingInfo: TrackingInfo[]
+  }>
   lineItems: {
     edges: Array<{
       node: AdminOrderLineItemNode
@@ -180,8 +183,8 @@ export async function GET(req: NextRequest) {
             totalShippingPriceSet { shopMoney { amount currencyCode } }
             customAttributes { key value }
             successfulFulfillments: fulfillments(first: 5) {
-              trackingCompany
               trackingInfo {
+                company
                 number
                 url
               }
@@ -280,7 +283,16 @@ export async function GET(req: NextRequest) {
           shippingAddress: adminOrder.shippingAddress,
           billingAddress: adminOrder.billingAddress,
           customAttributes: adminOrder.customAttributes,
-          successfulFulfillments: adminOrder.successfulFulfillments || [],
+          successfulFulfillments: (adminOrder.successfulFulfillments || []).map(
+            (fulfillment) => {
+              const firstTracking = fulfillment.trackingInfo[0]
+
+              return {
+                trackingCompany: firstTracking?.company || 'Curier',
+                trackingInfo: fulfillment.trackingInfo,
+              }
+            }
+          ),
           lineItems: storefrontLineItems,
         }
       }
@@ -347,7 +359,11 @@ export async function GET(req: NextRequest) {
         storefrontOrder.fulfillmentStatus || 'UNFULFILLED',
       fulfillment: firstFulfillment
         ? {
-            trackingCompany: firstFulfillment.trackingCompany,
+            trackingCompany:
+              firstFulfillment.trackingCompany ||
+              firstTrackingInfo?.company ||
+              courierName ||
+              'Curier',
             trackingInfo: firstTrackingInfo ?? null,
           }
         : null,

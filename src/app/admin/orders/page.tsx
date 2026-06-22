@@ -78,6 +78,71 @@ function getNumericOrderId(orderId: string) {
   return orderId.split('/').pop() || orderId
 }
 
+function parseInvoiceParts(order: AdminOrder) {
+  const rawSeries = order.invoice?.series?.trim() || 'DEMO'
+  const rawNumber = order.invoice?.number?.trim() || ''
+  const normalizedSeries = rawSeries || 'DEMO'
+  const prefixedNumberPattern = new RegExp(
+    `^${normalizedSeries.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+`,
+    'i'
+  )
+  const numberWithoutSeries = rawNumber.replace(prefixedNumberPattern, '').trim()
+
+  if (numberWithoutSeries) {
+    return {
+      series: normalizedSeries,
+      number: numberWithoutSeries,
+    }
+  }
+
+  const splitNumber = rawNumber.match(/^([A-Za-z]+)\s+(.+)$/)
+
+  if (splitNumber) {
+    return {
+      series: splitNumber[1],
+      number: splitNumber[2],
+    }
+  }
+
+  return {
+    series: normalizedSeries,
+    number: rawNumber === 'N/A' ? '' : rawNumber,
+  }
+}
+
+function getInvoiceQuery(order: AdminOrder) {
+  const query = new URLSearchParams()
+  const {series, number} = parseInvoiceParts(order)
+
+  if (series) {
+    query.set('series', series)
+  }
+
+  if (number) {
+    query.set('number', number)
+  }
+
+  return query.toString()
+}
+
+function getInvoiceHref(order: AdminOrder) {
+  const numericOrderId = getNumericOrderId(order.id)
+  const query = getInvoiceQuery(order)
+
+  return `/invoice/download/${encodeURIComponent(numericOrderId)}${
+    query ? `?${query}` : ''
+  }`
+}
+
+function getInvoicePdfHref(order: AdminOrder) {
+  const numericOrderId = getNumericOrderId(order.id)
+  const query = getInvoiceQuery(order)
+
+  return `/invoice/download/${encodeURIComponent(numericOrderId)}/pdf${
+    query ? `?${query}` : ''
+  }`
+}
+
 function matchesStatus(order: AdminOrder, status: string) {
   if (!status) return true
   if (status === 'missing_invoice') return !order.invoice
@@ -170,6 +235,8 @@ function OrderDetailsDrawer({
     actionState?.orderId === order.id && actionState.action === 'awb'
   const orderBusy = actionState?.orderId === order.id
   const numericOrderId = getNumericOrderId(order.id)
+  const invoiceHref = getInvoiceHref(order)
+  const invoicePdfHref = getInvoicePdfHref(order)
 
   return (
     <div className="fixed inset-0 z-[450] bg-[#202223]/25" onClick={onClose}>
@@ -260,19 +327,19 @@ function OrderDetailsDrawer({
         </div>
 
         <div className="space-y-2 border-t border-[#e1e3e5] bg-[#f6f6f7] px-5 py-4">
-          <AdminButton href={`/account/orders/${numericOrderId}`} variant="outline">
+          <AdminButton href={`/admin/orders/${numericOrderId}`} variant="outline">
             <ExternalLink className="h-3.5 w-3.5" />
             Detalii comandă
           </AdminButton>
-          {order.invoice?.url ? (
-            <AdminButton href={order.invoice.url} variant="outline">
+          {order.invoice ? (
+            <AdminButton
+              href={invoiceHref}
+              rel="noopener noreferrer"
+              target="_blank"
+              variant="outline"
+            >
               <ExternalLink className="h-3.5 w-3.5" />
-              Deschide document
-            </AdminButton>
-          ) : order.invoice ? (
-            <AdminButton disabled variant="outline">
-              <FileText className="h-3.5 w-3.5" />
-              Factură demo emisă
+              Deschide factura
             </AdminButton>
           ) : (
             <AdminButton
@@ -290,6 +357,39 @@ function OrderDetailsDrawer({
               )}
             </AdminButton>
           )}
+          {order.invoice ? (
+            <AdminButton
+              href={invoicePdfHref}
+              rel="noopener noreferrer"
+              target="_blank"
+              variant="outline"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              Descarcă PDF
+            </AdminButton>
+          ) : null}
+          {order.awb?.trackingUrl ? (
+            <AdminButton
+              href={order.awb.trackingUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+              variant="outline"
+            >
+              <Truck className="h-3.5 w-3.5" />
+              Tracking AWB
+            </AdminButton>
+          ) : null}
+          {order.invoice?.url ? (
+            <AdminButton
+              href={order.invoice.url}
+              rel="noopener noreferrer"
+              target="_blank"
+              variant="outline"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              PDF provider
+            </AdminButton>
+          ) : null}
           <AdminButton
             disabled={orderBusy || Boolean(order.awb)}
             onClick={() => onRunAction(order, 'awb')}

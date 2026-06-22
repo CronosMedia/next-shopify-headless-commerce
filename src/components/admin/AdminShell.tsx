@@ -664,6 +664,8 @@ export function AdminButton({
   disabled,
   href,
   onClick,
+  rel,
+  target,
   type = 'button',
   variant = 'primary',
 }: {
@@ -671,6 +673,8 @@ export function AdminButton({
   disabled?: boolean
   href?: string
   onClick?: () => void
+  rel?: string
+  target?: React.HTMLAttributeAnchorTarget
   type?: 'button' | 'submit'
   variant?: 'primary' | 'outline' | 'success' | 'danger'
 }) {
@@ -686,7 +690,7 @@ export function AdminButton({
 
   if (href) {
     return (
-      <Link href={href} className={className}>
+      <Link href={href} className={className} rel={rel} target={target}>
         {children}
       </Link>
     )

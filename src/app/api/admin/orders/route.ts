@@ -35,6 +35,9 @@ const GET_ORDERS_ADMIN_QUERY = `#graphql
           invoiceNumber: metafield(namespace: "custom", key: "invoice_number") {
             value
           }
+          invoiceSeries: metafield(namespace: "custom", key: "invoice_series") {
+            value
+          }
           invoiceProvider: metafield(namespace: "custom", key: "invoice_provider") {
             value
           }
@@ -82,6 +85,7 @@ type AdminOrderNode = {
   } | null
   invoicePdfUrl: { value: string } | null
   invoiceNumber: { value: string } | null
+  invoiceSeries: { value: string } | null
   invoiceProvider: { value: string } | null
   invoiceStatus: { value: string } | null
   awbCode: { value: string } | null
@@ -142,6 +146,7 @@ export async function GET() {
         invoice: node.invoicePdfUrl?.value || node.invoiceNumber?.value ? {
           url: node.invoicePdfUrl?.value || '',
           number: node.invoiceNumber?.value || 'N/A',
+          series: node.invoiceSeries?.value || 'DEMO',
           provider: node.invoiceProvider?.value || 'demo',
           status: node.invoiceStatus?.value || 'simulated',
         } : null,
