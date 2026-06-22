@@ -1,8 +1,6 @@
 'use client'
 
 import {useState} from 'react'
-import {LockKeyhole} from 'lucide-react'
-import {AdminButton, AdminCard} from './AdminShell'
 
 type AdminLoginFormProps = {
   onSuccess: () => void
@@ -48,48 +46,40 @@ export function AdminLoginForm({onSuccess}: AdminLoginFormProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f1f2f4] px-4 py-10 text-[#202223] [font-family:var(--font-geist),sans-serif]">
-      <AdminCard className="mx-auto max-w-md overflow-hidden">
-        <div className="border-b border-[#f1f2f3] px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md border border-[#d2d5d8] bg-[#f6f6f7]">
-              <LockKeyhole className="h-4 w-4 text-[#5c5f62]" />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8c9196]">
-                Backoffice
-              </p>
-              <h1 className="text-lg font-semibold text-[#202223]">
-                Autentificare admin
-              </h1>
-            </div>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground sm:py-16">
+      <div className="w-full max-w-[420px] rounded-lg bg-background p-8 shadow-lg">
+        <h1 className="mb-6 text-center text-2xl font-bold text-foreground">
+          Autentificare admin
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <div className="relative rounded-lg border border-red-400 bg-red-100 px-4 py-3 text-red-700">
               {error}
             </div>
           )}
           <div>
-            <label className="mb-1 block text-xs font-semibold text-[#6d7175]">
-              Parolă admin
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
+              Parolă
             </label>
             <input
               type="password"
+              placeholder="Parola admin"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="h-10 w-full rounded-md border border-[#aeb4b9] bg-white px-3 text-sm text-[#202223] outline-none transition focus:border-[#008060] focus:ring-2 focus:ring-[#008060]/20"
+              className="w-full rounded-none border-2 border-muted bg-background px-3 py-2 text-lg text-foreground outline-none placeholder:text-muted-foreground focus:border-black focus:ring-2 focus:ring-black/20 disabled:bg-secondary disabled:opacity-50"
               autoComplete="current-password"
               required
             />
           </div>
-          <AdminButton type="submit" disabled={isSubmitting}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full cursor-pointer rounded-none border border-black bg-black px-4 py-2 text-white transition-all hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             {isSubmitting ? 'Se verifică...' : 'Autentificare'}
-          </AdminButton>
+          </button>
         </form>
-      </AdminCard>
+      </div>
     </main>
   )
 }

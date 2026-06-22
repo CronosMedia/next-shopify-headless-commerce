@@ -35,7 +35,7 @@ import { useToast } from '@/components/ToastProvider'
 
 export default function AccountPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<AuthFormSkeleton />}>
       <AccountPageContent />
     </Suspense>
   )
@@ -56,7 +56,13 @@ function AccountPageContent() {
     }
   }, [searchParams, activeTab]);
 
-  if (loading) return <LoadingSpinner />
+  if (loading) {
+    return (
+      <AuthFormSkeleton
+        mode={searchParams.get('mode') === 'register' ? 'register' : 'login'}
+      />
+    )
+  }
   if (!user) return <AuthForm />
 
   return (
@@ -78,21 +84,64 @@ function AccountPageContent() {
 
 // --- Sub-components ---
 
-function LoadingSpinner() {
+function AuthPageShell({children}: {children: React.ReactNode}) {
   return (
-    <div className="max-w-md mx-auto p-6">
-      <div className="bg-background rounded-lg shadow-lg p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto"></div>
-        <p className="mt-4 text-muted-foreground">Se încarcă...</p>
-      </div>
+    <div className="flex min-h-[calc(100svh-5rem)] items-center justify-center px-4 py-10 sm:py-16">
+      {children}
     </div>
+  )
+}
+
+function AuthCard({children}: {children: React.ReactNode}) {
+  return (
+    <div className="w-full max-w-[420px] rounded-lg bg-background p-8 shadow-lg">
+      {children}
+    </div>
+  )
+}
+
+function SkeletonBlock({className}: {className: string}) {
+  return <div className={`animate-pulse rounded bg-neutral-200 ${className}`} />
+}
+
+type AuthMode = 'login' | 'register'
+
+function AuthFieldSkeleton() {
+  return (
+    <div>
+      <SkeletonBlock className="mb-1 h-5 w-20" />
+      <SkeletonBlock className="h-12 w-full rounded-none" />
+    </div>
+  )
+}
+
+function AuthFormSkeleton({mode = 'login'}: {mode?: AuthMode}) {
+  const fieldCount = mode === 'register' ? 4 : 2
+
+  return (
+    <AuthPageShell>
+      <AuthCard>
+        <SkeletonBlock
+          className={`mx-auto mb-6 h-8 ${mode === 'register' ? 'w-44' : 'w-40'}`}
+        />
+        <div className="space-y-4">
+          {Array.from({length: fieldCount}, (_, index) => (
+            <AuthFieldSkeleton key={index} />
+          ))}
+          <SkeletonBlock className="h-[42px] w-full rounded-none" />
+        </div>
+        <SkeletonBlock className="mx-auto mt-4 h-5 w-48" />
+      </AuthCard>
+    </AuthPageShell>
   )
 }
 
 function AuthForm() {
   const { login, register, loading } = useAuth()
   const { cart } = useCart()
-  const [isLogin, setIsLogin] = useState(true)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register')
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: '',
@@ -101,6 +150,26 @@ function AuthForm() {
     lastName: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    setIsLogin(searchParams.get('mode') !== 'register')
+  }, [searchParams])
+
+  const handleModeChange = () => {
+    const nextIsLogin = !isLogin
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (nextIsLogin) {
+      params.delete('mode')
+    } else {
+      params.set('mode', 'register')
+    }
+
+    const queryString = params.toString()
+    router.replace(queryString ? `/account?${queryString}` : '/account', {scroll: false})
+    setIsLogin(nextIsLogin)
+    setError(null)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -127,8 +196,8 @@ function AuthForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <div className="bg-background rounded-lg shadow-lg p-8">
+    <AuthPageShell>
+      <AuthCard>
         <h1 className="text-2xl font-bold text-center mb-6 text-foreground">
           {isLogin ? 'Autentificare' : 'Creează Cont'}
         </h1>
@@ -161,13 +230,14 @@ function AuthForm() {
           <InputField
             type="password"
             placeholder="Parolă"
+            inputPlaceholder="Parola ta"
             value={formData.password}
             onChange={(val) => setFormData({ ...formData, password: val })}
           />
           <button
             type="submit"
             disabled={isSubmitting || loading}
-            className="w-full bg-black text-white py-2 px-4 rounded-none border border-black hover:bg-neutral-900 transition-all disabled:opacity-50"
+            className="w-full cursor-pointer bg-black text-white py-2 px-4 rounded-none border border-black hover:bg-neutral-900 transition-all disabled:opacity-50"
           >
             {isSubmitting
               ? 'Vă rugăm așteptați...'
@@ -180,15 +250,15 @@ function AuthForm() {
           <p className="text-sm text-muted-foreground">
             {isLogin ? 'Nu ai cont?' : 'Ai deja cont?'}{' '}
             <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:underline"
+              onClick={handleModeChange}
+              className="cursor-pointer text-primary hover:underline"
             >
               {isLogin ? 'Înregistrează-te' : 'Autentifică-te'}
             </button>
           </p>
         </div>
-      </div>
-    </div>
+      </AuthCard>
+    </AuthPageShell>
   )
 }
 
@@ -1212,6 +1282,7 @@ function AddressForm({
 
 function InputField({
   placeholder,
+  inputPlaceholder,
   value,
   onChange,
   error,
@@ -1221,6 +1292,7 @@ function InputField({
   disabled = false,
 }: {
   placeholder: string
+  inputPlaceholder?: string
   value: string
   onChange: (value: string) => void
   error?: string
@@ -1236,7 +1308,7 @@ function InputField({
       </label>
       <input
         type={type}
-        placeholder={placeholder}
+        placeholder={inputPlaceholder || placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
