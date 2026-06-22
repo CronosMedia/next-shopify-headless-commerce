@@ -2,34 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdminSession } from '@/lib/admin-session'
 import { shopifyAdminRequest } from '@/lib/shopify/admin.server'
 
-const GET_FULFILLMENT_ORDERS = `#graphql
-  query GetFulfillmentOrders($id: ID!) {
+const GET_ORDER_AWB_DETAILS = `#graphql
+  query GetOrderAwbDetails($id: ID!) {
     order(id: $id) {
       id
       name
-      fulfillmentOrders(first: 5, displayable: true) {
-        edges {
-          node {
-            id
-            status
-            supportedActions
-          }
-        }
+      awbCode: metafield(namespace: "custom", key: "awb_code") {
+        value
       }
-    }
-  }
-`
-
-const CREATE_FULFILLMENT = `#graphql
-  mutation FulfillmentCreate($fulfillment: FulfillmentV2Input!) {
-    fulfillmentCreateV2(fulfillment: $fulfillment) {
-      fulfillment {
-        id
-        status
+      awbProvider: metafield(namespace: "custom", key: "awb_provider") {
+        value
       }
-      userErrors {
-        field
-        message
+      awbStatus: metafield(namespace: "custom", key: "awb_status") {
+        value
+      }
+      awbTrackingUrl: metafield(namespace: "custom", key: "awb_tracking_url") {
+        value
+      }
+      awbIssuedAt: metafield(namespace: "custom", key: "awb_issued_at") {
+        value
+      }
+      courierName: metafield(namespace: "custom", key: "courier_name") {
+        value
       }
     }
   }
@@ -52,35 +46,17 @@ const SET_ORDER_METAFIELDS = `#graphql
   }
 `
 
-type FulfillmentOrderNode = {
-  id: string
-  status: string
-  supportedActions: string[]
-}
-
-type FulfillmentOrdersResponse = {
+type OrderAwbDetailsResponse = {
   order: {
     id: string
     name: string
-    fulfillmentOrders: {
-      edges: Array<{
-        node: FulfillmentOrderNode
-      }>
-    }
+    awbCode: { value: string } | null
+    awbProvider: { value: string } | null
+    awbStatus: { value: string } | null
+    awbTrackingUrl: { value: string } | null
+    awbIssuedAt: { value: string } | null
+    courierName: { value: string } | null
   } | null
-}
-
-type FulfillmentMutationResponse = {
-  fulfillmentCreateV2: {
-    fulfillment: {
-      id: string
-      status: string
-    } | null
-    userErrors: Array<{
-      field: string[]
-      message: string
-    }>
-  }
 }
 
 type MetafieldMutationResponse = {
@@ -96,6 +72,16 @@ type MetafieldMutationResponse = {
       message: string
     }>
   }
+}
+
+type AwbMode = 'demo' | 'real'
+
+function getAwbProvider() {
+  return process.env.AWB_PROVIDER?.trim().toLowerCase() || 'demo'
+}
+
+function getAwbMode(provider: string): AwbMode {
+  return provider === 'demo' ? 'demo' : 'real'
 }
 
 export async function POST(req: NextRequest) {
@@ -114,85 +100,161 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 1. Generate AWB number
-    const awbCode = `AWB${Math.floor(10000000 + Math.random() * 90000000)}`
-    const courier = 'Sameday'
-    const trackingUrl = `https://sameday.ro/tracking/?awb=${awbCode}`
+    const provider = getAwbProvider()
+    const mode = getAwbMode(provider)
 
-    // 2. Fetch fulfillment orders for the order
-    const foResponse = await shopifyAdminRequest<FulfillmentOrdersResponse>(
-      GET_FULFILLMENT_ORDERS,
+    const orderResponse = await shopifyAdminRequest<OrderAwbDetailsResponse>(
+      GET_ORDER_AWB_DETAILS,
       { id: orderId }
     )
 
-    if (foResponse.errors?.length || !foResponse.data?.order) {
+    if (orderResponse.errors?.length || !orderResponse.data?.order) {
       return NextResponse.json(
-        { error: foResponse.errors?.[0]?.message || 'Order not found.' },
+        {
+          success: false,
+          mode,
+          fulfilled: false,
+          error: orderResponse.errors?.[0]?.message || 'Order not found.',
+        },
         { status: 404 }
       )
     }
 
-    const order = foResponse.data.order
-    const fulfillmentOrders = order.fulfillmentOrders.edges.map(({ node }) => node)
-    const openFo = fulfillmentOrders.find(
-      (fo) => fo.status === 'OPEN' || fo.status === 'IN_PROGRESS'
-    )
+    const order = orderResponse.data.order
 
-    // 3. Set custom AWB metafields in Shopify
+    if (order.awbCode?.value) {
+      const existingProvider = order.awbProvider?.value || 'demo'
+
+      return NextResponse.json({
+        success: true,
+        alreadyIssued: true,
+        mode: getAwbMode(existingProvider),
+        fulfilled: false,
+        message: 'AWB-ul era deja generat. Comanda nu a fost marcată ca expediată.',
+        awb: {
+          status: getAwbMode(existingProvider) === 'demo' ? 'simulated' : 'issued',
+          provider: existingProvider,
+          code: order.awbCode.value,
+          trackingUrl: order.awbTrackingUrl?.value,
+          issuedAt: order.awbIssuedAt?.value,
+        },
+      })
+    }
+
+    if (mode === 'real') {
+      return NextResponse.json(
+        {
+          success: false,
+          mode,
+          fulfilled: false,
+          error: `Providerul AWB "${provider}" nu este configurat complet în acest batch.`,
+          awb: {
+            status: 'error',
+            provider,
+          },
+        },
+        { status: 501 }
+      )
+    }
+
+    const awbCode = `AWB${Math.floor(10000000 + Math.random() * 90000000)}`
+    const courier = 'Sameday Demo'
+    const trackingUrl = `https://sameday.ro/tracking/?awb=${awbCode}`
+    const issuedAt = new Date().toISOString()
+
     const metafields = [
       {
-        ownerId: orderId,
+        ownerId: order.id,
         namespace: 'custom',
         key: 'awb_code',
         value: awbCode,
         type: 'single_line_text_field',
       },
       {
-        ownerId: orderId,
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'awb_provider',
+        value: provider,
+        type: 'single_line_text_field',
+      },
+      {
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'awb_status',
+        value: 'simulated',
+        type: 'single_line_text_field',
+      },
+      {
+        ownerId: order.id,
         namespace: 'custom',
         key: 'courier_name',
         value: courier,
         type: 'single_line_text_field',
       },
+      {
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'awb_tracking_url',
+        value: trackingUrl,
+        type: 'single_line_text_field',
+      },
+      {
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'awb_issued_at',
+        value: issuedAt,
+        type: 'single_line_text_field',
+      },
     ]
 
-    await shopifyAdminRequest<MetafieldMutationResponse>(
+    const metafieldResponse = await shopifyAdminRequest<MetafieldMutationResponse>(
       SET_ORDER_METAFIELDS,
       { metafields }
     )
 
-    // 4. Create the Shopify fulfillment (mark as fulfilled in Shopify) if there's an open fulfillment order
-    if (openFo) {
-      const fulfillmentInput = {
-        lineItemsByFulfillmentOrder: [
-          {
-            fulfillmentOrderId: openFo.id,
-          },
-        ],
-        trackingInfo: {
-          number: awbCode,
-          url: trackingUrl,
-          company: courier,
-        },
-      }
+    const metafieldErrors = metafieldResponse.data?.metafieldsSet.userErrors || []
 
-      await shopifyAdminRequest<FulfillmentMutationResponse>(
-        CREATE_FULFILLMENT,
-        { fulfillment: fulfillmentInput }
+    if (metafieldResponse.errors?.length || metafieldErrors.length) {
+      return NextResponse.json(
+        {
+          success: false,
+          mode,
+          fulfilled: false,
+          error:
+            metafieldResponse.errors?.[0]?.message ||
+            metafieldErrors[0]?.message ||
+            'AWB-ul demo nu a putut fi salvat pe comandă.',
+          awb: {
+            status: 'error',
+            provider,
+          },
+        },
+        { status: 500 }
       )
     }
 
     return NextResponse.json({
       success: true,
+      alreadyIssued: false,
+      mode,
+      fulfilled: false,
+      message: 'AWB demo generat. Comanda nu a fost marcată ca expediată.',
       awb: {
+        status: 'simulated',
+        provider,
         code: awbCode,
-        courier,
         trackingUrl,
+        issuedAt,
       },
     })
   } catch {
     return NextResponse.json(
-      { error: 'A apărut o eroare la generarea AWB-ului.' },
+      {
+        success: false,
+        mode: 'demo',
+        fulfilled: false,
+        error: 'A apărut o eroare la generarea AWB-ului.',
+      },
       { status: 500 }
     )
   }

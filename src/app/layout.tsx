@@ -1,14 +1,11 @@
 import { Geist_Mono } from 'next/font/google'
-import { Inter, Cormorant_Garamond, Barlow } from 'next/font/google'
+import { Geist, Inter, Cormorant_Garamond, Barlow } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/components/CartProvider'
 import { UIProvider } from '@/components/UIProvider'
 import { AuthProvider } from '@/components/AuthProvider'
 import { WishlistProvider } from '@/components/WishlistProvider'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import MobileBottomNav from '@/components/MobileBottomNav'
-import QuickViewModal from '@/components/QuickViewModal'
+import SiteChrome from '@/components/SiteChrome'
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -25,6 +22,11 @@ const cormorant = Cormorant_Garamond({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin', 'latin-ext'],
+})
+
+const geist = Geist({
+  variable: '--font-geist',
   subsets: ['latin', 'latin-ext'],
 })
 
@@ -62,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="ro" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${cormorant.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
+        className={`${inter.variable} ${cormorant.variable} ${geist.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
         suppressHydrationWarning
       >
         <AuthProvider>
@@ -70,11 +72,7 @@ export default function RootLayout({
             <UIProvider>
               <CartProvider>
                 <WishlistProvider>
-                  <Header />
-                  <main className="min-h-screen">{children}</main>
-                  <QuickViewModal />
-                  <Footer />
-                  <MobileBottomNav />
+                  <SiteChrome>{children}</SiteChrome>
                 </WishlistProvider>
               </CartProvider>
             </UIProvider>

@@ -1,6 +1,6 @@
 // Romanian Invoicing Types & Interfaces
 
-export type InvoiceProvider = 'smartbill' | 'oblio' | 'fgo'
+export type InvoiceProvider = 'smartbill' | 'oblio' | 'fgo' | 'demo'
 export type InvoiceStatus = 'draft' | 'issued' | 'sent' | 'paid' | 'cancelled' | 'storno'
 export type InvoiceType = 'invoice' | 'proforma' | 'receipt' | 'credit_note'
 

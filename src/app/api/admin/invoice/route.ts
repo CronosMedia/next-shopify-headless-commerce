@@ -29,10 +29,25 @@ const GET_ORDER_DETAILS_FOR_INVOICE = `#graphql
           currencyCode
         }
       }
-      customAttributes {
-        key
-        value
-      }
+          customAttributes {
+            key
+            value
+          }
+          invoicePdfUrl: metafield(namespace: "custom", key: "invoice_pdf_url") {
+            value
+          }
+          invoiceNumber: metafield(namespace: "custom", key: "invoice_number") {
+            value
+          }
+          invoiceProvider: metafield(namespace: "custom", key: "invoice_provider") {
+            value
+          }
+          invoiceStatus: metafield(namespace: "custom", key: "invoice_status") {
+            value
+          }
+          invoiceIssuedAt: metafield(namespace: "custom", key: "invoice_issued_at") {
+            value
+          }
       customer {
         firstName
         lastName
@@ -127,6 +142,11 @@ type AdminOrderDetailsResponse = {
     subtotalPriceSet: { shopMoney: { amount: string; currencyCode: string } }
     totalTaxSet: { shopMoney: { amount: string; currencyCode: string } }
     customAttributes: Array<{ key: string; value: string }>
+    invoicePdfUrl: { value: string } | null
+    invoiceNumber: { value: string } | null
+    invoiceProvider: { value: string } | null
+    invoiceStatus: { value: string } | null
+    invoiceIssuedAt: { value: string } | null
     customer: {
       firstName: string
       lastName: string
@@ -180,6 +200,30 @@ type MetafieldMutationResponse = {
   }
 }
 
+type InvoiceMode = 'demo' | 'real'
+
+function getInvoiceMode(provider: string | undefined): InvoiceMode {
+  return provider === 'demo' ? 'demo' : 'real'
+}
+
+function splitInvoiceNumber(value: string | undefined) {
+  const trimmedValue = value?.trim()
+
+  if (!trimmedValue) {
+    return {
+      series: undefined,
+      number: undefined,
+    }
+  }
+
+  const [series, ...numberParts] = trimmedValue.split(/\s+/)
+
+  return {
+    series,
+    number: numberParts.join(' ') || undefined,
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const adminSession = await requireAdminSession()
@@ -210,6 +254,30 @@ export async function POST(req: NextRequest) {
     }
 
     const order = orderResponse.data.order
+
+    if (order.invoiceNumber?.value || order.invoicePdfUrl?.value) {
+      const { series, number } = splitInvoiceNumber(order.invoiceNumber?.value)
+      const provider = order.invoiceProvider?.value || 'demo'
+      const mode = getInvoiceMode(provider)
+
+      return NextResponse.json({
+        success: true,
+        alreadyIssued: true,
+        mode,
+        message:
+          mode === 'demo'
+            ? 'Factura demo era deja emisă.'
+            : 'Factura era deja emisă.',
+        invoice: {
+          status: mode === 'demo' ? 'simulated' : 'issued',
+          provider,
+          number,
+          series,
+          pdfUrl: order.invoicePdfUrl?.value,
+          issuedAt: order.invoiceIssuedAt?.value,
+        },
+      })
+    }
 
     // Helper to read order attributes
     const getAttr = (key: string) => order.customAttributes?.find((a) => a.key === key)?.value || ''
@@ -294,10 +362,19 @@ export async function POST(req: NextRequest) {
     // 5. Generate the invoice via service
     const invoiceService = getInvoicingService()
     const invoiceResult = await invoiceService.issueInvoice(invoiceData)
+    const mode = getInvoiceMode(invoiceResult.provider)
 
     if (!invoiceResult.success || !invoiceResult.url) {
       return NextResponse.json(
-        { error: invoiceResult.error || 'Generarea facturii a eșuat.' },
+        {
+          success: false,
+          mode,
+          error: invoiceResult.error || 'Generarea facturii a eșuat.',
+          invoice: {
+            status: 'error',
+            provider: invoiceResult.provider,
+          },
+        },
         { status: 500 }
       )
     }
@@ -325,23 +402,75 @@ export async function POST(req: NextRequest) {
         value: invoiceResult.provider,
         type: 'single_line_text_field',
       },
+      {
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'invoice_status',
+        value: mode === 'demo' ? 'simulated' : 'issued',
+        type: 'single_line_text_field',
+      },
+      {
+        ownerId: order.id,
+        namespace: 'custom',
+        key: 'invoice_issued_at',
+        value: invoiceResult.issuedAt,
+        type: 'single_line_text_field',
+      },
     ]
 
-    await shopifyAdminRequest<MetafieldMutationResponse>(
+    const metafieldResponse = await shopifyAdminRequest<MetafieldMutationResponse>(
       SET_ORDER_METAFIELDS,
       { metafields }
     )
 
+    const metafieldErrors = metafieldResponse.data?.metafieldsSet.userErrors || []
+
+    if (metafieldResponse.errors?.length || metafieldErrors.length) {
+      return NextResponse.json(
+        {
+          success: false,
+          mode,
+          error:
+            metafieldResponse.errors?.[0]?.message ||
+            metafieldErrors[0]?.message ||
+            'Factura a fost generată, dar nu a putut fi salvată pe comandă.',
+          invoice: {
+            status: 'error',
+            provider: invoiceResult.provider,
+            number: invoiceResult.number,
+            series: invoiceResult.series,
+            pdfUrl: invoiceResult.url,
+            issuedAt: invoiceResult.issuedAt,
+          },
+        },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json({
       success: true,
+      alreadyIssued: false,
+      mode,
+      message:
+        mode === 'demo'
+          ? 'Factură demo emisă. Documentul este o simulare.'
+          : 'Factura a fost emisă.',
       invoice: {
-        number: `${invoiceResult.series} ${invoiceResult.number}`.trim(),
-        url: invoiceResult.url,
+        status: mode === 'demo' ? 'simulated' : 'issued',
+        provider: invoiceResult.provider,
+        number: invoiceResult.number,
+        series: invoiceResult.series,
+        pdfUrl: invoiceResult.url,
+        issuedAt: invoiceResult.issuedAt,
       },
     })
   } catch {
     return NextResponse.json(
-      { error: 'A apărut o eroare la emiterea facturii.' },
+      {
+        success: false,
+        mode: 'demo',
+        error: 'A apărut o eroare la emiterea facturii.',
+      },
       { status: 500 }
     )
   }

@@ -19,7 +19,7 @@ class DemoInvoicingService implements InvoicingService {
 
     return {
       success: true,
-      provider: 'oblio', // or 'smartbill'
+      provider: 'demo',
       invoiceId: `demo-id-${number}`,
       series,
       number,

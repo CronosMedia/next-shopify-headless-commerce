@@ -35,10 +35,25 @@ const GET_ORDERS_ADMIN_QUERY = `#graphql
           invoiceNumber: metafield(namespace: "custom", key: "invoice_number") {
             value
           }
+          invoiceProvider: metafield(namespace: "custom", key: "invoice_provider") {
+            value
+          }
+          invoiceStatus: metafield(namespace: "custom", key: "invoice_status") {
+            value
+          }
           awbCode: metafield(namespace: "custom", key: "awb_code") {
             value
           }
+          awbProvider: metafield(namespace: "custom", key: "awb_provider") {
+            value
+          }
+          awbStatus: metafield(namespace: "custom", key: "awb_status") {
+            value
+          }
           courierName: metafield(namespace: "custom", key: "courier_name") {
+            value
+          }
+          awbTrackingUrl: metafield(namespace: "custom", key: "awb_tracking_url") {
             value
           }
         }
@@ -67,8 +82,13 @@ type AdminOrderNode = {
   } | null
   invoicePdfUrl: { value: string } | null
   invoiceNumber: { value: string } | null
+  invoiceProvider: { value: string } | null
+  invoiceStatus: { value: string } | null
   awbCode: { value: string } | null
+  awbProvider: { value: string } | null
+  awbStatus: { value: string } | null
   courierName: { value: string } | null
+  awbTrackingUrl: { value: string } | null
 }
 
 type ShopifyAdminOrdersResponse = {
@@ -119,13 +139,18 @@ export async function GET() {
           name: 'Client Anonim',
           email: '',
         },
-        invoice: node.invoicePdfUrl?.value ? {
-          url: node.invoicePdfUrl.value,
+        invoice: node.invoicePdfUrl?.value || node.invoiceNumber?.value ? {
+          url: node.invoicePdfUrl?.value || '',
           number: node.invoiceNumber?.value || 'N/A',
+          provider: node.invoiceProvider?.value || 'demo',
+          status: node.invoiceStatus?.value || 'simulated',
         } : null,
         awb: node.awbCode?.value ? {
           code: node.awbCode.value,
           courier: node.courierName?.value || 'Sameday',
+          provider: node.awbProvider?.value || 'demo',
+          status: node.awbStatus?.value || 'simulated',
+          trackingUrl: node.awbTrackingUrl?.value || '',
         } : null,
       }
     }) || []
