@@ -672,19 +672,40 @@ function SettingsTab({ user }: { user: User }) {
 
   return (
     <div className={accountPanelClass}>
-      <h2 className={`${accountTitleClass} mb-6`}>
-        Securitate și Setări
-      </h2>
+      <div className="mb-6">
+        <h2 className={accountTitleClass}>Securitate și setări</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted-foreground)]">
+          Gestionează datele folosite pentru autentificare și accesul la cont.
+        </p>
+      </div>
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
+        <div className="mb-5 border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
           {error}
         </div>
       )}
-      <div className="space-y-8">
-        <div className={accountSectionClass}>
-          <h3 className={accountLabelClass}>Adresă de email</h3>
-          {isEditingEmail ? (
-            <form onSubmit={handleEmailChange} className="space-y-4 mt-4">
+      <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
+        <section className="py-5 md:px-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0">
+              <h3 className={accountLabelClass}>Adresă de email</h3>
+              <p className="mt-2 break-words text-base text-[var(--foreground)]">
+                {user.email}
+              </p>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted-foreground)]">
+                Folosită pentru autentificare și notificări despre comenzi.
+              </p>
+            </div>
+            {!isEditingEmail && (
+              <button
+                onClick={() => setIsEditingEmail(true)}
+                className={`${accountSecondaryButtonClass} w-full sm:w-auto md:min-w-36`}
+              >
+                <Edit size={16} strokeWidth={1.5} /> Editează
+              </button>
+            )}
+          </div>
+          {isEditingEmail && (
+            <form onSubmit={handleEmailChange} className="mt-5 max-w-xl space-y-4">
               <InputField
                 placeholder="Adresă de email nouă"
                 value={email}
@@ -708,22 +729,28 @@ function SettingsTab({ user }: { user: User }) {
                 </button>
               </div>
             </form>
-          ) : (
-            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-muted-foreground">{user.email}</p>
+          )}
+        </section>
+        <section className="py-5 md:px-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0">
+              <h3 className={accountLabelClass}>Parolă</h3>
+              <p className="mt-2 text-base text-[var(--foreground)]">••••••••</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted-foreground)]">
+                Actualizează parola pentru a păstra contul în siguranță.
+              </p>
+            </div>
+            {!isEditingPassword && (
               <button
-                onClick={() => setIsEditingEmail(true)}
-                className={accountSecondaryButtonClass}
+                onClick={() => setIsEditingPassword(true)}
+                className={`${accountSecondaryButtonClass} w-full sm:w-auto md:min-w-36`}
               >
                 <Edit size={16} strokeWidth={1.5} /> Editează
               </button>
-            </div>
-          )}
-        </div>
-        <div className={accountSectionClass}>
-          <h3 className={accountLabelClass}>Parolă</h3>
-          {isEditingPassword ? (
-            <form onSubmit={handlePasswordChange} className="space-y-4 mt-4">
+            )}
+          </div>
+          {isEditingPassword && (
+            <form onSubmit={handlePasswordChange} className="mt-5 max-w-xl space-y-4">
               <InputField
                 placeholder="Parolă nouă"
                 value={password}
@@ -754,18 +781,8 @@ function SettingsTab({ user }: { user: User }) {
                 </button>
               </div>
             </form>
-          ) : (
-            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-muted-foreground">••••••••</p>
-              <button
-                onClick={() => setIsEditingPassword(true)}
-                className={accountSecondaryButtonClass}
-              >
-                <Edit size={16} strokeWidth={1.5} /> Editează
-              </button>
-            </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   )
@@ -954,7 +971,7 @@ function OrdersTab() {
         <p className="text-muted-foreground">Nu ai nicio comandă.</p>
       ) : (
         <>
-          <div className="space-y-4">
+          <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
             {currentOrders.map((order) => {
               const orderId = order.id.split('/').pop();
               const date = new Date(order.processedAt);
@@ -969,34 +986,47 @@ function OrdersTab() {
               return (
                 <div
                   key={order.id}
-                  className={accountSectionClass}
+                  className="group py-5 transition-colors hover:bg-[#F9F8F6]/55 md:px-4"
                 >
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                    <div className="text-xl font-light uppercase tracking-[0.04em] text-[var(--foreground)] md:text-2xl">
-                      {capitalizedDate}
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_auto] md:items-center">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                        Data comenzii
+                      </p>
+                      <p className="mt-2 text-lg font-light uppercase tracking-[0.06em] text-[var(--foreground)] md:text-xl">
+                        {capitalizedDate}
+                      </p>
                     </div>
-                    <div className="hidden h-12 border-l border-[var(--border)] md:block"></div>
-                    <div className="flex-grow">
-                      <p className="text-sm leading-6 text-[var(--muted-foreground)]">
-                        Comanda nr:{' '}
-                        <span className="font-semibold text-[var(--foreground)]">{order.orderNumber}</span>
-                      </p>
-                      <p className="text-sm leading-6 text-[var(--muted-foreground)]">
-                        Total:{' '}
-                        <span className="font-semibold text-[var(--foreground)]">
-                          {order.totalPrice.amount} LEI
-                        </span>
-                      </p>
+
+                    <div className="min-w-0 border-l-0 border-[var(--border)] md:border-l md:pl-5">
+                      <dl className="grid grid-cols-2 gap-3 text-sm leading-6 md:block md:space-y-1">
+                        <div>
+                          <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)] md:sr-only">
+                            Comanda
+                          </dt>
+                          <dd className="text-[var(--muted-foreground)]">
+                            Nr. <span className="font-semibold text-[var(--foreground)]">{order.orderNumber}</span>
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)] md:sr-only">
+                            Total
+                          </dt>
+                          <dd className="text-[var(--muted-foreground)]">
+                            Total <span className="font-semibold text-[var(--foreground)]">{order.totalPrice.amount} LEI</span>
+                          </dd>
+                        </div>
+                      </dl>
                       {order.successfulFulfillments && order.successfulFulfillments.length > 0 && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          <div className="mb-1">
+                        <div className="mt-3 text-sm text-gray-600">
+                          <div className="mb-2">
                             {order.fulfillmentStatus === 'FULFILLED' && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-primary border border-border">
+                              <span className="inline-flex items-center border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--foreground)]">
                                 Expediat
                               </span>
                             )}
                             {order.fulfillmentStatus === 'IN_PROGRESS' && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-black border border-border">
+                              <span className="inline-flex items-center border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--foreground)]">
                                 În curs de livrare
                               </span>
                             )}
@@ -1021,10 +1051,10 @@ function OrdersTab() {
                     </div>
                     <Link
                       href={`/account/orders/${orderId}`}
-                      className="inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--foreground)] underline-offset-4 hover:underline"
+                      className="inline-flex min-h-10 items-center justify-between gap-2 border border-[var(--border)] bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--foreground)] transition-colors hover:border-black md:justify-center"
                     >
-                      Vezi detaliile comenzii
-                      <ChevronRight size={16} className="ml-1" />
+                      Detalii
+                      <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                     </Link>
                   </div>
                 </div>
@@ -1059,18 +1089,19 @@ function OrdersTabSkeleton() {
   return (
     <div className={accountPanelClass} aria-hidden="true">
       <SkeletonBlock className="mb-6 h-6 w-44" />
-      <div className="space-y-4">
+      <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
         {Array.from({ length: 3 }, (_, index) => (
-          <div key={index} className={accountSectionClass}>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              <SkeletonBlock className="h-7 w-56 max-w-full" />
-              <div className="hidden h-12 border-l border-[var(--border)] md:block" />
+          <div key={index} className="py-5 md:px-4">
+            <div className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_auto] md:items-center">
               <div className="flex-1 space-y-2">
-                <SkeletonBlock className="h-4 w-36" />
-                <SkeletonBlock className="h-4 w-28" />
-                <SkeletonBlock className="h-5 w-24" />
+                <SkeletonBlock className="h-3 w-24" />
+                <SkeletonBlock className="h-6 w-56 max-w-full" />
               </div>
-              <SkeletonBlock className="h-4 w-40" />
+              <div className="space-y-2 md:border-l md:border-[var(--border)] md:pl-5">
+                <SkeletonBlock className="h-4 w-32" />
+                <SkeletonBlock className="h-4 w-28" />
+              </div>
+              <SkeletonBlock className="h-10 w-full md:w-28" />
             </div>
           </div>
         ))}
@@ -1709,17 +1740,7 @@ function BillingTab() {
       const data = await res.json()
       setProfiles(data.billingProfiles || [])
     } catch {
-      // Fallback to localStorage
-      const local = localStorage.getItem('local_billing_profiles')
-      if (local) {
-        try {
-          setProfiles(JSON.parse(local))
-        } catch {
-          setProfiles([])
-        }
-      } else {
-        setProfiles([])
-      }
+      setProfiles([])
     } finally {
       setLoading(false)
     }
@@ -1774,22 +1795,8 @@ function BillingTab() {
       showToast('Datele de facturare au fost salvate cu succes!')
       setProfiles(data.billingProfiles || [])
       setIsAdding(false)
-    } catch {
-      // Fallback: Save to localStorage instead
-      let nextProfiles = [...profiles]
-      if (formData.id) {
-        nextProfiles = nextProfiles.map((p) => (p.id === formData.id ? formData : p))
-      } else {
-        const newProfile = {
-          ...formData,
-          id: `billing_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-        }
-        nextProfiles.push(newProfile)
-      }
-      localStorage.setItem('local_billing_profiles', JSON.stringify(nextProfiles))
-      setProfiles(nextProfiles)
-      showToast('Datele de facturare au fost salvate cu succes!')
-      setIsAdding(false)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Nu am putut salva datele de facturare.')
     } finally {
       setIsSubmitting(false)
     }
@@ -1816,12 +1823,8 @@ function BillingTab() {
 
       showToast('Profilul de facturare a fost șters.')
       setProfiles(data.billingProfiles || [])
-    } catch {
-      // Fallback: Delete from localStorage
-      const nextProfiles = profiles.filter((p) => p.id !== id)
-      localStorage.setItem('local_billing_profiles', JSON.stringify(nextProfiles))
-      setProfiles(nextProfiles)
-      showToast('Profilul de facturare a fost șters.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Nu am putut șterge profilul de facturare.')
     }
   }
 
@@ -2161,42 +2164,69 @@ function BillingTab() {
       ) : (
         <div className="space-y-4">
           {profiles.map((profile) => (
-            <div key={profile.id} className="flex flex-col items-start justify-between border border-[var(--border)] bg-white p-4 md:flex-row md:items-center md:p-5">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-foreground">{profile.alias}</p>
-                <div className="text-sm text-muted-foreground mt-1 space-y-0.5">
-                  <p>Tip: {profile.type === 'personal' ? 'Persoană Fizică' : 'Persoană Juridică'}</p>
+            <div
+              key={profile.id || `${profile.type}-${profile.alias}-${profile.cui || profile.phone}`}
+              className="min-w-0 border border-[var(--border)] bg-white p-4 md:p-5"
+            >
+              <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                    {profile.type === 'personal' ? 'Persoană fizică' : 'Persoană juridică'}
+                  </p>
+                  <p className="mt-2 break-words text-sm font-semibold uppercase tracking-[0.08em] text-foreground">
+                    {profile.alias}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    onClick={() => startEdit(profile)}
+                    className={`${accountSecondaryButtonClass} w-full sm:w-auto`}
+                  >
+                    <Edit size={14} /> Editează
+                  </button>
+                  <button
+                    onClick={() => {
+                      setProfileIdToDelete(profile.id!)
+                      setIsDeleteModalOpen(true)
+                    }}
+                    className={`${accountDangerButtonClass} w-full sm:w-auto`}
+                  >
+                    <Trash2 size={14} /> Șterge
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3 border-t border-[var(--border)] pt-4 text-sm leading-6 text-muted-foreground">
+                <div>
+                  <p className={accountLabelClass}>Tip</p>
+                  <p>{profile.type === 'personal' ? 'Persoană Fizică' : 'Persoană Juridică'}</p>
+                </div>
+                <div>
                   {profile.type === 'personal' ? (
-                    <p>{profile.firstName} {profile.lastName}</p>
+                    <>
+                      <p className={accountLabelClass}>Nume</p>
+                      <p>{profile.firstName} {profile.lastName}</p>
+                    </>
                   ) : (
                     <>
-                      <p>{profile.companyName} (CUI: {profile.cui}{profile.regCom ? `, RegCom: ${profile.regCom}` : ''})</p>
-                      <p>
+                      <p className={accountLabelClass}>Firmă</p>
+                      <p className="break-words text-[var(--foreground)]">{profile.companyName}</p>
+                      <p className="mt-1">CUI: {profile.cui}{profile.regCom ? `, Reg. Com.: ${profile.regCom}` : ''}</p>
+                      <p className="mt-1">
                         {profile.isVatPayer ? 'Plătitor TVA' : 'Neplătitor TVA'}
                         {profile.isEInvoiceActive ? ' • RO e-Factura activ' : ''}
                       </p>
                     </>
                   )}
-                  <p>{profile.address}, {profile.city}, {profile.province} • {profile.zip}</p>
-                  <p>Tel: {profile.phone}</p>
                 </div>
-              </div>
-              <div className="mt-4 flex flex-col gap-2 sm:flex-row md:mt-0">
-                <button
-                  onClick={() => startEdit(profile)}
-                  className={accountSecondaryButtonClass}
-                >
-                  <Edit size={14} /> Editează
-                </button>
-                <button
-                  onClick={() => {
-                    setProfileIdToDelete(profile.id!)
-                    setIsDeleteModalOpen(true)
-                  }}
-                  className={accountDangerButtonClass}
-                >
-                  <Trash2 size={14} /> Șterge
-                </button>
+                <div>
+                  <p className={accountLabelClass}>Adresă</p>
+                  <p className="break-words">{profile.address}, {profile.city}, {profile.province} • {profile.zip}</p>
+                </div>
+                <div>
+                  <p className={accountLabelClass}>Telefon</p>
+                  <p>{profile.phone}</p>
+                </div>
               </div>
             </div>
           ))}

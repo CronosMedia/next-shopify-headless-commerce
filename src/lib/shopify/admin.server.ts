@@ -14,7 +14,9 @@ export async function shopifyAdminRequest<T>(
   variables?: Record<string, unknown>
 ): Promise<AdminGraphQLResponse<T>> {
   const adminDomain = process.env.SHOPIFY_STORE_DOMAIN
-  const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
+  const adminToken =
+    process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ||
+    process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
   const adminVersion = process.env.SHOPIFY_ADMIN_API_VERSION || '2026-04'
 
   if (!adminDomain || !adminToken) {

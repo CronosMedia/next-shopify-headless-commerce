@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback, useRef, type FormEvent } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef, type Dispatch, type FormEvent, type SetStateAction } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -33,6 +33,7 @@ import {
   RO_COUNTIES,
   POSTAL_CODE_REGEX_RO,
 } from '@/lib/ro-address'
+import { normalizeRomanianPhoneForShopify } from '@/lib/phone'
 
 type BillingType = 'personal' | 'business'
 
@@ -52,9 +53,12 @@ interface BillingProfile {
   phone: string
   isVatPayer?: boolean
   isEInvoiceActive?: boolean
+  isDefault?: boolean
 }
 
-
+function getPreferredBillingProfile(profiles: BillingProfile[]) {
+  return profiles.find((profile) => profile.isDefault) || profiles[0] || null
+}
 
 export default function CartPage() {
   const {
@@ -79,6 +83,7 @@ export default function CartPage() {
 
   const [hasMounted, setHasMounted] = useState(false)
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [isBillingModalOpen, setIsBillingModalOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [addressModalMode, setAddressModalMode] = useState<'shipping' | 'billing'>('shipping')
   const [sameBillingAddress, setSameBillingAddress] = useState(true)
@@ -94,6 +99,9 @@ export default function CartPage() {
   const [selectedBillingProfileId, setSelectedBillingProfileId] = useState<string>('')
   const [isAnafLoading, setIsAnafLoading] = useState(false)
   const [customBillingError, setCustomBillingError] = useState<string | null>(null)
+  const [billingModalError, setBillingModalError] = useState<string | null>(null)
+  const [saveBillingToAccount, setSaveBillingToAccount] = useState(false)
+  const [isBillingSubmitting, setIsBillingSubmitting] = useState(false)
   const [isDeleteBillingProfileModalOpen, setIsDeleteBillingProfileModalOpen] = useState(false)
   const [billingProfileIdToDelete, setBillingProfileIdToDelete] = useState<string | null>(null)
   const [customBilling, setCustomBilling] = useState<BillingProfile>({
@@ -118,16 +126,21 @@ export default function CartPage() {
   // Sync selectedBillingProfileId based on billingType and user profiles
   useEffect(() => {
     if (hasMounted && billingProfiles.length > 0) {
+      if (selectedBillingProfileId === 'new') return
+
       const typeProfiles = billingProfiles.filter((p) => p.type === billingType)
+      const selectedProfile = typeProfiles.find((profile) => profile.id === selectedBillingProfileId)
+      if (selectedProfile) return
+
       if (typeProfiles.length > 0) {
-        setSelectedBillingProfileId(typeProfiles[0].id || '')
+        setSelectedBillingProfileId(getPreferredBillingProfile(typeProfiles)?.id || '')
       } else {
         setSelectedBillingProfileId('new')
       }
     } else {
       setSelectedBillingProfileId('new')
     }
-  }, [billingType, billingProfiles, hasMounted])
+  }, [billingType, billingProfiles, hasMounted, selectedBillingProfileId])
 
   // Sync customBilling.type with billingType
   useEffect(() => {
@@ -155,41 +168,31 @@ export default function CartPage() {
   // Load customer billing profiles
   useEffect(() => {
     const loadProfiles = async () => {
-      let profilesList: BillingProfile[] = []
       try {
         const res = await fetch('/api/account/billing')
         if (res.ok) {
           const data = await res.json()
-          profilesList = data.billingProfiles || []
-        }
-      } catch {
-        // Quietly fail and fallback
-      }
-
-      if (profilesList.length === 0) {
-        const local = localStorage.getItem('local_billing_profiles')
-        if (local) {
-          try {
-            profilesList = JSON.parse(local)
-          } catch {
-            profilesList = []
+          const profilesList: BillingProfile[] = data.billingProfiles || []
+          setBillingProfiles(profilesList)
+          if (profilesList.length > 0) {
+            const preferredProfile = getPreferredBillingProfile(profilesList)
+            setSelectedBillingProfileId(preferredProfile?.id || 'new')
+            if (preferredProfile) {
+              setBillingType(preferredProfile.type)
+            }
+            setSameBillingAddress(false)
           }
         }
-      }
-
-      setBillingProfiles(profilesList)
-      if (profilesList.length > 0) {
-        const firstProfile = profilesList[0]
-        setSelectedBillingProfileId(firstProfile.id || '')
-        setBillingType(firstProfile.type)
-        if (firstProfile.type === 'business') {
-          setSameBillingAddress(false)
-        }
+      } catch {
+        setBillingProfiles([])
       }
     }
 
     if (user) {
       loadProfiles()
+    } else {
+      setBillingProfiles([])
+      setSelectedBillingProfileId('new')
     }
   }, [user])
 
@@ -215,17 +218,10 @@ export default function CartPage() {
       const updated = data.billingProfiles || []
       setBillingProfiles(updated)
       if (selectedBillingProfileId === id) {
-        setSelectedBillingProfileId(updated[0]?.id || 'new')
+        setSelectedBillingProfileId(getPreferredBillingProfile(updated)?.id || 'new')
       }
-    } catch {
-      // Fallback: Delete from localStorage
-      const nextProfiles = billingProfiles.filter((p) => p.id !== id)
-      localStorage.setItem('local_billing_profiles', JSON.stringify(nextProfiles))
-      setBillingProfiles(nextProfiles)
-      showToast('Profilul de facturare a fost șters.')
-      if (selectedBillingProfileId === id) {
-        setSelectedBillingProfileId(nextProfiles[0]?.id || 'new')
-      }
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Nu am putut șterge profilul de facturare.')
     }
   }
 
@@ -253,10 +249,34 @@ export default function CartPage() {
       }
 
       if (active) {
+        const billingSummaryParts =
+          active.type === 'business'
+            ? [
+                active.companyName || 'Firmă',
+                active.cui ? `CUI ${active.cui}` : '',
+                active.regCom ? `Reg. Com. ${active.regCom}` : '',
+                active.isVatPayer ? 'TVA: Da' : 'TVA: Nu',
+                active.isEInvoiceActive ? 'e-Factura: Da' : 'e-Factura: Nu',
+              ]
+            : [
+                `${active.firstName || ''} ${active.lastName || ''}`.trim(),
+              ]
+        const billingAddressSummary = [
+          active.address,
+          active.city,
+          active.province,
+          active.zip,
+          active.phone,
+        ].filter(Boolean).join(', ')
+
         attrs = [
           { key: 'Factură solicitată', value: 'Da' },
           { key: 'Tip Facturare', value: active.type === 'personal' ? 'Persoană Fizică' : 'Persoană Juridică' },
           { key: 'Facturare pe firmă', value: active.type === 'business' ? 'Da' : 'Nu' },
+          {
+            key: 'Rezumat Facturare',
+            value: [...billingSummaryParts, billingAddressSummary].filter(Boolean).join(' | '),
+          },
         ]
 
         if (active.type === 'personal') {
@@ -293,13 +313,13 @@ export default function CartPage() {
 
   // Sync billing attributes to cart
   useEffect(() => {
-    if (hasMounted && cart?.id) {
+    if (hasMounted && cart?.id && !isBillingModalOpen) {
       const timer = setTimeout(() => {
         updateCartBillingAttributes(sameBillingAddress, selectedBillingProfileId, customBilling)
       }, 600)
       return () => clearTimeout(timer)
     }
-  }, [sameBillingAddress, selectedBillingProfileId, customBilling, cart?.id, hasMounted, updateCartBillingAttributes])
+  }, [sameBillingAddress, selectedBillingProfileId, customBilling, cart?.id, hasMounted, isBillingModalOpen, updateCartBillingAttributes])
 
   const cartLocalities = useMemo(() => {
     return getLocalitiesForCounty(customBilling.province)
@@ -344,6 +364,170 @@ export default function CartPage() {
     } finally {
       setIsAnafLoading(false)
     }
+  }
+
+  const getActiveBillingProfile = useCallback((): BillingProfile | null => {
+    if (sameBillingAddress) {
+      return null
+    }
+
+    if (user && selectedBillingProfileId && selectedBillingProfileId !== 'new') {
+      return billingProfiles.find((profile) => profile.id === selectedBillingProfileId) || null
+    }
+
+    return customBilling
+  }, [billingProfiles, customBilling, sameBillingAddress, selectedBillingProfileId, user])
+
+  const getBillingSummary = useCallback(() => {
+    if (sameBillingAddress) {
+      return {
+        title: 'Facturare: Persoană fizică',
+        lines: selectedDeliveryAddress
+          ? [
+              `${selectedDeliveryAddress.firstName || ''} ${selectedDeliveryAddress.lastName || ''}`.trim(),
+              [selectedDeliveryAddress.address1, selectedDeliveryAddress.city, selectedDeliveryAddress.province]
+                .filter(Boolean)
+                .join(', '),
+            ].filter(Boolean)
+          : ['Alege cum vrei să fie emisă factura.'],
+      }
+    }
+
+    const active = getActiveBillingProfile()
+    if (!active) {
+      return {
+        title: 'Date de facturare',
+        lines: ['Alege cum vrei să fie emisă factura.'],
+      }
+    }
+
+    if (active.type === 'business') {
+      return {
+        title: 'Facturare: Persoană juridică',
+        lines: [
+          active.companyName,
+          active.cui ? `CUI: ${active.cui}` : '',
+          [active.address, active.city, active.province].filter(Boolean).join(', '),
+        ].filter(Boolean),
+      }
+    }
+
+    return {
+      title: 'Facturare: Persoană fizică',
+      lines: [
+        `${active.firstName || ''} ${active.lastName || ''}`.trim(),
+        [active.address, active.city, active.province].filter(Boolean).join(', '),
+      ].filter(Boolean),
+    }
+  }, [getActiveBillingProfile, sameBillingAddress, selectedDeliveryAddress])
+
+  const validateBillingProfile = useCallback((profile: BillingProfile) => {
+    if (profile.type === 'personal') {
+      if (!profile.firstName?.trim() || !profile.lastName?.trim()) {
+        return 'Te rugăm să completezi numele și prenumele pentru facturare.'
+      }
+    } else if (!profile.companyName?.trim() || !profile.cui?.trim() || !profile.regCom?.trim()) {
+      return 'Te rugăm să completezi toate datele firmei pentru facturare.'
+    }
+
+    if (!profile.address?.trim()) {
+      return 'Te rugăm să completezi adresa de facturare.'
+    }
+
+    const canonicalProvince = getCanonicalCounty(profile.province || '')
+    if (!RO_COUNTIES.includes(canonicalProvince)) {
+      return 'Te rugăm să selectezi un județ valid din listă pentru facturare.'
+    }
+
+    const localitiesList = getLocalitiesForCounty(canonicalProvince)
+    const canonicalCity = getCanonicalLocality(canonicalProvince, profile.city || '')
+    if (!localitiesList.some((locality) => locality.name === canonicalCity)) {
+      return 'Te rugăm să selectezi o localitate validă din listă pentru facturare.'
+    }
+
+    if (!profile.zip || !POSTAL_CODE_REGEX_RO.test(profile.zip)) {
+      return 'Codul poștal de facturare trebuie să aibă exact 6 cifre.'
+    }
+
+    return null
+  }, [])
+
+  const handleApplyBilling = async () => {
+    setBillingModalError(null)
+    setCustomBillingError(null)
+
+    if (!sameBillingAddress) {
+      const active = getActiveBillingProfile()
+      if (!active) {
+        setBillingModalError('Alege sau completează datele de facturare.')
+        return
+      }
+
+      const validationError = validateBillingProfile(active)
+      if (validationError) {
+        setBillingModalError(validationError)
+        return
+      }
+
+      const normalizedPhone = normalizeRomanianPhoneForShopify(active.phone) ?? ''
+      const appliedProfile: BillingProfile = {
+        ...active,
+        phone: normalizedPhone,
+      }
+
+      if (selectedBillingProfileId === 'new' || !user) {
+        setCustomBilling(appliedProfile)
+      }
+
+      await updateCartBillingAttributes(false, selectedBillingProfileId, appliedProfile)
+
+      if (user && saveBillingToAccount && (selectedBillingProfileId === 'new' || !active.id)) {
+        setIsBillingSubmitting(true)
+        const profileToSave: BillingProfile = {
+          ...appliedProfile,
+          isDefault: true,
+          alias:
+            appliedProfile.alias ||
+            (appliedProfile.type === 'business'
+              ? appliedProfile.companyName || 'Facturare firmă'
+              : 'Facturare personală'),
+        }
+        try {
+          const res = await fetch('/api/account/billing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'save',
+              profile: profileToSave,
+            }),
+          })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error?.message || 'Nu am putut salva datele.')
+
+          const updated = data.billingProfiles || []
+          const savedProfile = data.billingProfile
+          if (!savedProfile?.id || !updated.some((profile: BillingProfile) => profile.id === savedProfile.id)) {
+            throw new Error('Datele au fost trimise, dar nu au fost confirmate în cont.')
+          }
+
+          setBillingProfiles(updated)
+          setSelectedBillingProfileId(savedProfile.id)
+          showToast('Datele de facturare au fost salvate în cont.')
+        } catch (err: unknown) {
+          const message = err instanceof Error
+            ? err.message
+            : 'Datele au fost folosite pentru comandă, dar nu au putut fi salvate în cont.'
+          setBillingModalError(message)
+          showToast(message)
+        } finally {
+          setIsBillingSubmitting(false)
+        }
+      }
+    } else {
+      await updateCartBillingAttributes(true)
+    }
+
+    setIsBillingModalOpen(false)
   }
 
   const handleClearCart = () => {
@@ -615,7 +799,8 @@ export default function CartPage() {
                                 }
                                 fill
                                 priority={true}
-                                sizes="(max-width: 640px) 80px, 96px"
+                                sizes="(max-width: 640px) 160px, 192px"
+                                quality={95}
                                 className="object-cover"
                               />
                             ) : (
@@ -959,326 +1144,34 @@ export default function CartPage() {
                     {/* Step 2: Date de facturare */}
                     {selectedDeliveryAddress && (
                       <div className="pt-6 border-t border-neutral-200">
-                        <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-900 mb-4">
-                          2. Date de facturare
-                        </h3>
-
-                        {/* Billing Address Selection */}
-                        <div className="space-y-4">
-                          {/* Billing Type Choice */}
-                          <div className="flex gap-6">
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                              <input
-                                type="radio"
-                                name="billingType"
-                                value="personal"
-                                checked={billingType === 'personal'}
-                                onChange={() => {
-                                  setBillingType('personal')
-                                  setSameBillingAddress(true)
-                                }}
-                                className="h-4 w-4 border-neutral-300 text-black focus:ring-black rounded-none cursor-pointer"
-                              />
-                              <span className="text-xs font-bold tracking-wider text-neutral-800 uppercase">
-                                Persoană Fizică
-                              </span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                              <input
-                                type="radio"
-                                name="billingType"
-                                value="business"
-                                checked={billingType === 'business'}
-                                onChange={() => {
-                                  setBillingType('business')
-                                  setSameBillingAddress(false)
-                                }}
-                                className="h-4 w-4 border-neutral-300 text-black focus:ring-black rounded-none cursor-pointer"
-                              />
-                              <span className="text-xs font-bold tracking-wider text-neutral-800 uppercase">
-                                Persoană Juridică
-                              </span>
-                            </label>
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-900">
+                              2. Date de facturare
+                            </h3>
+                            <p className="mt-1 text-xs leading-5 text-neutral-500">
+                              Alege cum vrei să fie emisă factura.
+                            </p>
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setBillingModalError(null)
+                              setIsBillingModalOpen(true)
+                            }}
+                            className="shrink-0 text-xs font-semibold text-neutral-500 hover:text-black underline underline-offset-2 transition-colors cursor-pointer"
+                          >
+                            {getBillingSummary().lines.length > 0 ? 'Modifică' : 'Adaugă'}
+                          </button>
+                        </div>
 
-                          {/* If Personal, show checkbox */}
-                          {billingType === 'personal' && (
-                            <label className="flex items-center gap-2 cursor-pointer select-none mt-2">
-                              <input
-                                type="checkbox"
-                                checked={sameBillingAddress}
-                                onChange={(e) => {
-                                  setSameBillingAddress(e.target.checked)
-                                }}
-                                className="h-4 w-4 border-neutral-300 text-black focus:ring-black rounded-none cursor-pointer"
-                              />
-                              <span className="text-xs font-semibold tracking-wide text-neutral-800">
-                                Datele de facturare coincid cu adresa de livrare
-                              </span>
-                            </label>
-                          )}
-
-                          {/* Show Form/Dropdown if sameBillingAddress is false */}
-                          {!sameBillingAddress && (
-                            <div className="space-y-4 pt-2">
-                              {user && billingProfiles.filter(p => p.type === billingType).length > 0 ? (
-                                <div className="space-y-3">
-                                  <label className="block text-xs font-semibold text-neutral-700">
-                                    Selectează un profil de facturare salvat
-                                  </label>
-                                  <select
-                                    value={selectedBillingProfileId}
-                                    onChange={(e) => {
-                                      setSelectedBillingProfileId(e.target.value)
-                                    }}
-                                    className="w-full border border-neutral-300 rounded-none px-3 py-2 text-sm focus:border-black outline-none bg-white font-medium h-10"
-                                  >
-                                    {billingProfiles
-                                      .filter(p => p.type === billingType)
-                                      .map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                          {p.alias}
-                                        </option>
-                                      ))}
-                                    <option value="new">Altă adresă (completare manuală)</option>
-                                  </select>
-
-                                  {selectedBillingProfileId !== 'new' && (
-                                    (() => {
-                                      const p = billingProfiles.find((x) => x.id === selectedBillingProfileId)
-                                      if (!p) return null
-                                      return (
-                                        <div className="mt-3 text-sm space-y-1.5 text-neutral-600 relative pl-4 border-l-2 border-neutral-200">
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setBillingProfileIdToDelete(p.id!)
-                                              setIsDeleteBillingProfileModalOpen(true)
-                                            }}
-                                            className="absolute top-0 right-0 text-neutral-400 hover:text-red-600 transition-colors cursor-pointer"
-                                            title="Șterge acest profil"
-                                          >
-                                            <Trash2 size={16} />
-                                          </button>
-                                          <p className="font-semibold text-neutral-900 pr-6">{p.alias}</p>
-                                          {p.type === 'personal' ? (
-                                            <p>{p.firstName} {p.lastName}</p>
-                                          ) : (
-                                            <>
-                                              <p>{p.companyName} (CUI: {p.cui})</p>
-                                              {p.regCom && <p>RegCom: {p.regCom}</p>}
-                                              <p>{p.isVatPayer ? 'Plătitor TVA' : 'Neplătitor TVA'} {p.isEInvoiceActive ? '• e-Factura activ' : ''}</p>
-                                            </>
-                                          )}
-                                          <p>{p.address}, {p.city}, {p.province} • {p.zip}</p>
-                                          <p>Tel: {p.phone}</p>
-                                        </div>
-                                      )
-                                    })()
-                                  )}
-                                </div>
-                              ) : null}
-
-                              {(selectedBillingProfileId === 'new' || !user || billingProfiles.filter(p => p.type === billingType).length === 0) && (
-                                <div className="space-y-4 pt-2">
-                                  <div className="flex justify-between items-center gap-2 flex-wrap">
-                                    <p className="text-xs font-bold text-neutral-800 uppercase tracking-wider">Date facturare noi</p>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setAddressModalMode('billing')
-                                        setIsAddressModalOpen(true)
-                                      }}
-                                      className="text-xs font-bold text-black border border-black px-3 py-1.5 hover:bg-neutral-100 transition-all uppercase tracking-wider cursor-pointer bg-white"
-                                    >
-                                      Alege adresa din cont
-                                    </button>
-                                  </div>
-                                  
-                                  {customBillingError && (
-                                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-1.5">
-                                      <AlertCircle size={14} />
-                                      <span>{customBillingError}</span>
-                                    </div>
-                                  )}
-
-                                  {billingType === 'personal' ? (
-                                    <div className="grid grid-cols-2 gap-3">
-                                      <div>
-                                        <label className="block text-xs font-semibold text-neutral-600 mb-1">Prenume</label>
-                                        <input
-                                          type="text"
-                                          value={customBilling.firstName || ''}
-                                          onChange={(e) => setCustomBilling((prev) => ({ ...prev, firstName: e.target.value }))}
-                                          className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                        />
-                                      </div>
-                                      <div>
-                                        <label className="block text-xs font-semibold text-neutral-600 mb-1">Nume</label>
-                                        <input
-                                          type="text"
-                                          value={customBilling.lastName || ''}
-                                          onChange={(e) => setCustomBilling((prev) => ({ ...prev, lastName: e.target.value }))}
-                                          className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                        />
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="space-y-3">
-                                      <div className="grid grid-cols-3 gap-3 items-end">
-                                        <div className="col-span-2">
-                                          <label className="block text-xs font-semibold text-neutral-600 mb-1">CUI / CIF</label>
-                                          <input
-                                            type="text"
-                                            value={customBilling.cui || ''}
-                                            placeholder="Fără RO"
-                                            onChange={(e) => setCustomBilling((prev) => ({ ...prev, cui: e.target.value }))}
-                                            className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                          />
-                                        </div>
-                                        <button
-                                          type="button"
-                                          disabled={isAnafLoading || !customBilling.cui}
-                                          onClick={handleCartAnafLookup}
-                                          className="bg-black text-white text-xs font-bold py-2 px-1 border border-black hover:opacity-90 disabled:opacity-50 h-10 flex items-center justify-center cursor-pointer"
-                                        >
-                                          {isAnafLoading ? '...' : 'ANAF'}
-                                        </button>
-                                      </div>
-
-                                      <div>
-                                        <label className="block text-xs font-semibold text-neutral-600 mb-1">Nume Companie</label>
-                                        <input
-                                          type="text"
-                                          value={customBilling.companyName || ''}
-                                          onChange={(e) => setCustomBilling((prev) => ({ ...prev, companyName: e.target.value }))}
-                                          className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                        />
-                                      </div>
-
-                                      <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                          <label className="block text-xs font-semibold text-neutral-600 mb-1">RegCom</label>
-                                          <input
-                                            type="text"
-                                            value={customBilling.regCom || ''}
-                                            placeholder="ex: J40/1234/2020"
-                                            onChange={(e) => setCustomBilling((prev) => ({ ...prev, regCom: e.target.value }))}
-                                            className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                          />
-                                        </div>
-                                        <div className="flex flex-col gap-1.5 justify-center pt-2">
-                                          <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                              type="checkbox"
-                                              checked={customBilling.isVatPayer || false}
-                                              onChange={(e) => setCustomBilling((prev) => ({ ...prev, isVatPayer: e.target.checked }))}
-                                              className="h-4 w-4 text-black border-neutral-300 focus:ring-black"
-                                            />
-                                            <span className="text-xs font-semibold text-neutral-700">Plătitor TVA</span>
-                                          </label>
-                                          <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                              type="checkbox"
-                                              checked={customBilling.isEInvoiceActive || false}
-                                              onChange={(e) => setCustomBilling((prev) => ({ ...prev, isEInvoiceActive: e.target.checked }))}
-                                              className="h-4 w-4 text-black border-neutral-300 focus:ring-black"
-                                            />
-                                            <span className="text-xs font-semibold text-neutral-700">e-Factura</span>
-                                          </label>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  <div>
-                                    <label className="block text-xs font-semibold text-neutral-600 mb-1">Adresă de facturare (Sediu social)</label>
-                                    <input
-                                      type="text"
-                                      value={customBilling.address || ''}
-                                      placeholder="Strada, nr., bl., ap."
-                                      onChange={(e) => setCustomBilling((prev) => ({ ...prev, address: e.target.value }))}
-                                      className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                    />
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Județ</label>
-                                      <SearchableSelect
-                                        value={customBilling.province || ''}
-                                        options={RO_COUNTIES}
-                                        placeholder="Județ"
-                                        inputClassName="border border-neutral-300 px-3 py-2 text-sm focus:border-black rounded-none h-10 text-neutral-800 bg-white w-full"
-                                        onChange={(nextProvince) => {
-                                          setCustomBilling((prev) => ({
-                                            ...prev,
-                                            province: nextProvince,
-                                            city: prev.province !== nextProvince ? '' : prev.city,
-                                            zip: prev.province !== nextProvince ? '' : prev.zip,
-                                          }))
-                                        }}
-                                        onSelect={(nextProvince) => {
-                                          const canonical = getCanonicalCounty(nextProvince)
-                                          setCustomBilling((prev) => ({
-                                            ...prev,
-                                            province: canonical,
-                                            city: '',
-                                            zip: '',
-                                          }))
-                                        }}
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Localitate</label>
-                                      <SearchableSelect
-                                        value={customBilling.city || ''}
-                                        options={cartLocalities.map((l) => l.name)}
-                                        disabled={!customBilling.province}
-                                        placeholder="Localitate"
-                                        inputClassName="border border-neutral-300 px-3 py-2 text-sm focus:border-black rounded-none h-10 text-neutral-800 bg-white w-full"
-                                        onChange={(nextCity) => {
-                                          setCustomBilling((prev) => ({ ...prev, city: nextCity }))
-                                        }}
-                                        onSelect={(nextCity) => {
-                                          const canonical = getCanonicalLocality(customBilling.province, nextCity)
-                                          const code = getPostalCodeForCountyAndLocality(customBilling.province, canonical)
-                                          setCustomBilling((prev) => ({
-                                            ...prev,
-                                            city: canonical,
-                                            zip: code || prev.zip,
-                                          }))
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Cod Poștal</label>
-                                      <input
-                                        type="text"
-                                        value={customBilling.zip || ''}
-                                        onChange={(e) => setCustomBilling((prev) => ({ ...prev, zip: e.target.value }))}
-                                        className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="block text-xs font-semibold text-neutral-600 mb-1">Telefon</label>
-                                      <input
-                                        type="tel"
-                                        autoComplete="tel"
-                                        value={customBilling.phone || ''}
-                                        onChange={(e) => setCustomBilling((prev) => ({ ...prev, phone: e.target.value }))}
-                                        className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
-                                        placeholder="0747000000"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                        <div className="mt-4 border-l-2 border-neutral-200 pl-4 text-sm text-neutral-600">
+                          <p className="font-semibold text-neutral-900">{getBillingSummary().title}</p>
+                          <div className="mt-1 space-y-1">
+                            {getBillingSummary().lines.map((line) => (
+                              <p key={line}>{line}</p>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1372,44 +1265,11 @@ export default function CartPage() {
 
                       // Validate custom billing address if selected
                       if (!sameBillingAddress && selectedBillingProfileId === 'new') {
-                        if (billingType === 'personal') {
-                          if (!customBilling.firstName?.trim() || !customBilling.lastName?.trim()) {
-                            e.preventDefault()
-                            showToast({ message: 'Te rugăm să completezi numele și prenumele pentru facturare.', type: 'error' })
-                            return
-                          }
-                        } else {
-                          if (!customBilling.companyName?.trim() || !customBilling.cui?.trim() || !customBilling.regCom?.trim()) {
-                            e.preventDefault()
-                            showToast({ message: 'Te rugăm să completezi toate datele firmei pentru facturare.', type: 'error' })
-                            return
-                          }
-                        }
-
-                        if (!customBilling.address?.trim()) {
+                        const validationError = validateBillingProfile(customBilling)
+                        if (validationError) {
                           e.preventDefault()
-                          showToast({ message: 'Te rugăm să completezi adresa de facturare.', type: 'error' })
-                          return
-                        }
-
-                        const canonicalProvince = getCanonicalCounty(customBilling.province || '')
-                        if (!RO_COUNTIES.includes(canonicalProvince)) {
-                          e.preventDefault()
-                          showToast({ message: 'Te rugăm să selectezi un județ valid din listă pentru facturare.', type: 'error' })
-                          return
-                        }
-
-                        const localitiesList = getLocalitiesForCounty(canonicalProvince)
-                        const canonicalCity = getCanonicalLocality(canonicalProvince, customBilling.city || '')
-                        if (!localitiesList.some(l => l.name === canonicalCity)) {
-                          e.preventDefault()
-                          showToast({ message: 'Te rugăm să selectezi o localitate validă din listă pentru facturare.', type: 'error' })
-                          return
-                        }
-
-                        if (!customBilling.zip || !POSTAL_CODE_REGEX_RO.test(customBilling.zip)) {
-                          e.preventDefault()
-                          showToast({ message: 'Codul poștal de facturare trebuie să aibă exact 6 cifre.', type: 'error' })
+                          setBillingModalError(validationError)
+                          setIsBillingModalOpen(true)
                           return
                         }
                       }
@@ -1465,6 +1325,7 @@ export default function CartPage() {
                 phone: address.phone || prev.phone,
               }))
               setSelectedBillingProfileId('new')
+              setIsBillingModalOpen(true)
             }
             setIsAddressModalOpen(false)
           } catch {
@@ -1474,6 +1335,34 @@ export default function CartPage() {
                 : 'Adresa de facturare nu a putut fi actualizată.'
             )
           }
+        }}
+      />
+
+      <BillingDetailsModal
+        isOpen={isBillingModalOpen}
+        onClose={() => setIsBillingModalOpen(false)}
+        userIsAuthenticated={Boolean(user)}
+        billingType={billingType}
+        setBillingType={setBillingType}
+        sameBillingAddress={sameBillingAddress}
+        setSameBillingAddress={setSameBillingAddress}
+        billingProfiles={billingProfiles}
+        selectedBillingProfileId={selectedBillingProfileId}
+        setSelectedBillingProfileId={setSelectedBillingProfileId}
+        customBilling={customBilling}
+        setCustomBilling={setCustomBilling}
+        customBillingError={customBillingError}
+        billingModalError={billingModalError}
+        cartLocalities={cartLocalities}
+        isAnafLoading={isAnafLoading}
+        onAnafLookup={handleCartAnafLookup}
+        onUseBilling={handleApplyBilling}
+        saveBillingToAccount={saveBillingToAccount}
+        setSaveBillingToAccount={setSaveBillingToAccount}
+        isSubmitting={isBillingSubmitting}
+        onDeleteProfile={(profileId) => {
+          setBillingProfileIdToDelete(profileId)
+          setIsDeleteBillingProfileModalOpen(true)
         }}
       />
 
@@ -1507,6 +1396,432 @@ export default function CartPage() {
 type CartAuthModalProps = {
   isOpen: boolean
   onClose: () => void
+}
+
+type BillingDetailsModalProps = {
+  isOpen: boolean
+  onClose: () => void
+  userIsAuthenticated: boolean
+  billingType: BillingType
+  setBillingType: (type: BillingType) => void
+  sameBillingAddress: boolean
+  setSameBillingAddress: (value: boolean) => void
+  billingProfiles: BillingProfile[]
+  selectedBillingProfileId: string
+  setSelectedBillingProfileId: (id: string) => void
+  customBilling: BillingProfile
+  setCustomBilling: Dispatch<SetStateAction<BillingProfile>>
+  customBillingError: string | null
+  billingModalError: string | null
+  cartLocalities: Array<{ name: string }>
+  isAnafLoading: boolean
+  onAnafLookup: () => void
+  onUseBilling: () => void
+  saveBillingToAccount: boolean
+  setSaveBillingToAccount: (value: boolean) => void
+  isSubmitting: boolean
+  onDeleteProfile: (profileId: string) => void
+}
+
+function BillingDetailsModal({
+  isOpen,
+  onClose,
+  userIsAuthenticated,
+  billingType,
+  setBillingType,
+  sameBillingAddress,
+  setSameBillingAddress,
+  billingProfiles,
+  selectedBillingProfileId,
+  setSelectedBillingProfileId,
+  customBilling,
+  setCustomBilling,
+  customBillingError,
+  billingModalError,
+  cartLocalities,
+  isAnafLoading,
+  onAnafLookup,
+  onUseBilling,
+  saveBillingToAccount,
+  setSaveBillingToAccount,
+  isSubmitting,
+  onDeleteProfile,
+}: BillingDetailsModalProps) {
+  const matchingProfiles = billingProfiles.filter((profile) => profile.type === billingType)
+  const selectedProfile = matchingProfiles.find((profile) => profile.id === selectedBillingProfileId)
+  const shouldShowManualFields =
+    selectedBillingProfileId === 'new' || !userIsAuthenticated || matchingProfiles.length === 0
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-4 py-4 sm:items-center sm:py-6">
+      <button
+        type="button"
+        aria-label="Închide modalul de facturare"
+        className="absolute inset-0 bg-black/45 backdrop-blur-xs"
+        onClick={onClose}
+      />
+
+      <div className="relative z-10 flex max-h-[calc(100svh-2rem)] w-full max-w-2xl flex-col overflow-hidden border border-neutral-200 bg-white shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-neutral-100 px-5 py-5 md:px-6">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+              Checkout
+            </p>
+            <h2 className="mt-1 text-xl font-light uppercase tracking-[0.08em] text-neutral-950">
+              Date de facturare
+            </h2>
+          </div>
+          <button
+            type="button"
+            aria-label="Închide"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center text-neutral-500 transition-colors hover:text-black"
+          >
+            <X size={18} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto px-5 py-5 md:px-6">
+          <div className="space-y-5">
+            {(billingModalError || customBillingError) && (
+              <div className="flex items-start gap-2 border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">
+                <AlertCircle size={16} className="mt-1 shrink-0" />
+                <span>{billingModalError || customBillingError}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-2">
+              {(['personal', 'business'] as BillingType[]).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => {
+                    setBillingType(type)
+                    const hasProfilesForType = billingProfiles.some((profile) => profile.type === type)
+                    setSameBillingAddress(type === 'personal' && !hasProfilesForType)
+                  }}
+                  className={`min-h-11 border px-3 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
+                    billingType === type
+                      ? 'border-black bg-black text-white'
+                      : 'border-neutral-200 bg-white text-neutral-800 hover:border-black'
+                  }`}
+                >
+                  {type === 'personal' ? 'Persoană fizică' : 'Persoană juridică'}
+                </button>
+              ))}
+            </div>
+
+            {billingType === 'personal' && (
+              <label className="flex items-start gap-3 border border-neutral-200 bg-[#F9F8F6]/50 p-4 text-sm leading-6 text-neutral-700">
+                <input
+                  type="checkbox"
+                  checked={sameBillingAddress}
+                  onChange={(event) => setSameBillingAddress(event.target.checked)}
+                  className="mt-1 h-4 w-4 rounded-none border-neutral-300 text-black focus:ring-black"
+                />
+                <span>Datele de facturare coincid cu adresa de livrare.</span>
+              </label>
+            )}
+
+            {!sameBillingAddress && (
+              <div className="space-y-5">
+                {userIsAuthenticated && matchingProfiles.length > 0 && (
+                  <div className="space-y-3">
+                    <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-neutral-600">
+                      Profil salvat
+                    </label>
+                    <select
+                      value={selectedBillingProfileId}
+                      onChange={(event) => setSelectedBillingProfileId(event.target.value)}
+                      className="h-11 w-full border border-neutral-300 bg-white px-3 text-sm font-medium outline-none focus:border-black"
+                    >
+                      {matchingProfiles.map((profile) => (
+                        <option key={profile.id} value={profile.id}>
+                          {profile.alias}
+                        </option>
+                      ))}
+                      <option value="new">Altă adresă de facturare</option>
+                    </select>
+
+                    {selectedProfile && selectedBillingProfileId !== 'new' && (
+                      <div className="relative border-l-2 border-neutral-200 pl-4 text-sm leading-6 text-neutral-600">
+                        <button
+                          type="button"
+                          onClick={() => selectedProfile.id && onDeleteProfile(selectedProfile.id)}
+                          className="absolute right-0 top-0 text-neutral-400 transition-colors hover:text-red-600"
+                          aria-label="Șterge profilul de facturare"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <p className="pr-8 font-semibold text-neutral-950">{selectedProfile.alias}</p>
+                        {selectedProfile.type === 'business' ? (
+                          <>
+                            <p>{selectedProfile.companyName}</p>
+                            <p>CUI: {selectedProfile.cui}</p>
+                            {selectedProfile.regCom && <p>Reg. Com.: {selectedProfile.regCom}</p>}
+                          </>
+                        ) : (
+                          <p>{selectedProfile.firstName} {selectedProfile.lastName}</p>
+                        )}
+                        <p>{selectedProfile.address}, {selectedProfile.city}, {selectedProfile.province}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {shouldShowManualFields && (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-700">
+                        Date noi
+                      </p>
+                      {userIsAuthenticated ? (
+                        <p className="mt-1 text-xs leading-5 text-neutral-500">
+                          Completează datele aici sau alege un profil salvat din lista de mai sus.
+                        </p>
+                      ) : null}
+                    </div>
+
+                    {billingType === 'personal' ? (
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <BillingInput
+                          label="Prenume"
+                          value={customBilling.firstName || ''}
+                          onChange={(value) => setCustomBilling((prev) => ({ ...prev, firstName: value }))}
+                        />
+                        <BillingInput
+                          label="Nume"
+                          value={customBilling.lastName || ''}
+                          onChange={(value) => setCustomBilling((prev) => ({ ...prev, lastName: value }))}
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-[1fr_auto] items-end gap-3">
+                          <BillingInput
+                            label="CUI / CIF"
+                            value={customBilling.cui || ''}
+                            placeholder="Fără RO"
+                            onChange={(value) => setCustomBilling((prev) => ({ ...prev, cui: value }))}
+                          />
+                          <button
+                            type="button"
+                            disabled={isAnafLoading || !customBilling.cui}
+                            onClick={onAnafLookup}
+                            className="h-11 bg-black px-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-neutral-900 disabled:opacity-40"
+                          >
+                            {isAnafLoading ? '...' : 'ANAF'}
+                          </button>
+                        </div>
+                        <BillingInput
+                          label="Firmă"
+                          value={customBilling.companyName || ''}
+                          onChange={(value) => setCustomBilling((prev) => ({ ...prev, companyName: value }))}
+                        />
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <BillingInput
+                            label="Reg. Com."
+                            value={customBilling.regCom || ''}
+                            placeholder="ex. J40/1234/2020"
+                            onChange={(value) => setCustomBilling((prev) => ({ ...prev, regCom: value }))}
+                          />
+                          <div className="flex flex-col justify-center gap-2 pt-2">
+                            <BillingCheckbox
+                              label="Plătitor TVA"
+                              checked={Boolean(customBilling.isVatPayer)}
+                              onChange={(checked) => setCustomBilling((prev) => ({ ...prev, isVatPayer: checked }))}
+                            />
+                            <BillingCheckbox
+                              label="e-Factura"
+                              checked={Boolean(customBilling.isEInvoiceActive)}
+                              onChange={(checked) => setCustomBilling((prev) => ({ ...prev, isEInvoiceActive: checked }))}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <BillingInput
+                      label="Adresă facturare"
+                      value={customBilling.address || ''}
+                      placeholder="Strada, nr., bl., ap."
+                      onChange={(value) => setCustomBilling((prev) => ({ ...prev, address: value }))}
+                    />
+
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-neutral-600">Județ</label>
+                        <SearchableSelect
+                          value={customBilling.province || ''}
+                          options={RO_COUNTIES}
+                          placeholder="Județ"
+                          inputClassName="border border-neutral-300 px-3 py-2 text-sm focus:border-black rounded-none h-11 text-neutral-800 bg-white w-full"
+                          onChange={(nextProvince) => {
+                            setCustomBilling((prev) => ({
+                              ...prev,
+                              province: nextProvince,
+                              city: prev.province !== nextProvince ? '' : prev.city,
+                              zip: prev.province !== nextProvince ? '' : prev.zip,
+                            }))
+                          }}
+                          onSelect={(nextProvince) => {
+                            const canonical = getCanonicalCounty(nextProvince)
+                            setCustomBilling((prev) => ({
+                              ...prev,
+                              province: canonical,
+                              city: '',
+                              zip: '',
+                            }))
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-neutral-600">Localitate</label>
+                        <SearchableSelect
+                          value={customBilling.city || ''}
+                          options={cartLocalities.map((locality) => locality.name)}
+                          disabled={!customBilling.province}
+                          placeholder="Localitate"
+                          inputClassName="border border-neutral-300 px-3 py-2 text-sm focus:border-black rounded-none h-11 text-neutral-800 bg-white w-full"
+                          onChange={(nextCity) => setCustomBilling((prev) => ({ ...prev, city: nextCity }))}
+                          onSelect={(nextCity) => {
+                            const canonical = getCanonicalLocality(customBilling.province, nextCity)
+                            const code = getPostalCodeForCountyAndLocality(customBilling.province, canonical)
+                            setCustomBilling((prev) => ({
+                              ...prev,
+                              city: canonical,
+                              zip: code || prev.zip,
+                            }))
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <BillingInput
+                        label="Cod poștal"
+                        value={customBilling.zip || ''}
+                        onChange={(value) => setCustomBilling((prev) => ({ ...prev, zip: value }))}
+                      />
+                      <BillingInput
+                        label="Telefon"
+                        type="tel"
+                        value={customBilling.phone || ''}
+                        placeholder="0747000000"
+                        onChange={(value) => setCustomBilling((prev) => ({ ...prev, phone: value }))}
+                      />
+                    </div>
+
+                    {userIsAuthenticated ? (
+                      <BillingCheckbox
+                        label="Salvează aceste date de facturare în contul meu"
+                        checked={saveBillingToAccount}
+                        onChange={setSaveBillingToAccount}
+                      />
+                    ) : (
+                      <p className="text-xs leading-5 text-neutral-500">
+                        Autentifică-te pentru a salva datele de facturare în cont.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-neutral-100 bg-neutral-50/60 px-5 py-5 sm:flex-row sm:justify-end md:px-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-11 border border-neutral-300 bg-white px-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-800 transition-colors hover:border-black"
+          >
+            Anulează
+          </button>
+          <button
+            type="button"
+            onClick={onUseBilling}
+            disabled={isSubmitting}
+            className="min-h-11 bg-black px-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-neutral-900 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Se salvează...' : 'Folosește aceste date'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BillingInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  type?: string
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-semibold text-neutral-600">{label}</label>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        autoComplete={type === 'tel' ? 'tel' : undefined}
+        inputMode={type === 'tel' ? 'tel' : undefined}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-11 w-full border border-neutral-300 bg-white px-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-black"
+      />
+    </div>
+  )
+}
+
+function BillingCheckbox({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <label className="flex items-center gap-2 text-sm text-neutral-700">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="h-4 w-4 rounded-none border-neutral-300 text-black focus:ring-black"
+      />
+      <span>{label}</span>
+    </label>
+  )
 }
 
 function CartAuthModal({ isOpen, onClose }: CartAuthModalProps) {

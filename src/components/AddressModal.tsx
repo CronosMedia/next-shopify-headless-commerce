@@ -1,7 +1,8 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { X, Plus, ArrowLeft } from 'lucide-react'
 import { SearchableSelect } from '@/components/common/SearchableSelect'
+import { useAuth } from '@/components/AuthProvider'
 import {
   getCanonicalCounty,
   getCanonicalLocality,
@@ -145,6 +146,7 @@ export default function AddressModal({
   onAddressSelect,
   mode = 'default',
 }: AddressModalProps) {
+  const { user } = useAuth()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(true)
   const [cachedAddressCount, setCachedAddressCount] = useState(2)
@@ -153,6 +155,7 @@ export default function AddressModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [saveAddressToAccount, setSaveAddressToAccount] = useState(false)
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -167,23 +170,19 @@ export default function AddressModal({
     company: '',
   })
 
-
-
-  useEffect(() => {
-    if (isOpen) {
-      const cachedCount = Number(window.localStorage.getItem(ADDRESS_COUNT_CACHE_KEY))
-      setCachedAddressCount(Number.isFinite(cachedCount) && cachedCount >= 0 ? cachedCount : 2)
-      fetchAddresses()
-      setError(null)
-      setSuccess(null)
-    }
-  }, [isOpen])
-
-  const fetchAddresses = async () => {
+  const fetchAddresses = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/account/addresses')
       if (!response.ok) {
+        if (response.status === 401 && (mode === 'shipping' || mode === 'billing')) {
+          setAddresses([])
+          setSelectedAddress(null)
+          setIsAdding(true)
+          setCachedAddressCount(0)
+          window.localStorage.setItem(ADDRESS_COUNT_CACHE_KEY, '0')
+          return
+        }
         throw new Error('Failed to fetch addresses')
       }
       const data = await response.json()
@@ -210,7 +209,18 @@ export default function AddressModal({
     } finally {
       setLoading(false)
     }
-  }
+  }, [mode])
+
+  useEffect(() => {
+    if (isOpen) {
+      const cachedCount = Number(window.localStorage.getItem(ADDRESS_COUNT_CACHE_KEY))
+      setCachedAddressCount(Number.isFinite(cachedCount) && cachedCount >= 0 ? cachedCount : 2)
+      fetchAddresses()
+      setError(null)
+      setSuccess(null)
+      setSaveAddressToAccount(Boolean(user))
+    }
+  }, [fetchAddresses, isOpen, user])
 
   const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -248,6 +258,19 @@ export default function AddressModal({
     setSuccess(null)
 
     try {
+      const localAddress: Address = {
+        ...formData,
+        id: `local_${Date.now()}`,
+        address2: formData.address2 || null,
+        isDefault: false,
+      }
+
+      if ((mode === 'shipping' || mode === 'billing') && (!user || !saveAddressToAccount)) {
+        onAddressSelect?.(localAddress)
+        onClose()
+        return
+      }
+
       const response = await fetch('/api/account/addresses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -257,6 +280,15 @@ export default function AddressModal({
       if (!response.ok) {
         const data = await response.json()
         throw new Error(data.error || 'Eroare la salvarea adresei.')
+      }
+
+      const data = await response.json()
+      const savedAddress = data.address || localAddress
+
+      if ((mode === 'shipping' || mode === 'billing') && onAddressSelect) {
+        onAddressSelect(savedAddress)
+        onClose()
+        return
       }
 
       setSuccess('Adresa a fost salvată cu succes!')
@@ -468,6 +500,23 @@ export default function AddressModal({
                   </p>
                 </div>
               </div>
+              {mode === 'shipping' || mode === 'billing' ? (
+                user ? (
+                  <label className="flex items-start gap-3 border border-neutral-200 bg-[#F9F8F6]/50 p-4 text-sm leading-6 text-neutral-700">
+                    <input
+                      type="checkbox"
+                      checked={saveAddressToAccount}
+                      onChange={(event) => setSaveAddressToAccount(event.target.checked)}
+                      className="mt-1 h-4 w-4 rounded-none border-neutral-300 text-black focus:ring-black"
+                    />
+                    <span>Salvează această adresă în contul meu</span>
+                  </label>
+                ) : (
+                  <p className="text-xs leading-5 text-neutral-500">
+                    Autentifică-te pentru a salva adresa în cont.
+                  </p>
+                )
+              ) : null}
             </form>
           ) : (
             <div className="space-y-4">
