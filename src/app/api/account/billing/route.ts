@@ -11,7 +11,6 @@ const BILLING_KEY = 'billing_profiles'
 const BILLING_SUMMARY_KEY = 'billing_profiles_summary'
 const BILLING_TYPE = 'json'
 const BILLING_SUMMARY_TYPE = 'multi_line_text_field'
-const SHOULD_INCLUDE_DEBUG = process.env.NODE_ENV !== 'production'
 
 type StoredBillingAddress = {
   street: string
@@ -83,45 +82,15 @@ type DeletePayload = {
   profile?: unknown
 }
 
-type BillingReadSource = 'maison' | 'custom_legacy' | 'empty'
-
 type BillingReadResult = {
   profiles: StoredBillingProfile[]
-  readSource: BillingReadSource
-  migrationAttempted?: boolean
-  migrationSucceeded?: boolean
 }
 
 type BillingWriteResult = {
-  metafieldsSetCalled: boolean
   userErrors: Array<{field: string[]; message: string}>
   errors: string[]
-  metafieldId?: string
   profilesCountAfterWrite: number
   readBackCount?: number
-}
-
-type BillingDebug = {
-  customerId?: string
-  metafieldNamespace: typeof BILLING_NAMESPACE
-  metafieldKey: typeof BILLING_KEY
-  readSource?: BillingReadSource
-  profilesCount?: number
-  migrationAttempted?: boolean
-  migrationSucceeded?: boolean
-  write?: BillingWriteResult
-}
-
-function debugBase(customerId?: string): BillingDebug {
-  return {
-    customerId,
-    metafieldNamespace: BILLING_NAMESPACE,
-    metafieldKey: BILLING_KEY,
-  }
-}
-
-function withDebug<T extends Record<string, unknown>>(body: T, debug: BillingDebug) {
-  return SHOULD_INCLUDE_DEBUG ? {...body, debug} : body
 }
 
 function getStringField(source: Record<string, unknown>, key: string): string {
@@ -467,25 +436,18 @@ async function readProfiles(customerId: string, options: {migrateLegacy?: boolea
 
   const primaryProfiles = parseBillingProfiles(adminResponse.data?.customer?.primary?.value)
   if (primaryProfiles.length > 0) {
-    return {
-      profiles: primaryProfiles,
-      readSource: 'maison',
-    }
+    return {profiles: primaryProfiles}
   }
 
   const legacyProfiles = parseBillingProfiles(adminResponse.data?.customer?.legacy?.value)
   if (legacyProfiles.length === 0) {
-    return {
-      profiles: [],
-      readSource: 'empty',
-    }
+    return {profiles: []}
   }
 
   const normalizedLegacyProfiles = normalizeDefaultProfiles(legacyProfiles)
-  let migrationSucceeded: boolean | undefined
   if (options.migrateLegacy) {
     const writeResult = await writeProfiles(customerId, normalizedLegacyProfiles)
-    migrationSucceeded =
+    const migrationSucceeded =
       writeResult.errors.length === 0 &&
       writeResult.userErrors.length === 0 &&
       (writeResult.readBackCount ?? 0) > 0
@@ -495,12 +457,7 @@ async function readProfiles(customerId: string, options: {migrateLegacy?: boolea
     }
   }
 
-  return {
-    profiles: normalizedLegacyProfiles,
-    readSource: 'custom_legacy',
-    migrationAttempted: Boolean(options.migrateLegacy),
-    migrationSucceeded,
-  }
+  return {profiles: normalizedLegacyProfiles}
 }
 
 async function writeProfiles(customerId: string, profiles: StoredBillingProfile[]): Promise<BillingWriteResult> {
@@ -541,20 +498,16 @@ async function writeProfiles(customerId: string, profiles: StoredBillingProfile[
 
     const errors = response.errors?.map((error) => error.message) || []
     const userErrors = response.data?.metafieldsSet?.userErrors || []
-    const metafieldId = response.data?.metafieldsSet?.metafields?.[0]?.id
     const readBackProfiles = await readPrimaryProfiles(customerId)
 
     return {
-      metafieldsSetCalled: true,
       userErrors,
       errors,
-      metafieldId,
       profilesCountAfterWrite: profiles.length,
       readBackCount: readBackProfiles.length,
     }
   } catch (error) {
     return {
-      metafieldsSetCalled: true,
       userErrors: [],
       errors: [error instanceof Error ? error.message : 'Unknown Shopify Admin API error'],
       profilesCountAfterWrite: profiles.length,
@@ -578,16 +531,7 @@ export async function GET() {
     }
 
     const readResult = await readProfiles(customerId, {migrateLegacy: true})
-    return Response.json(withDebug(
-      {billingProfiles: readResult.profiles.map(toClientProfile)},
-      {
-        ...debugBase(customerId),
-        readSource: readResult.readSource,
-        profilesCount: readResult.profiles.length,
-        migrationAttempted: readResult.migrationAttempted,
-        migrationSucceeded: readResult.migrationSucceeded,
-      }
-    ))
+    return Response.json({billingProfiles: readResult.profiles.map(toClientProfile)})
   } catch (error: unknown) {
     return Response.json(
       {error: {message: error instanceof Error ? error.message : 'Failed to fetch billing profiles'}},
@@ -656,13 +600,7 @@ export async function DELETE(req: NextRequest) {
 
 async function saveProfile(customerId: string, payload: SavePayload | DeletePayload) {
   if (payload.action && payload.action !== 'save') {
-    return Response.json(
-      withDebug(
-        {error: {message: 'Invalid action'}},
-        debugBase(customerId)
-      ),
-      {status: 400}
-    )
+    return Response.json({error: {message: 'Invalid action'}}, {status: 400})
   }
 
   const existingReadResult = await readProfiles(customerId)
@@ -676,14 +614,7 @@ async function saveProfile(customerId: string, payload: SavePayload | DeletePayl
 
   if (!normalizedProfile) {
     return Response.json(
-      withDebug(
-        {error: {message: 'Datele de facturare sunt invalide.'}},
-        {
-          ...debugBase(customerId),
-          readSource: existingReadResult.readSource,
-          profilesCount: existingProfiles.length,
-        }
-      ),
+      {error: {message: 'Datele de facturare sunt invalide.'}},
       {status: 400}
     )
   }
@@ -707,31 +638,15 @@ async function saveProfile(customerId: string, payload: SavePayload | DeletePayl
       writeResult.errors[0] ||
       'Failed to save billing profiles'
     return Response.json(
-      withDebug(
-        {error: {message}},
-        {
-          ...debugBase(customerId),
-          readSource: existingReadResult.readSource,
-          profilesCount: existingProfiles.length,
-          write: writeResult,
-        }
-      ),
+      {error: {message}},
       {status: 400}
     )
   }
 
-  return Response.json(withDebug(
-    {
-      billingProfile: toClientProfile(savedProfile),
-      billingProfiles: nextProfiles.map(toClientProfile),
-    },
-    {
-      ...debugBase(customerId),
-      readSource: existingReadResult.readSource,
-      profilesCount: nextProfiles.length,
-      write: writeResult,
-    }
-  ))
+  return Response.json({
+    billingProfile: toClientProfile(savedProfile),
+    billingProfiles: nextProfiles.map(toClientProfile),
+  })
 }
 
 async function deleteProfile(customerId: string, payload: DeletePayload) {
@@ -745,10 +660,7 @@ async function deleteProfile(customerId: string, payload: DeletePayload) {
 
   if (!profileId) {
     return Response.json(
-      withDebug(
-        {error: {message: 'Profile ID required for deletion'}},
-        debugBase(customerId)
-      ),
+      {error: {message: 'Profile ID required for deletion'}},
       {status: 400}
     )
   }
@@ -766,26 +678,10 @@ async function deleteProfile(customerId: string, payload: DeletePayload) {
       writeResult.errors[0] ||
       'Failed to delete billing profile'
     return Response.json(
-      withDebug(
-        {error: {message}},
-        {
-          ...debugBase(customerId),
-          readSource: existingReadResult.readSource,
-          profilesCount: existingReadResult.profiles.length,
-          write: writeResult,
-        }
-      ),
+      {error: {message}},
       {status: 400}
     )
   }
 
-  return Response.json(withDebug(
-    {billingProfiles: nextProfiles.map(toClientProfile)},
-    {
-      ...debugBase(customerId),
-      readSource: existingReadResult.readSource,
-      profilesCount: nextProfiles.length,
-      write: writeResult,
-    }
-  ))
+  return Response.json({billingProfiles: nextProfiles.map(toClientProfile)})
 }
