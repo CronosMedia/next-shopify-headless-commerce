@@ -15,6 +15,7 @@ type CollectionProduct = {
   vendor: string
   productType: string
   tags: string[]
+  options?: Array<{ name: string; values: string[] }>
   featuredImage: {
     url: string
     altText: string | null

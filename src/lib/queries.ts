@@ -6,7 +6,10 @@ export const PRODUCTS_QUERY = `#graphql
           id
           handle
           title
+          vendor
+          productType
           description
+          options { name values }
           featuredImage {
             url
             altText
@@ -65,6 +68,7 @@ export const COLLECTION_PRODUCT_QUERY = `#graphql
             vendor
             productType
             tags
+            options { name values }
             featuredImage {
               url
               altText
@@ -142,6 +146,9 @@ export const RELATED_PRODUCTS_QUERY = `#graphql
           id
           handle
           title
+          vendor
+          productType
+          options { name values }
           featuredImage { url altText width height }
           priceRange { minVariantPrice { amount currencyCode } }
           variants(first: 5) {

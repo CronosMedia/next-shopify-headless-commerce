@@ -11,6 +11,7 @@ type ProductNode = {
   handle: string
   title: string
   vendor?: string
+  productType?: string
   description?: string
   featuredImage?: {
     url: string
@@ -19,6 +20,7 @@ type ProductNode = {
     height: number
   } | null
   priceRange?: { minVariantPrice: { amount: string; currencyCode: string } }
+  options?: Array<{ name: string; values: string[] }>
   variants?: {
     edges: {
       node: {
@@ -86,7 +88,13 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
-            openQuickView({ handle: product.handle })
+            openQuickView({
+              handle: product.handle,
+              vendor: product.vendor,
+              productType: product.productType,
+              options: product.options,
+              variantCount: product.variants?.edges.length,
+            })
           }}
           className="absolute bottom-0 left-0 right-0 bg-white/90 text-black text-[10px] font-semibold tracking-[0.25em] uppercase py-4 text-center border-t border-x-0 border-b-0 border-[var(--border)] focus:outline-none focus-visible:outline-none backdrop-blur-xs transition-all duration-300 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-black hover:text-white hover:border-black cursor-pointer hidden lg:block"
         >

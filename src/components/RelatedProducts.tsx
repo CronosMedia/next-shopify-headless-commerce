@@ -7,6 +7,7 @@ type ProductNode = {
   handle: string
   title: string
   vendor?: string
+  productType?: string
   description?: string
   featuredImage?: {
     url: string
@@ -15,6 +16,7 @@ type ProductNode = {
     height: number
   } | null
   priceRange?: { minVariantPrice: { amount: string; currencyCode: string } }
+  options?: Array<{ name: string; values: string[] }>
   variants?: {
     edges: Array<{
       node: {

@@ -5,9 +5,12 @@ import type { ReactNode } from 'react'
 
 // Define a more specific type for the product in quick view
 // This can be expanded based on what QuickViewModal needs
-type QuickViewProduct = {
+export type QuickViewProduct = {
   handle: string
-  // Add other necessary product fields here
+  vendor?: string | null
+  productType?: string | null
+  options?: Array<{ name: string; values: string[] }>
+  variantCount?: number
 }
 
 type UIContextType = {

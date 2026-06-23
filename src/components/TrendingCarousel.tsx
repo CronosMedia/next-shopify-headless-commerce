@@ -9,6 +9,7 @@ type Product = {
     handle: string
     title: string
     vendor?: string
+    productType?: string
     description: string
     featuredImage?: {
         url: string
@@ -17,6 +18,7 @@ type Product = {
         height: number
     } | null
     priceRange?: { minVariantPrice: { amount: string; currencyCode: string } }
+    options?: Array<{ name: string; values: string[] }>
     variants?: {
         edges: {
             node: {
