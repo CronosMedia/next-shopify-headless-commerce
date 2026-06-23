@@ -16,12 +16,13 @@ import { GraphQLResponse } from '@/lib/shopify'
 export const POST = async (req: NextRequest) => {
   try {
     const { email, password, firstName, lastName, cartId } = await req.json()
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
 
     // 1. Create the customer in Shopify
     const createData = (await shopifyClient.request(
       CUSTOMER_CREATE_MUTATION,
       {
-        input: { email, password, firstName, lastName },
+        input: { email: normalizedEmail, password, firstName, lastName },
       }
     )) as GraphQLResponse<{ customerCreate: CustomerCreatePayload }>
 
@@ -45,7 +46,7 @@ export const POST = async (req: NextRequest) => {
     const tokenData = (await shopifyClient.request(
       CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
       {
-        input: { email, password },
+        input: { email: normalizedEmail, password },
       }
     )) as GraphQLResponse<{ customerAccessTokenCreate: CustomerAccessTokenCreatePayload }>
 

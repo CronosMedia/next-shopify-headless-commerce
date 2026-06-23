@@ -10,6 +10,26 @@ import {
   cartAttributesUpdate,
 } from '@/lib/cart'
 import {serverLogger} from '@/lib/logger.server'
+import {normalizeRomanianPhoneForShopify} from '@/lib/phone'
+import type {CartBuyerIdentityInput} from '@/lib/types'
+
+function normalizeBuyerIdentityPhone(
+  buyerIdentity: CartBuyerIdentityInput
+): CartBuyerIdentityInput {
+  return {
+    ...buyerIdentity,
+    phone: normalizeRomanianPhoneForShopify(buyerIdentity.phone) ?? undefined,
+    deliveryAddressPreferences: buyerIdentity.deliveryAddressPreferences?.map((preference) => ({
+      ...preference,
+      deliveryAddress: preference.deliveryAddress
+        ? {
+            ...preference.deliveryAddress,
+            phone: normalizeRomanianPhoneForShopify(preference.deliveryAddress.phone) ?? undefined,
+          }
+        : undefined,
+    })),
+  }
+}
 
 async function handler(req: NextRequest) {
   try {
@@ -76,7 +96,7 @@ async function handler(req: NextRequest) {
                       country: body.address.country,
                       firstName: body.address.firstName,
                       lastName: body.address.lastName,
-                      phone: body.address.phone || undefined,
+                      phone: normalizeRomanianPhoneForShopify(body.address.phone) ?? undefined,
                       province: body.address.province,
                       zip: body.address.zip,
                     },
@@ -112,7 +132,10 @@ async function handler(req: NextRequest) {
       case 'update_buyer':
         if (!cartId || !buyerIdentity)
           throw new Error('cartId and buyerIdentity required')
-        const buyerCart = await cartBuyerIdentityUpdate(cartId, buyerIdentity)
+        const buyerCart = await cartBuyerIdentityUpdate(
+          cartId,
+          normalizeBuyerIdentityPhone(buyerIdentity)
+        )
         return Response.json({ cart: buyerCart })
 
       case 'update_delivery_option':

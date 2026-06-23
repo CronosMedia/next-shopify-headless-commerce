@@ -45,10 +45,10 @@ export default function WishlistPage() {
 
                 <div className="w-full py-10 pb-24">
                     {!ready ? (
-                        <ProductGridSkeleton className="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" />
+                        <ProductGridSkeleton count={8} />
                     ) : items.length > 0 ? (
                         <>
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+                            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
                                 {visibleItems.map((item) => {
                                     const product = {
                                         ...item,

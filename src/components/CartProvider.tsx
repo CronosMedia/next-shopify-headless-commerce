@@ -74,6 +74,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [selectedBillingAddress, setSelectedBillingAddress] =
     useState<Address | null>(null)
 
+  const normalizeAddressForSelection = useCallback((address: Address): Address => ({
+    ...address,
+    address2: address.address2 ?? null,
+    country: address.country || 'Romania',
+    province: address.province || '',
+    phone: address.phone || undefined,
+    company: address.company || undefined,
+    name: address.name || `${address.firstName || ''} ${address.lastName || ''}`.trim(),
+    isDefault: Boolean(address.isDefault),
+  }), [])
+
   // New: Load recently removed items from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -588,6 +599,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!response.ok || !data.cart) {
           throw new Error(data.error?.message || 'Failed to update delivery address')
         }
+        setSelectedDeliveryAddress(normalizeAddressForSelection(address))
         syncFromCart(data.cart)
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
@@ -596,7 +608,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart, ensureCart, syncFromCart]
+    [cart, ensureCart, normalizeAddressForSelection, syncFromCart]
   )
 
   const updateBillingAddress = useCallback(
@@ -677,13 +689,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
     return subtotal + (subtotal >= 500 ? 0 : 25)
   }, [selectedDeliveryAddress, selectedDeliveryOption, cart?.cost?.totalAmount?.amount, subtotal])
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).__cart = { addToCart, cart, loading }
-    }
-  }, [addToCart, cart, loading])
 
   const value = useMemo(
     () => ({

@@ -15,13 +15,14 @@ import {serverLogger} from '@/lib/logger.server'
 export const POST = async (req: NextRequest) => {
   try {
     const { email, password, cartId } = await req.json()
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
 
     // 1. Authenticate customer and get access token
     const tokenResponse = (await shopifyClient.request(
       CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION,
       {
         input: {
-          email,
+          email: normalizedEmail,
           password,
         },
       }
@@ -38,14 +39,18 @@ export const POST = async (req: NextRequest) => {
 
     if (customerUserErrors?.length > 0) {
       return Response.json(
-        { error: { message: customerUserErrors[0].message } },
+        {
+          error: {
+            message: 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.',
+          },
+        },
         { status: 401 }
       )
     }
 
     if (!customerAccessToken?.accessToken) {
       return Response.json(
-        { error: { message: 'Invalid credentials' } },
+        { error: { message: 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.' } },
         { status: 401 }
       )
     }
@@ -54,9 +59,13 @@ export const POST = async (req: NextRequest) => {
 
     // 2. If a cartId is provided, associate it with the customer
     if (cartId) {
-      await cartBuyerIdentityUpdate(cartId, {
-        customerAccessToken: accessToken,
-      })
+      try {
+        await cartBuyerIdentityUpdate(cartId, {
+          customerAccessToken: accessToken,
+        })
+      } catch (error) {
+        serverLogger.error('auth.login.cart_association_failed', error)
+      }
     }
 
     // 3. Fetch the full customer object to return to the client

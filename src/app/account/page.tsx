@@ -1,12 +1,11 @@
 'use client'
-import {Suspense, useEffect, useMemo, useState} from 'react'
+import {Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation' // Added useRouter and useSearchParams, and Router type
 import {
   User as UserIcon,
   Package,
   MapPin,
-  CreditCard,
   LogOut,
   Edit,
   PlusCircle,
@@ -17,6 +16,8 @@ import {
   HelpCircle, // Added for Help Center
   Check, // Added for checked icon
   Receipt,
+  Eye,
+  EyeOff,
 } from 'lucide-react'
 import {
   useAuth,
@@ -33,9 +34,11 @@ import { getLocalitiesForCounty, RO_COUNTIES, getCanonicalCounty, getCanonicalLo
 import ConfirmationModal from '@/components/ConfirmationModal'
 import { useToast } from '@/components/ToastProvider'
 
+const accountTabIds = ['profile', 'orders', 'addresses', 'billing', 'settings', 'help']
+
 export default function AccountPage() {
   return (
-    <Suspense fallback={<AuthFormSkeleton />}>
+    <Suspense fallback={<AccountPageSkeleton />}>
       <AccountPageContent />
     </Suspense>
   )
@@ -44,36 +47,69 @@ export default function AccountPage() {
 function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'profile';
+  const requestedInitialTab = searchParams.get('tab')
+  const initialTab = requestedInitialTab && accountTabIds.includes(requestedInitialTab)
+    ? requestedInitialTab
+    : 'profile'
   const [activeTab, setActiveTab] = useState(initialTab);
   const { user, loading, logout } = useAuth();
   const { cart } = useCart();
 
+  const handleLogout = async () => {
+    await logout(cart?.id)
+    router.push('/logout')
+  }
+
   useEffect(() => {
     const tab = searchParams.get('tab');
+    if (tab && !accountTabIds.includes(tab)) {
+      setActiveTab('profile')
+      router.replace('/account?tab=profile', {scroll: false})
+      return
+    }
+
     if (tab && tab !== activeTab) {
       setActiveTab(tab);
     }
-  }, [searchParams, activeTab]);
+  }, [searchParams, activeTab, router]);
 
   if (loading) {
-    return (
+    const isAuthRoute = searchParams.get('mode') === 'register' || searchParams.get('redirect')
+
+    return isAuthRoute ? (
       <AuthFormSkeleton
         mode={searchParams.get('mode') === 'register' ? 'register' : 'login'}
       />
+    ) : (
+      <AccountPageSkeleton />
     )
   }
   if (!user) return <AuthForm />
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-foreground">Salutare {user.firstName}!</h1>
-      <p className="text-lg text-muted-foreground mb-8">Bine ai venit în contul tău!</p>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="mx-auto max-w-6xl overflow-x-hidden px-4 py-6 sm:p-6">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-light uppercase tracking-[0.1em] text-foreground md:text-3xl">
+            Salutare {user.firstName}!
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground md:text-base">
+            Bine ai venit în contul tău.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 border border-red-200 bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.12em] text-red-600 transition-colors hover:border-red-500 hover:bg-red-50"
+        >
+          <LogOut size={14} strokeWidth={1.5} />
+          Deconectare
+        </button>
+      </div>
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
         <Sidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          onLogout={() => logout(cart?.id)}
           router={router}
         />
         <MainContent activeTab={activeTab} user={user} />
@@ -86,7 +122,7 @@ function AccountPageContent() {
 
 function AuthPageShell({children}: {children: React.ReactNode}) {
   return (
-    <div className="flex min-h-[calc(100svh-5rem)] items-center justify-center px-4 py-10 sm:py-16">
+    <div className="flex min-h-[calc(100svh-5rem)] items-center justify-center px-4 pb-28 pt-10 sm:py-16">
       {children}
     </div>
   )
@@ -104,7 +140,72 @@ function SkeletonBlock({className}: {className: string}) {
   return <div className={`animate-pulse rounded bg-neutral-200 ${className}`} />
 }
 
+function AccountPageSkeleton() {
+  return (
+    <div className="mx-auto max-w-6xl overflow-x-hidden px-4 py-6 sm:p-6" aria-hidden="true">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <SkeletonBlock className="mb-3 h-8 w-64 max-w-full" />
+          <SkeletonBlock className="h-5 w-48 max-w-full" />
+        </div>
+        <SkeletonBlock className="h-10 w-36" />
+      </div>
+
+      <div className="lg:hidden -mx-4 mb-6 border-y border-[var(--border)] bg-[var(--background)] py-4">
+        <SkeletonBlock className="mx-4 mb-3 h-3 w-36" />
+        <div className="flex gap-2 overflow-hidden px-4">
+          {Array.from({ length: 4 }, (_, index) => (
+            <SkeletonBlock key={index} className="h-10 w-32 shrink-0" />
+          ))}
+        </div>
+      </div>
+
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+        <aside className="hidden border-t border-[var(--border)] pt-5 lg:block">
+          <SkeletonBlock className="mb-4 h-3 w-36" />
+          <div className="space-y-2">
+            {Array.from({ length: 6 }, (_, index) => (
+              <SkeletonBlock key={index} className="h-12 w-full" />
+            ))}
+          </div>
+        </aside>
+
+        <div className="min-w-0 lg:col-span-3">
+          <div className={accountPanelClass}>
+            <SkeletonBlock className="mb-6 h-6 w-48" />
+            <div className="space-y-4">
+              {Array.from({ length: 3 }, (_, index) => (
+                <div key={index} className={accountSectionClass}>
+                  <SkeletonBlock className="mb-3 h-3 w-24" />
+                  <SkeletonBlock className="h-5 w-56 max-w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 type AuthMode = 'login' | 'register'
+
+const accountPanelClass =
+  'border border-[var(--border)] bg-white p-5 md:p-6 lg:p-8'
+const accountSectionClass =
+  'border border-[var(--border)] bg-[#F9F8F6]/45 p-4 md:p-5'
+const accountTitleClass =
+  'text-lg md:text-xl font-light uppercase tracking-[0.08em] text-[var(--foreground)]'
+const accountLabelClass =
+  'text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]'
+const accountPrimaryButtonClass =
+  'inline-flex min-h-11 items-center justify-center gap-2 bg-black px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300'
+const accountSecondaryButtonClass =
+  'inline-flex min-h-11 items-center justify-center gap-2 border border-[var(--border)] bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--foreground)] transition-colors hover:border-black hover:bg-[#F9F8F6]'
+const accountDangerButtonClass =
+  'inline-flex min-h-11 items-center justify-center gap-2 border border-red-200 bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:border-red-500 hover:bg-red-50'
+const accountInputClass =
+  'w-full min-h-12 border border-[var(--border)] bg-white px-3 py-2 text-base text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted-foreground)] focus:border-black disabled:bg-[var(--secondary)] disabled:opacity-60'
 
 function AuthFieldSkeleton() {
   return (
@@ -143,6 +244,7 @@ function AuthForm() {
   const searchParams = useSearchParams()
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register')
   const [error, setError] = useState<string | null>(null)
+  const errorRef = useRef<HTMLDivElement>(null)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -154,6 +256,12 @@ function AuthForm() {
   useEffect(() => {
     setIsLogin(searchParams.get('mode') !== 'register')
   }, [searchParams])
+
+  useEffect(() => {
+    if (error) {
+      errorRef.current?.focus()
+    }
+  }, [error])
 
   const handleModeChange = () => {
     const nextIsLogin = !isLogin
@@ -173,6 +281,8 @@ function AuthForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting || loading) return
+
     setIsSubmitting(true)
     setError(null)
     try {
@@ -186,7 +296,10 @@ function AuthForm() {
           cart?.id
         )
       if (apiError) {
-        setError(apiError.error.message)
+        setError(apiError.error.message || 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.')
+      } else {
+        const redirectPath = searchParams.get('redirect')
+        router.push(redirectPath?.startsWith('/') ? redirectPath : '/account')
       }
     } catch {
       setError('A apărut o eroare neașteptată.')
@@ -203,18 +316,27 @@ function AuthForm() {
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative">
+            <div
+              ref={errorRef}
+              role="alert"
+              tabIndex={-1}
+              className="border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700 outline-none"
+            >
               {error}
             </div>
           )}
           {!isLogin && (
             <>
               <InputField
+                name="given-name"
+                autoComplete="given-name"
                 placeholder="Prenume"
                 value={formData.firstName}
                 onChange={(val) => setFormData({ ...formData, firstName: val })}
               />
               <InputField
+                name="family-name"
+                autoComplete="family-name"
                 placeholder="Nume"
                 value={formData.lastName}
                 onChange={(val) => setFormData({ ...formData, lastName: val })}
@@ -222,17 +344,25 @@ function AuthForm() {
             </>
           )}
           <InputField
+            name="email"
+            autoComplete="email"
             type="email"
             placeholder="Email"
             value={formData.email}
             onChange={(val) => setFormData({ ...formData, email: val })}
+            required
+            invalid={Boolean(error)}
           />
           <InputField
+            name="password"
+            autoComplete={isLogin ? 'current-password' : 'new-password'}
             type="password"
             placeholder="Parolă"
             inputPlaceholder="Parola ta"
             value={formData.password}
             onChange={(val) => setFormData({ ...formData, password: val })}
+            required
+            invalid={Boolean(error)}
           />
           <button
             type="submit"
@@ -262,57 +392,113 @@ function AuthForm() {
   )
 }
 
-function Sidebar({ activeTab, setActiveTab, onLogout, router }: { activeTab: string, setActiveTab: (tab: string) => void, onLogout: () => void, router: ReturnType<typeof useRouter> }) {
+function Sidebar({ activeTab, setActiveTab, router }: { activeTab: string, setActiveTab: (tab: string) => void, router: ReturnType<typeof useRouter> }) {
+  const mobileNavRef = useRef<HTMLElement | null>(null)
+  const mobileTabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+
   const accountManagementItems = [
     { id: 'profile', label: 'Detalii personale', icon: UserIcon },
     { id: 'orders', label: 'Istoric comenzi', icon: Package },
-    { id: 'payment', label: 'Metode de plată', icon: CreditCard },
     { id: 'addresses', label: 'Adrese', icon: MapPin },
     { id: 'billing', label: 'Date de facturare', icon: Receipt },
     { id: 'settings', label: 'Securitate și setări', icon: Settings },
+    { id: 'help', label: 'Ajutor', icon: HelpCircle },
   ]
 
-  return (
-    <div className="lg:col-span-1 border border-gray-300 rounded-none p-4">
-      <h2 className="text-xl font-semibold text-foreground mb-4">Administrare cont</h2>
-      <nav className="divide-y divide-gray-300 mb-8">
-        {accountManagementItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              setActiveTab(item.id);
-              router.push(`/account?tab=${item.id}`);
-            }}
-            className={`w-full flex items-center gap-3 text-left transition-colors relative cursor-pointer ${activeTab === item.id
-              ? 'py-3 pl-4 text-foreground hover:bg-secondary'
-              : 'text-foreground hover:bg-secondary pl-4 py-3'
-              }`}
-          >
-            <div
-              className={`absolute top-0 h-full w-2 bg-black -left-4 transform origin-left transition-all duration-300 ease-in-out ${activeTab === item.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-                }`}
-            ></div>
-            <item.icon size={20} className="ml-4" />
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
+  const getCenteredScrollLeft = useCallback((nav: HTMLElement, item: HTMLElement) => {
+    const centeredLeft = item.offsetLeft - (nav.clientWidth - item.clientWidth) / 2
+    const maxScrollLeft = nav.scrollWidth - nav.clientWidth
 
-      <h2 className="text-xl font-semibold text-foreground mb-4">Ajutor</h2>
-      <nav className="divide-y divide-gray-300">
-        <Link href="/help-center" className="w-full flex items-center gap-3 py-3 text-left text-foreground hover:bg-secondary transition-colors pl-4 cursor-pointer">
-          <HelpCircle size={20} />
-          <span>Centru de ajutor (FAQ)</span>
-        </Link>
-        <button
-          onClick={onLogout}
-          className="w-full flex items-center gap-3 py-3 text-left text-red-600 hover:bg-red-500/10 transition-colors pl-4 cursor-pointer"
+    return Math.max(0, Math.min(centeredLeft, maxScrollLeft))
+  }, [])
+
+  const centerMobileTab = useCallback((tabId: string, behavior: ScrollBehavior = 'smooth') => {
+    const nav = mobileNavRef.current
+    const item = mobileTabRefs.current[tabId]
+
+    if (!nav || !item || !window.matchMedia('(max-width: 1023px)').matches) {
+      return
+    }
+
+    nav.scrollTo({
+      left: getCenteredScrollLeft(nav, item),
+      behavior,
+    })
+  }, [getCenteredScrollLeft])
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId)
+    window.requestAnimationFrame(() => centerMobileTab(tabId))
+    router.push(`/account?tab=${tabId}`, { scroll: false })
+  }
+
+  return (
+    <>
+      <div className="lg:hidden -mx-4 mb-6 border-y border-[var(--border)] bg-[var(--background)] py-4">
+        <p className="px-4 pb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
+          Administrare cont
+        </p>
+        <nav
+          ref={mobileNavRef}
+          className="flex max-w-full gap-2 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Navigație cont"
         >
-          <LogOut size={20} />
-          <span>Deconectare</span>
-        </button>
-      </nav>
-    </div>
+          {accountManagementItems.map((item) => {
+            const isActive = activeTab === item.id
+            const Icon = item.icon
+
+            return (
+              <button
+                key={item.id}
+                ref={(node) => {
+                  mobileTabRefs.current[item.id] = node
+                }}
+                type="button"
+                onClick={() => handleTabChange(item.id)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`inline-flex h-10 shrink-0 items-center gap-2 border px-3 text-[11px] font-semibold uppercase tracking-[0.04em] transition-colors ${
+                  isActive
+                    ? 'border-black bg-black text-white'
+                    : 'border-[var(--border)] bg-white text-[var(--foreground)] hover:border-black'
+                }`}
+              >
+                <Icon size={14} strokeWidth={1.5} />
+                <span className="whitespace-nowrap">{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+      </div>
+
+      <aside className="hidden lg:col-span-1 lg:block border-t border-[var(--border)] pt-5">
+        <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted-foreground)]">
+          Administrare cont
+        </h2>
+        <nav className="mb-9 grid gap-1">
+          {accountManagementItems.map((item) => {
+            const isActive = activeTab === item.id
+            const Icon = item.icon
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleTabChange(item.id)}
+                className={`relative flex min-h-12 w-full items-center gap-3 border-l px-4 text-left text-[13px] font-semibold uppercase tracking-[0.075em] transition-colors ${
+                  isActive
+                    ? 'border-black bg-[var(--secondary)] text-[var(--foreground)]'
+                    : 'border-transparent text-[var(--foreground)]/80 hover:bg-[var(--secondary)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                <Icon size={17} strokeWidth={1.5} />
+                <span>{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+      </aside>
+    </>
   )
 }
 
@@ -327,17 +513,104 @@ function MainContent({ activeTab, user }: { activeTab: string; user: User }) {
   }, [activeTab]);
 
   return (
-    <div className="lg:col-span-3">
+    <div className="min-w-0 pb-24 lg:col-span-3 lg:pb-0">
       <div key={activeTab}> {/* Key prop to force re-render */}
         {renderedActiveTab === 'profile' && <ProfileTab user={user} />}
         {renderedActiveTab === 'orders' && <OrdersTab />}
         {renderedActiveTab === 'addresses' && <AddressesTab user={user} />}
         {renderedActiveTab === 'billing' && <BillingTab />}
-        {renderedActiveTab === 'payment' && <PaymentTab />}
         {renderedActiveTab === 'settings' && <SettingsTab user={user} />}
+        {renderedActiveTab === 'help' && <AccountHelpTab />}
       </div>
     </div>
   );
+}
+
+function AccountHelpTab() {
+  const helpItems = [
+    {
+      title: 'Comenzi și livrare',
+      text: 'Urmărește statusul comenzilor din istoric și verifică adresele salvate înainte de checkout.',
+      href: '/account?tab=orders',
+      action: 'Vezi comenzile',
+    },
+    {
+      title: 'Retururi',
+      text: 'Ai 14 zile pentru retur. Păstrează produsul în starea în care l-ai primit și pregătește numărul comenzii.',
+    },
+    {
+      title: 'Date cont',
+      text: 'Actualizează emailul, parola sau datele personale fără să părăsești zona de cont.',
+      href: '/account?tab=settings',
+      action: 'Deschide setările',
+    },
+  ]
+
+  return (
+    <div className={accountPanelClass}>
+      <div className="mb-6">
+        <h2 className={accountTitleClass}>Ajutor cont</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted-foreground)]">
+          Găsești rapid cele mai utile direcții fără să ieși din cont. Pentru situații punctuale, ne poți scrie din pagina de contact.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {helpItems.map((item) => {
+          const content = (
+            <>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--foreground)]">
+                  {item.title}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted-foreground)]">
+                  {item.text}
+                </p>
+              </div>
+              {item.href ? (
+                <span className="mt-5 inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--foreground)]">
+                  {item.action}
+                  <ChevronRight size={15} className="ml-1 transition-transform group-hover:translate-x-1" />
+                </span>
+              ) : (
+                <span className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+                  Informație utilă
+                </span>
+              )}
+            </>
+          )
+
+          return item.href ? (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="group flex min-h-40 flex-col justify-between border border-[var(--border)] bg-[#F9F8F6]/45 p-5 transition-colors hover:border-black hover:bg-white"
+            >
+              {content}
+            </Link>
+          ) : (
+            <article
+              key={item.title}
+              className="flex min-h-40 flex-col justify-between border border-[var(--border)] bg-[#F9F8F6]/45 p-5"
+            >
+              {content}
+            </article>
+          )
+        })}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 border border-[var(--border)] bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--foreground)]">
+            Ai nevoie de un răspuns direct?
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+            Folosește detaliile comenzii sau datele din cont când ne contactezi, ca să putem verifica rapid situația.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function SettingsTab({ user }: { user: User }) {
@@ -398,8 +671,8 @@ function SettingsTab({ user }: { user: User }) {
   };
 
   return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
-      <h2 className="text-xl font-semibold mb-6 text-foreground">
+    <div className={accountPanelClass}>
+      <h2 className={`${accountTitleClass} mb-6`}>
         Securitate și Setări
       </h2>
       {error && (
@@ -408,8 +681,8 @@ function SettingsTab({ user }: { user: User }) {
         </div>
       )}
       <div className="space-y-8">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Adresă de email</h3>
+        <div className={accountSectionClass}>
+          <h3 className={accountLabelClass}>Adresă de email</h3>
           {isEditingEmail ? (
             <form onSubmit={handleEmailChange} className="space-y-4 mt-4">
               <InputField
@@ -419,36 +692,36 @@ function SettingsTab({ user }: { user: User }) {
                 type="email"
                 required
               />
-              <div className="flex justify-end gap-4">
+              <div className="flex flex-col justify-end gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setIsEditingEmail(false)}
-                  className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                  className={accountSecondaryButtonClass}
                 >
                   Anulează
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
+                  className={accountPrimaryButtonClass}
                 >
                   Salvează
                 </button>
               </div>
             </form>
           ) : (
-            <div className="flex items-center justify-between mt-2">
+            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-muted-foreground">{user.email}</p>
               <button
                 onClick={() => setIsEditingEmail(true)}
-                className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                className={accountSecondaryButtonClass}
               >
-                <Edit size={20} /> Editează
+                <Edit size={16} strokeWidth={1.5} /> Editează
               </button>
             </div>
           )}
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Parolă</h3>
+        <div className={accountSectionClass}>
+          <h3 className={accountLabelClass}>Parolă</h3>
           {isEditingPassword ? (
             <form onSubmit={handlePasswordChange} className="space-y-4 mt-4">
               <InputField
@@ -465,30 +738,30 @@ function SettingsTab({ user }: { user: User }) {
                 type="password"
                 required
               />
-              <div className="flex justify-end gap-4">
+              <div className="flex flex-col justify-end gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setIsEditingPassword(false)}
-                  className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                  className={accountSecondaryButtonClass}
                 >
                   Anulează
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
+                  className={accountPrimaryButtonClass}
                 >
                   Salvează
                 </button>
               </div>
             </form>
           ) : (
-            <div className="flex items-center justify-between mt-2">
+            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-muted-foreground">••••••••</p>
               <button
                 onClick={() => setIsEditingPassword(true)}
-                className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                className={accountSecondaryButtonClass}
               >
-                <Edit size={20} /> Editează
+                <Edit size={16} strokeWidth={1.5} /> Editează
               </button>
             </div>
           )}
@@ -523,17 +796,17 @@ function ProfileTab({ user }: { user: User }) {
   }
 
   return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-foreground">
+    <div className={accountPanelClass}>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className={accountTitleClass}>
           Detaliile mele
         </h2>
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+            className={accountSecondaryButtonClass}
           >
-            <Edit size={20} /> Editează
+            <Edit size={16} strokeWidth={1.5} /> Editează
           </button>
         )}
       </div>
@@ -560,21 +833,27 @@ function ProfileTab({ user }: { user: User }) {
           />
           <InputField
             placeholder="Telefon"
+            inputPlaceholder="ex. 0747000000"
+            type="tel"
+            autoComplete="tel"
             value={formData.phone}
             onChange={(val) => setFormData({ ...formData, phone: val })}
           />
-          <div className="flex justify-end gap-4 mt-4">
+          <p className="-mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+            Poți introduce numărul în format românesc, de exemplu 0747000000.
+          </p>
+          <div className="mt-6 flex flex-col justify-end gap-3 sm:flex-row">
             <button
               type="button"
               onClick={() => setIsEditing(false)}
-              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+              className={accountSecondaryButtonClass}
             >
               Anulează
             </button>
              <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
+              className={accountPrimaryButtonClass}
             >
               {isSubmitting ? 'Se salvează...' : 'Salvează'}
             </button>
@@ -582,22 +861,22 @@ function ProfileTab({ user }: { user: User }) {
         </form>
       ) : (
         <div className="space-y-8">
-          <div className="bg-card p-6 border border-gray-300 rounded-none">
-            <div className="space-y-4 divide-y divide-gray-300">
+          <div className={accountSectionClass}>
+            <div className="space-y-4 divide-y divide-[var(--border)]">
               <div className="pt-4 first:pt-0">
-                <p className="text-lg font-bold text-foreground">Prenume</p>
+                <p className={accountLabelClass}>Prenume</p>
                 <p className="text-base text-muted-foreground mt-1">
                   {user.firstName || '-'}
                 </p>
               </div>
               <div className="pt-4">
-                <p className="text-lg font-bold text-foreground">Nume</p>
+                <p className={accountLabelClass}>Nume</p>
                 <p className="text-base text-muted-foreground mt-1">
                   {user.lastName || '-'}
                 </p>
               </div>
               <div className="pt-4">
-                <p className="text-lg font-bold text-foreground">Telefon</p>
+                <p className={accountLabelClass}>Telefon</p>
                 <p className="text-base text-muted-foreground mt-1">
                   {user.phone || '-'}
                 </p>
@@ -621,9 +900,9 @@ function ProfileTab({ user }: { user: User }) {
             </p>
           </div>
 
-          <div className="bg-card p-6 border border-gray-300 rounded-none">
+          <div className={accountSectionClass}>
             <div>
-              <p className="text-lg font-bold text-foreground">Email</p>
+              <p className={accountLabelClass}>Email</p>
               <p className="text-base text-muted-foreground mt-1">
                 {user.email || '-'}
               </p>
@@ -662,12 +941,13 @@ function OrdersTab() {
   };
 
 
-  if (isLoading)
-    return <p className="text-muted-foreground">Se încarcă comenzile...</p>
+  if (isLoading) {
+    return <OrdersTabSkeleton />
+  }
 
   return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
-      <h2 className="text-xl font-semibold mb-6 text-foreground">
+    <div className={accountPanelClass}>
+      <h2 className={`${accountTitleClass} mb-6`}>
         Istoric Comenzi
       </h2>
       {orders.length === 0 ? (
@@ -689,21 +969,21 @@ function OrdersTab() {
               return (
                 <div
                   key={order.id}
-                  className="bg-card p-6 border border-gray-300 rounded-none"
+                  className={accountSectionClass}
                 >
-                  <div className="flex items-center">
-                    <div className="font-barlow text-2xl text-gray-800" style={{ color: 'rgb(51, 51, 51)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '24px', lineHeight: '28px', fontWeight: 400 }}>
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div className="text-xl font-light uppercase tracking-[0.04em] text-[var(--foreground)] md:text-2xl">
                       {capitalizedDate}
                     </div>
-                    <div className="border-l border-gray-300 h-12 mx-4"></div>
+                    <div className="hidden h-12 border-l border-[var(--border)] md:block"></div>
                     <div className="flex-grow">
-                      <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
+                      <p className="text-sm leading-6 text-[var(--muted-foreground)]">
                         Comanda nr:{' '}
-                        <span style={{ fontWeight: 600 }}>{order.orderNumber}</span>
+                        <span className="font-semibold text-[var(--foreground)]">{order.orderNumber}</span>
                       </p>
-                      <p className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
+                      <p className="text-sm leading-6 text-[var(--muted-foreground)]">
                         Total:{' '}
-                        <span style={{ fontWeight: 600 }}>
+                        <span className="font-semibold text-[var(--foreground)]">
                           {order.totalPrice.amount} LEI
                         </span>
                       </p>
@@ -722,8 +1002,8 @@ function OrdersTab() {
                             )}
                           </div>
                           {order.successfulFulfillments.map((fulfillment, index) => (
-                            <div key={index} className="font-barlow" style={{ color: 'rgb(112, 112, 112)', fontFamily: 'Barlow, Arial, Helvetica, sans-serif', fontSize: '15px', lineHeight: '20px', fontWeight: 400 }}>
-                              <span style={{ fontWeight: 600 }}>{fulfillment.trackingCompany}: </span>
+                            <div key={index} className="text-sm leading-6 text-[var(--muted-foreground)]">
+                              <span className="font-semibold text-[var(--foreground)]">{fulfillment.trackingCompany}: </span>
                               {fulfillment.trackingInfo && fulfillment.trackingInfo.length > 0 ? (
                                 <a
                                   href={fulfillment.trackingInfo[0].url}
@@ -741,17 +1021,10 @@ function OrdersTab() {
                     </div>
                     <Link
                       href={`/account/orders/${orderId}`}
-                      className="flex items-center font-barlow no-underline hover:underline uppercase"
-                      style={{
-                        fontFamily: 'Barlow, Arial, Helvetica, sans-serif',
-                        fontWeight: 600,
-                        color: 'rgb(51, 51, 51)',
-                        fontSize: '15px',
-                        lineHeight: '15px'
-                      }}
+                      className="inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--foreground)] underline-offset-4 hover:underline"
                     >
                       Vezi detaliile comenzii
-                      <ChevronRight size={20} className="ml-1" />
+                      <ChevronRight size={16} className="ml-1" />
                     </Link>
                   </div>
                 </div>
@@ -778,6 +1051,30 @@ function OrdersTab() {
           )}
         </>
       )}
+    </div>
+  )
+}
+
+function OrdersTabSkeleton() {
+  return (
+    <div className={accountPanelClass} aria-hidden="true">
+      <SkeletonBlock className="mb-6 h-6 w-44" />
+      <div className="space-y-4">
+        {Array.from({ length: 3 }, (_, index) => (
+          <div key={index} className={accountSectionClass}>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+              <SkeletonBlock className="h-7 w-56 max-w-full" />
+              <div className="hidden h-12 border-l border-[var(--border)] md:block" />
+              <div className="flex-1 space-y-2">
+                <SkeletonBlock className="h-4 w-36" />
+                <SkeletonBlock className="h-4 w-28" />
+                <SkeletonBlock className="h-5 w-24" />
+              </div>
+              <SkeletonBlock className="h-4 w-40" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -838,7 +1135,7 @@ function AddressesTab({ user }: { user: User }) {
   }
 
   return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
+    <div className={accountPanelClass}>
       {isFormOpen ? (
         <AddressForm
           user={user}
@@ -852,15 +1149,15 @@ function AddressesTab({ user }: { user: User }) {
         />
       ) : (
         <>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-foreground">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className={accountTitleClass}>
               Adrese Salvate
             </h2>
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+              className={accountPrimaryButtonClass}
             >
-              <PlusCircle size={20} />
+              <PlusCircle size={16} strokeWidth={1.5} />
               <span>Adaugă Adresă Nouă</span>
             </button>
           </div>
@@ -871,12 +1168,12 @@ function AddressesTab({ user }: { user: User }) {
               addresses.map((address: Address) => (
                 <div
                   key={address.id}
-                  className={`border p-4 flex flex-col ${user.defaultAddress?.id === address.id ? 'border-gray-500 border-2' : 'border-gray-300'
+                  className={`flex flex-col border p-4 md:p-5 ${user.defaultAddress?.id === address.id ? 'border-black bg-[#F9F8F6]' : 'border-[var(--border)] bg-white'
                     }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-medium flex items-center gap-2 text-foreground">
+                      <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.08em] text-foreground">
                         {address.company || 'Adresă'}
                       </p>
                       <p className="text-sm text-muted-foreground mt-2">
@@ -902,34 +1199,34 @@ function AddressesTab({ user }: { user: User }) {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-4 items-center mt-4">
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                     {user.defaultAddress?.id === address.id ? (
                       <button
                         disabled
-                        className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-none border-2 border-black text-lg"
+                        className={accountSecondaryButtonClass}
                       >
-                        <Check size={20} />
+                        <Check size={16} strokeWidth={1.5} />
                         Adresă preferată
                       </button>
                     ) : (
                       <button
                         onClick={() => handleSetDefault(address.id)}
-                        className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                        className={accountSecondaryButtonClass}
                       >
                         Setează ca preferată
                       </button>
                     )}
                     <button
                       onClick={() => handleEdit(address)}
-                      className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+                      className={accountSecondaryButtonClass}
                     >
-                      <Edit size={20} /> Editează
+                      <Edit size={16} strokeWidth={1.5} /> Editează
                     </button>
                     <button
                       onClick={() => openDeleteModal(address.id)}
-                      className="flex items-center gap-2 bg-red-500 text-white px-6 py-3 rounded-none border-2 border-red-600 hover:bg-red-600 text-lg cursor-pointer"
+                      className={accountDangerButtonClass}
                     >
-                      <Trash2 size={20} /> Șterge
+                      <Trash2 size={16} strokeWidth={1.5} /> Șterge
                     </button>
                   </div>
                 </div>
@@ -1093,7 +1390,7 @@ function AddressForm({
 
   return (
     <>
-      <h2 className="text-2xl font-semibold text-foreground mb-4">
+      <h2 className={`${accountTitleClass} mb-5`}>
         {address ? 'Editează Adresa' : 'Adaugă Adresă Nouă'}
       </h2>
 
@@ -1129,11 +1426,17 @@ function AddressForm({
           />
           <InputField
             placeholder="Telefon"
+            inputPlaceholder="ex. 0747000000"
+            type="tel"
+            autoComplete="tel"
             value={formData.phone || ''}
             onChange={(val) => setFormData({ ...formData, phone: val })}
             error={errors.phone}
             className="md:col-span-2"
           />
+          <p className="-mt-2 text-sm leading-6 text-[var(--muted-foreground)] md:col-span-2">
+            Acceptăm formatul românesc, de exemplu 0747000000.
+          </p>
           <InputField
             placeholder="Stradă"
             value={formData.street}
@@ -1189,7 +1492,7 @@ function AddressForm({
                   zip: '',
                 }))
               }}
-              className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary h-[48px]"
+              className={accountInputClass}
             >
               <option value="" disabled>
                 Selectează un județ
@@ -1217,7 +1520,7 @@ function AddressForm({
               })()}
               disabled={!formData.province}
               placeholder={formData.province ? "Alege localitatea" : "Selectează județul întâi"}
-              inputClassName="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-black/20 focus:border-black h-[48px]"
+              inputClassName={accountInputClass}
               onChange={(nextCity) => {
                 setFormData((prev) => ({
                   ...prev,
@@ -1259,18 +1562,18 @@ function AddressForm({
             required
           />
         </div>
-        <div className="flex justify-end gap-4 mt-4">
+        <div className="mt-6 flex flex-col justify-end gap-3 sm:flex-row">
           <button
             type="button"
             onClick={onClose}
-            className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-lg cursor-pointer"
+            className={accountSecondaryButtonClass}
           >
             Anulează
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-lg cursor-pointer disabled:opacity-50"
+            className={accountPrimaryButtonClass}
           >
             {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
           </button>
@@ -1281,58 +1584,72 @@ function AddressForm({
 }
 
 function InputField({
+  name,
   placeholder,
   inputPlaceholder,
   value,
   onChange,
   error,
+  invalid = false,
   className = '',
   type = 'text',
+  autoComplete,
   required = false,
   disabled = false,
 }: {
+  name?: string
   placeholder: string
   inputPlaceholder?: string
   value: string
   onChange: (value: string) => void
   error?: string
+  invalid?: boolean
   className?: string
   type?: string
+  autoComplete?: string
   required?: boolean
   disabled?: boolean
 }) {
+  const inputId = `account-${name || placeholder.toLowerCase().replace(/\s+/g, '-')}`
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-muted-foreground mb-1">
+      <label htmlFor={inputId} className="block text-sm font-medium text-muted-foreground mb-1">
         {placeholder}{required && <span className="text-red-500"> *</span>}
       </label>
-      <input
-        type={type}
-        placeholder={inputPlaceholder || placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className={`w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-black/20 focus:border-black disabled:opacity-50 disabled:bg-secondary ${error ? 'border-red-500' : 'border-muted'
-          }`}
-      />
-      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
-    </div>
-  )
-}
-
-function PaymentTab() {
-  return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
-      <h2 className="text-xl font-semibold mb-6 text-foreground">
-        Metode de plată
-      </h2>
-      <div>
-        <p className="font-medium">Gestionează metodele de plată la finalizarea comenzii</p>
-        <p className="text-sm mt-1">
-          Pentru securitatea ta, metodele de plată pot fi adăugate, modificate
-          sau șterse în timpul procesului de finalizare a comenzii.
-        </p>
+      <div className="relative">
+        <input
+          id={inputId}
+          name={name}
+          type={isPassword && showPassword ? 'text' : type}
+          placeholder={inputPlaceholder || placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoComplete={autoComplete}
+          autoCapitalize="none"
+          autoCorrect="off"
+          required={required}
+          disabled={disabled}
+          spellCheck={false}
+          inputMode={type === 'email' ? 'email' : type === 'tel' ? 'tel' : undefined}
+          aria-invalid={invalid || Boolean(error)}
+          className={`w-full min-h-12 px-3 py-2 ${isPassword ? 'pr-12' : ''} bg-background border-2 rounded-none text-base md:text-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-black/20 focus:border-black disabled:opacity-50 disabled:bg-secondary ${invalid || error ? 'border-red-500' : 'border-gray-400'
+            }`}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-neutral-500 hover:text-black"
+            aria-label={showPassword ? 'Ascunde parola' : 'Arată parola'}
+          >
+            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+          </button>
+        ) : null}
       </div>
+      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
   )
 }
@@ -1579,20 +1896,20 @@ function BillingTab() {
   const localities = useMemo(() => getLocalitiesForCounty(formData.province), [formData.province])
 
   return (
-    <div className="bg-card p-6 border border-gray-300 rounded-none">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-foreground">Date de facturare</h2>
+    <div className={accountPanelClass}>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className={accountTitleClass}>Date de facturare</h2>
         {!isAdding && (
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <button
               onClick={() => startNew('personal')}
-              className="flex items-center gap-2 bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer transition-all"
+              className={accountSecondaryButtonClass}
             >
               <PlusCircle size={16} /> Persoană Fizică
             </button>
             <button
               onClick={() => startNew('business')}
-              className="flex items-center gap-2 bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer transition-all"
+              className={accountPrimaryButtonClass}
             >
               <PlusCircle size={16} /> Persoană Juridică
             </button>
@@ -1607,9 +1924,19 @@ function BillingTab() {
         </div>
       )}
 
+      <p className="mb-5 border border-[var(--border)] bg-[#F9F8F6]/45 px-4 py-3 text-sm leading-6 text-[var(--muted-foreground)]">
+        Plata este gestionată securizat în checkout-ul Shopify.
+      </p>
+
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+        <div className="space-y-4 py-2" aria-hidden="true">
+          {Array.from({ length: 2 }, (_, index) => (
+            <div key={index} className={accountSectionClass}>
+              <SkeletonBlock className="mb-3 h-4 w-40" />
+              <SkeletonBlock className="mb-2 h-3 w-56" />
+              <SkeletonBlock className="h-3 w-72 max-w-full" />
+            </div>
+          ))}
         </div>
       ) : isAdding ? (
         <form onSubmit={handleSave} className="space-y-4">
@@ -1623,7 +1950,7 @@ function BillingTab() {
                 required
                 value={formData.alias}
                 onChange={(e) => setFormData({ ...formData, alias: e.target.value })}
-                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className={accountInputClass}
                 placeholder="ex. Factură Principală"
               />
             </div>
@@ -1637,7 +1964,7 @@ function BillingTab() {
                     required
                     value={formData.firstName || ''}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className={accountInputClass}
                   />
                 </div>
                 <div>
@@ -1647,7 +1974,7 @@ function BillingTab() {
                     required
                     value={formData.lastName || ''}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className={accountInputClass}
                   />
                 </div>
               </>
@@ -1661,7 +1988,7 @@ function BillingTab() {
                       required
                       value={formData.cui || ''}
                       onChange={(e) => setFormData({ ...formData, cui: e.target.value })}
-                      className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                      className={accountInputClass}
                       placeholder="Fără RO"
                     />
                   </div>
@@ -1670,7 +1997,7 @@ function BillingTab() {
                       type="button"
                       disabled={isAnafLoading || !formData.cui}
                       onClick={handleAnafLookup}
-                      className="w-full bg-black text-white py-2 px-4 border-2 border-black hover:bg-neutral-900 transition-all text-base font-bold disabled:opacity-50 cursor-pointer h-[46px] flex items-center justify-center rounded-none"
+                      className={`${accountPrimaryButtonClass} w-full`}
                     >
                       {isAnafLoading ? 'Se verifică...' : 'Preia din ANAF'}
                     </button>
@@ -1684,7 +2011,7 @@ function BillingTab() {
                     required
                     value={formData.companyName || ''}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className={accountInputClass}
                   />
                 </div>
 
@@ -1694,7 +2021,7 @@ function BillingTab() {
                     type="text"
                     value={formData.regCom || ''}
                     onChange={(e) => setFormData({ ...formData, regCom: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className={accountInputClass}
                     placeholder="J40/12345/2026"
                   />
                 </div>
@@ -1729,7 +2056,7 @@ function BillingTab() {
                 required
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className={accountInputClass}
                 placeholder="Strada, număr, bloc, ap."
               />
             </div>
@@ -1740,7 +2067,7 @@ function BillingTab() {
                 value={formData.province}
                 options={RO_COUNTIES}
                 placeholder="Alege județul"
-                inputClassName="px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                inputClassName={accountInputClass}
                 onChange={(nextProvince) => {
                   setFormData((prev) => ({
                     ...prev,
@@ -1768,7 +2095,7 @@ function BillingTab() {
                 options={localities.map((l) => l.name)}
                 disabled={!formData.province}
                 placeholder={formData.province ? "Alege localitatea" : "Selectează județul întâi"}
-                inputClassName="px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                inputClassName={accountInputClass}
                 onChange={(nextCity) => {
                   setFormData((prev) => ({ ...prev, city: nextCity }))
                 }}
@@ -1791,7 +2118,7 @@ function BillingTab() {
                 required
                 value={formData.zip}
                 onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className={accountInputClass}
               />
             </div>
 
@@ -1800,25 +2127,30 @@ function BillingTab() {
               <input
                 type="tel"
                 required
+                autoComplete="tel"
+                placeholder="ex. 0747000000"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-3 py-2 bg-background border-2 border-gray-400 rounded-none text-lg text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className={accountInputClass}
               />
+              <p className="mt-1 text-xs leading-5 text-[var(--muted-foreground)]">
+                Poți folosi formatul 0747000000.
+              </p>
             </div>
           </div>
 
-          <div className="flex gap-4 mt-6">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="flex items-center gap-2 bg-white text-gray-800 px-6 py-3 rounded-none border-2 border-gray-400 hover:bg-gray-100 text-base font-semibold cursor-pointer"
+              className={accountSecondaryButtonClass}
             >
               Anulează
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-none border-2 border-black hover:bg-neutral-900 text-base font-bold cursor-pointer disabled:opacity-50"
+              className={accountPrimaryButtonClass}
             >
               {isSubmitting ? 'Se salvează...' : 'Salvează Profilul'}
             </button>
@@ -1829,9 +2161,9 @@ function BillingTab() {
       ) : (
         <div className="space-y-4">
           {profiles.map((profile) => (
-            <div key={profile.id} className="border border-gray-300 p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div key={profile.id} className="flex flex-col items-start justify-between border border-[var(--border)] bg-white p-4 md:flex-row md:items-center md:p-5">
               <div>
-                <p className="font-semibold text-foreground text-lg">{profile.alias}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-foreground">{profile.alias}</p>
                 <div className="text-sm text-muted-foreground mt-1 space-y-0.5">
                   <p>Tip: {profile.type === 'personal' ? 'Persoană Fizică' : 'Persoană Juridică'}</p>
                   {profile.type === 'personal' ? (
@@ -1849,10 +2181,10 @@ function BillingTab() {
                   <p>Tel: {profile.phone}</p>
                 </div>
               </div>
-              <div className="flex gap-2 mt-4 md:mt-0">
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row md:mt-0">
                 <button
                   onClick={() => startEdit(profile)}
-                  className="flex items-center gap-1.5 bg-white text-gray-800 px-4 py-2 border border-gray-400 hover:bg-gray-100 text-sm font-semibold cursor-pointer"
+                  className={accountSecondaryButtonClass}
                 >
                   <Edit size={14} /> Editează
                 </button>
@@ -1861,7 +2193,7 @@ function BillingTab() {
                     setProfileIdToDelete(profile.id!)
                     setIsDeleteModalOpen(true)
                   }}
-                  className="flex items-center gap-1.5 bg-red-500 text-white px-4 py-2 border border-red-600 hover:bg-red-600 text-sm font-semibold cursor-pointer"
+                  className={accountDangerButtonClass}
                 >
                   <Trash2 size={14} /> Șterge
                 </button>

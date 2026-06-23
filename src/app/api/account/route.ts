@@ -7,12 +7,21 @@ import {
 } from '@/lib/queries'
 import { Customer, CustomerUpdateInput } from '@/lib/shopify/generated/graphql'
 import {serverLogger} from '@/lib/logger.server'
+import {normalizeRomanianPhoneForShopify} from '@/lib/phone'
 
 type CustomerUpdateData = {
   customerUpdate: {
     customer: Customer | null
     customerUserErrors: Array<{message: string}>
   } | null
+}
+
+type AccountUpdatePayload = {
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string | null
+  password?: string
 }
 
 export const GET = async () => {
@@ -54,9 +63,16 @@ export const PUT = async (req: NextRequest) => {
       return Response.json({ error: { message: 'Not authenticated' } }, { status: 401 })
     }
 
-    const { firstName, lastName, email, phone, password } = await req.json()
+    const { firstName, lastName, email, phone, password } =
+      (await req.json()) as AccountUpdatePayload
 
-    const customerData: CustomerUpdateInput = { firstName, lastName, email, phone, password }
+    const customerData: CustomerUpdateInput = {
+      firstName,
+      lastName,
+      email,
+      phone: normalizeRomanianPhoneForShopify(phone),
+      password,
+    }
     Object.keys(customerData).forEach((key) => {
       if (customerData[key as keyof typeof customerData] === undefined) {
         delete customerData[key as keyof typeof customerData]

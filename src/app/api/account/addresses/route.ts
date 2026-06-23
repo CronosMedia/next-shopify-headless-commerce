@@ -16,6 +16,14 @@ import {
   CustomerDefaultAddressUpdatePayload,
 } from '@/lib/shopify/generated/graphql'
 import {serverLogger} from '@/lib/logger.server'
+import {normalizeRomanianPhoneForShopify} from '@/lib/phone'
+
+function normalizeAddressPhone(address: MailingAddress): MailingAddress {
+  return {
+    ...address,
+    phone: normalizeRomanianPhoneForShopify(address.phone),
+  }
+}
 
 // Get all addresses
 export const GET = async (req: NextRequest) => {
@@ -65,12 +73,13 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const { address }: { address: MailingAddress } = await req.json()
+    const normalizedAddress = normalizeAddressPhone(address)
 
     const response = await shopifyClient.request<{ customerAddressCreate: CustomerAddressCreatePayload }>(
       CUSTOMER_ADDRESS_CREATE_MUTATION,
       {
         customerAccessToken,
-        address,
+        address: normalizedAddress,
       }
     )
 
@@ -115,12 +124,14 @@ export const PUT = async (req: NextRequest) => {
       return Response.json({ error: { message: 'Address ID is required' } }, { status: 400 })
     }
 
+    const normalizedAddress = normalizeAddressPhone(address)
+
     const response = await shopifyClient.request<{ customerAddressUpdate: CustomerAddressUpdatePayload }>(
       CUSTOMER_ADDRESS_UPDATE_MUTATION,
       {
         customerAccessToken,
         id,
-        address,
+        address: normalizedAddress,
       }
     )
 

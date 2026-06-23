@@ -11,6 +11,8 @@ import {
   POSTAL_CODE_REGEX_RO,
 } from '@/lib/ro-address'
 
+const ADDRESS_COUNT_CACHE_KEY = 'addressModalLastCount'
+
 export type Address = {
   id: string
   firstName: string
@@ -34,6 +36,109 @@ type AddressModalProps = {
   mode?: 'default' | 'shipping' | 'billing'
 }
 
+function AddressSkeletonBlock({ className }: { className: string }) {
+  return (
+    <div
+      className={`animate-pulse bg-gradient-to-r from-neutral-100 via-neutral-50 to-neutral-100 bg-[length:200%_100%] ${className}`}
+    />
+  )
+}
+
+function AddressCardSkeleton({ selected }: { selected?: boolean }) {
+  return (
+    <div
+      className={`border-2 p-4 ${selected ? 'border-black bg-[#F9F8F6]' : 'border-neutral-200 bg-white'}`}
+      aria-hidden="true"
+    >
+      <div className="flex justify-between gap-5">
+        <div className="flex-1 space-y-2">
+          <AddressSkeletonBlock className="h-5 w-40" />
+          <AddressSkeletonBlock className="h-4 w-full max-w-[360px]" />
+          <AddressSkeletonBlock className="h-3.5 w-32" />
+          <AddressSkeletonBlock className="h-4 w-52" />
+          <AddressSkeletonBlock className="mt-3 h-4 w-28" />
+        </div>
+        {selected ? <AddressSkeletonBlock className="h-5 w-5 bg-black/80" /> : null}
+      </div>
+    </div>
+  )
+}
+
+function AddressFormSkeleton() {
+  return (
+    <div className="space-y-4" aria-hidden="true">
+      <div className="space-y-1">
+        <AddressSkeletonBlock className="h-4 w-48" />
+        <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-20" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-16" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+      </div>
+      <div className="space-y-1">
+        <AddressSkeletonBlock className="h-4 w-44" />
+        <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+      </div>
+      <div className="space-y-1">
+        <AddressSkeletonBlock className="h-4 w-56" />
+        <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-16" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-24" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-24" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+        <div className="space-y-1">
+          <AddressSkeletonBlock className="h-4 w-20" />
+          <AddressSkeletonBlock className="h-[42px] w-full border border-neutral-200" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AddressModalSkeleton({
+  variant,
+  count,
+}: {
+  variant: 'list' | 'form'
+  count: number
+}) {
+  if (variant === 'form') {
+    return <AddressFormSkeleton />
+  }
+
+  const skeletonCount = Math.min(Math.max(count, 1), 3)
+
+  return (
+    <div className="space-y-4" aria-hidden="true">
+      {Array.from({ length: skeletonCount }, (_, index) => (
+        <AddressCardSkeleton key={index} selected={index === 0} />
+      ))}
+      <div className="flex w-full items-center justify-center gap-2 border-2 border-dashed border-neutral-300 p-5">
+        <AddressSkeletonBlock className="h-5 w-5" />
+        <AddressSkeletonBlock className="h-5 w-40" />
+      </div>
+    </div>
+  )
+}
+
 export default function AddressModal({
   isOpen,
   onClose,
@@ -42,6 +147,7 @@ export default function AddressModal({
 }: AddressModalProps) {
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(true)
+  const [cachedAddressCount, setCachedAddressCount] = useState(2)
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -65,6 +171,8 @@ export default function AddressModal({
 
   useEffect(() => {
     if (isOpen) {
+      const cachedCount = Number(window.localStorage.getItem(ADDRESS_COUNT_CACHE_KEY))
+      setCachedAddressCount(Number.isFinite(cachedCount) && cachedCount >= 0 ? cachedCount : 2)
       fetchAddresses()
       setError(null)
       setSuccess(null)
@@ -83,6 +191,8 @@ export default function AddressModal({
       const defaultAddress = data.defaultAddress
 
       setAddresses(fetchedAddresses)
+      setCachedAddressCount(fetchedAddresses.length)
+      window.localStorage.setItem(ADDRESS_COUNT_CACHE_KEY, String(fetchedAddresses.length))
       if (defaultAddress) {
         setSelectedAddress(defaultAddress.id)
       } else if (fetchedAddresses.length > 0) {
@@ -218,10 +328,10 @@ export default function AddressModal({
           )}
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-4">
-              <div className="w-8 h-8 border-4 border-black/20 border-t-black rounded-full animate-spin" />
-              <p className="text-gray-500 font-medium font-serif">Se încarcă adresele...</p>
-            </div>
+            <AddressModalSkeleton
+              variant={cachedAddressCount === 0 ? 'form' : 'list'}
+              count={cachedAddressCount}
+            />
           ) : isAdding ? (
             <form id="add-address-form" onSubmit={handleSaveAddress} className="space-y-4">
               <div className="space-y-1">
@@ -347,11 +457,15 @@ export default function AddressModal({
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full border border-gray-200 rounded-none px-4 py-2.5 text-sm focus:ring-2 focus:ring-black/20 focus:border-black transition-all outline-none"
-                    placeholder="ex: 0721 123 456"
+                    placeholder="ex: 0747000000"
                   />
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Acceptăm numere românești în format 0747000000.
+                  </p>
                 </div>
               </div>
             </form>
@@ -448,14 +562,7 @@ export default function AddressModal({
                 disabled={isSubmitting}
                 className="px-5 py-2.5 rounded-none bg-black text-white hover:bg-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold flex items-center gap-2"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Se salvează...
-                  </>
-                ) : (
-                  'Salvează Adresa'
-                )}
+                {isSubmitting ? 'Se salvează...' : 'Salvează Adresa'}
               </button>
             ) : (
               <button

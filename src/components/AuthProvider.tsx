@@ -120,12 +120,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     cartId?: string
   ): Promise<ApiError | null> => {
+    const normalizedEmail = email.trim().toLowerCase()
+
     setLoading(true)
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, cartId }), // Pass cartId to the API
+        body: JSON.stringify({ email: normalizedEmail, password, cartId }), // Pass cartId to the API
       })
       const data = await response.json()
       if (response.ok) {
@@ -147,12 +149,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     lastName?: string,
     cartId?: string
   ): Promise<ApiError | null> => {
+    const normalizedEmail = email.trim().toLowerCase()
+
     setLoading(true)
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, firstName, lastName, cartId }), // Pass cartId
+        body: JSON.stringify({ email: normalizedEmail, password, firstName, lastName, cartId }), // Pass cartId
       })
       const data = await response.json()
       if (response.ok) {

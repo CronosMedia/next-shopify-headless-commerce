@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef, type FormEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -13,6 +13,8 @@ import {
   Minus,
   Plus,
   AlertCircle,
+  Eye,
+  EyeOff,
 } from 'lucide-react'
 import { useCart } from '@/components/CartProvider'
 import ConfirmationModal from '@/components/ConfirmationModal'
@@ -77,6 +79,7 @@ export default function CartPage() {
 
   const [hasMounted, setHasMounted] = useState(false)
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [addressModalMode, setAddressModalMode] = useState<'shipping' | 'billing'>('shipping')
   const [sameBillingAddress, setSameBillingAddress] = useState(true)
   const [billingType, setBillingType] = useState<'personal' | 'business'>('personal')
@@ -1264,9 +1267,11 @@ export default function CartPage() {
                                       <label className="block text-xs font-semibold text-neutral-600 mb-1">Telefon</label>
                                       <input
                                         type="tel"
+                                        autoComplete="tel"
                                         value={customBilling.phone || ''}
                                         onChange={(e) => setCustomBilling((prev) => ({ ...prev, phone: e.target.value }))}
                                         className="w-full border border-neutral-300 px-3 py-2 text-sm outline-none bg-white focus:border-black h-10"
+                                        placeholder="0747000000"
                                       />
                                     </div>
                                   </div>
@@ -1311,12 +1316,13 @@ export default function CartPage() {
                     <p className="leading-relaxed">
                       Autentifică-te pentru a selecta o adresă salvată și a estima costul livrării direct în coș.
                     </p>
-                    <Link
-                      href="/account/login?redirect=/cart"
+                    <button
+                      type="button"
+                      onClick={() => setIsAuthModalOpen(true)}
                       className="inline-block text-[10px] tracking-wider uppercase font-bold text-black underline underline-offset-4 hover:text-neutral-700 transition-colors"
                     >
                       Autentifică-te aici
-                    </Link>
+                    </button>
                   </div>
                 )}
 
@@ -1471,6 +1477,11 @@ export default function CartPage() {
         }}
       />
 
+      <CartAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
       <ConfirmationModal
         isOpen={isClearCartModalOpen}
         onClose={() => setIsClearCartModalOpen(false)}
@@ -1490,5 +1501,261 @@ export default function CartPage() {
         message="Ești sigur că vrei să ștergi acest profil de facturare?"
       />
     </>
+  )
+}
+
+type CartAuthModalProps = {
+  isOpen: boolean
+  onClose: () => void
+}
+
+function CartAuthModal({ isOpen, onClose }: CartAuthModalProps) {
+  const { login, register, loading } = useAuth()
+  const { cart } = useCart()
+  const { showToast } = useToast()
+  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const errorRef = useRef<HTMLDivElement>(null)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+  })
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
+
+  useEffect(() => {
+    if (error) {
+      errorRef.current?.focus()
+    }
+  }, [error])
+
+  if (!isOpen) return null
+
+  const isLogin = mode === 'login'
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (isSubmitting || loading) return
+
+    setError(null)
+    setIsSubmitting(true)
+
+    try {
+      const apiError = isLogin
+        ? await login(formData.email, formData.password, cart?.id)
+        : await register(
+          formData.email,
+          formData.password,
+          formData.firstName,
+          formData.lastName,
+          cart?.id
+        )
+
+      if (apiError) {
+        setError(apiError.error.message || 'Emailul sau parola nu sunt corecte. Verifică datele și încearcă din nou.')
+        return
+      }
+
+      showToast(isLogin ? 'Te-ai autentificat cu succes.' : 'Contul a fost creat.')
+      onClose()
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleModeChange = () => {
+    setMode(isLogin ? 'register' : 'login')
+    setError(null)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-4 py-4 sm:items-center sm:py-6">
+      <button
+        type="button"
+        aria-label="Închide autentificarea"
+        className="absolute inset-0 bg-black/45 backdrop-blur-xs"
+        onClick={onClose}
+      />
+
+      <div className="relative z-10 w-full max-w-[430px] max-h-[calc(100svh-2rem)] overflow-y-auto bg-white border border-neutral-200 shadow-2xl">
+        <button
+          type="button"
+          aria-label="Închide"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center text-neutral-500 hover:text-black transition-colors"
+        >
+          <X size={18} strokeWidth={1.5} />
+        </button>
+
+        <div className="px-6 py-8 md:px-8 md:py-10">
+          <div className="mb-7 pr-10">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-neutral-400">
+              Maison Outdoor
+            </p>
+            <h2 className="text-xl font-light uppercase tracking-[0.12em] text-neutral-950">
+              {isLogin ? 'Autentificare' : 'Creează cont'}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-neutral-500">
+              {isLogin
+                ? 'Rămâi în coș și folosește adresele salvate pentru finalizarea comenzii.'
+                : 'Creează contul fără să pierzi produsele din coș.'}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <CartAuthField
+                  name="given-name"
+                  label="Prenume"
+                  value={formData.firstName}
+                  onChange={(value) => setFormData((prev) => ({ ...prev, firstName: value }))}
+                  autoComplete="given-name"
+                />
+                <CartAuthField
+                  name="family-name"
+                  label="Nume"
+                  value={formData.lastName}
+                  onChange={(value) => setFormData((prev) => ({ ...prev, lastName: value }))}
+                  autoComplete="family-name"
+                />
+              </div>
+            ) : null}
+
+            <CartAuthField
+              name="email"
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(value) => setFormData((prev) => ({ ...prev, email: value }))}
+              autoComplete="email"
+              required
+              invalid={Boolean(error)}
+            />
+            <CartAuthField
+              name="password"
+              label="Parolă"
+              type="password"
+              value={formData.password}
+              onChange={(value) => setFormData((prev) => ({ ...prev, password: value }))}
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
+              required
+              invalid={Boolean(error)}
+            />
+
+            {error ? (
+              <div
+                ref={errorRef}
+                role="alert"
+                tabIndex={-1}
+                className="border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700 outline-none"
+              >
+                {error}
+              </div>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={isSubmitting || loading}
+              className="mt-2 flex h-12 w-full items-center justify-center bg-black px-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+            >
+              {isSubmitting || loading
+                ? 'Se verifică...'
+                : isLogin
+                  ? 'Autentificare'
+                  : 'Creează cont'}
+            </button>
+          </form>
+
+          <div className="mt-6 border-t border-neutral-200 pt-5 text-center">
+            <p className="text-sm text-neutral-500">
+              {isLogin ? 'Nu ai cont?' : 'Ai deja cont?'}{' '}
+              <button
+                type="button"
+                onClick={handleModeChange}
+                className="font-semibold text-black underline underline-offset-4 hover:text-neutral-700"
+              >
+                {isLogin ? 'Înregistrează-te' : 'Autentifică-te'}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+type CartAuthFieldProps = {
+  name: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  type?: 'text' | 'email' | 'password'
+  autoComplete?: string
+  required?: boolean
+  invalid?: boolean
+}
+
+function CartAuthField({
+  name,
+  label,
+  value,
+  onChange,
+  type = 'text',
+  autoComplete,
+  required = false,
+  invalid = false,
+}: CartAuthFieldProps) {
+  const inputId = `cart-auth-${name}`
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+
+  return (
+    <label className="block">
+      <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+        {label}
+      </span>
+      <div className="relative">
+        <input
+          id={inputId}
+          name={name}
+          type={isPassword && showPassword ? 'text' : type}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          autoComplete={autoComplete}
+          autoCapitalize="none"
+          autoCorrect="off"
+          required={required}
+          spellCheck={false}
+          inputMode={type === 'email' ? 'email' : undefined}
+          aria-invalid={invalid}
+          className={`h-12 w-full border bg-white px-4 ${isPassword ? 'pr-12' : ''} text-sm text-neutral-950 outline-none transition-colors focus:border-black ${invalid ? 'border-red-500' : 'border-neutral-200'}`}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-neutral-500 hover:text-black"
+            aria-label={showPassword ? 'Ascunde parola' : 'Arată parola'}
+          >
+            {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+          </button>
+        ) : null}
+      </div>
+    </label>
   )
 }
