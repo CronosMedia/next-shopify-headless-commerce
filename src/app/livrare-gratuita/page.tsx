@@ -4,22 +4,22 @@ import { LegalSidebar } from '@/components/LegalSidebar'
 
 export default function FreeShippingPage() {
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Livrare Gratuită</h1>
-            <p className="text-lg text-muted-foreground mb-8">Informații despre livrare și costuri</p>
+        <div className="legal-page-shell">
+            <h1 className="legal-page-title">Livrare Gratuită</h1>
+            <p className="legal-page-subtitle">Informații despre livrare și costuri</p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="legal-layout">
                 <LegalSidebar />
 
                 {/* Main Content */}
-                <div className="lg:col-span-3">
-                    <section className="bg-card p-8 border border-gray-300 rounded-none space-y-6">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Truck className="w-8 h-8 text-primary" />
-                            <h2 className="text-2xl font-bold text-foreground">Politica de Livrare</h2>
+                <div className="legal-main">
+                    <section className="legal-content-card">
+                        <div className="legal-section-heading">
+                            <Truck />
+                            <h2>Politica de Livrare</h2>
                         </div>
 
-                        <div className="prose max-w-none text-muted-foreground space-y-4">
+                        <div className="legal-copy">
                             <p>
                                 La Maison Outdoor, ne dorim ca produsele tale să ajungă la tine cât mai rapid și în siguranță.
                                 Colaborăm cu firme de curierat de top pentru a asigura o experiență de livrare excelentă.

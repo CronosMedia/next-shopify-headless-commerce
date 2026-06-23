@@ -4,22 +4,22 @@ import { LegalSidebar } from '@/components/LegalSidebar'
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Politica de Confidențialitate</h1>
-            <p className="text-lg text-muted-foreground mb-8">Cum prelucrăm și protejăm datele tale</p>
+        <div className="legal-page-shell">
+            <h1 className="legal-page-title">Politica de Confidențialitate</h1>
+            <p className="legal-page-subtitle">Cum prelucrăm și protejăm datele tale</p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="legal-layout">
                 <LegalSidebar />
 
                 {/* Main Content */}
-                <div className="lg:col-span-3">
-                    <section className="bg-card p-8 border border-gray-300 rounded-none space-y-6">
-                        <div className="flex items-center gap-3 mb-6">
-                            <ShieldCheck className="w-8 h-8 text-primary" />
-                            <h2 className="text-2xl font-bold text-foreground">Protecția Datelor Tale</h2>
+                <div className="legal-main">
+                    <section className="legal-content-card">
+                        <div className="legal-section-heading">
+                            <ShieldCheck />
+                            <h2>Protecția Datelor Tale</h2>
                         </div>
 
-                        <div className="prose max-w-none text-muted-foreground space-y-4">
+                        <div className="legal-copy">
                             <p>
                                 Maison Outdoor respectă confidențialitatea datelor clienților noștri și ne angajăm să protejăm informațiile personale pe care ni le oferiți.
                                 Această politică explică modul în care colectăm, utilizăm și păstrăm datele dumneavoastră.

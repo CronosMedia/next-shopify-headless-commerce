@@ -4,22 +4,22 @@ import { LegalSidebar } from '@/components/LegalSidebar'
 
 export default function AboutPage() {
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Despre Noi</h1>
-            <p className="text-lg text-muted-foreground mb-8">Povestea și misiunea Maison Outdoor</p>
+        <div className="legal-page-shell">
+            <h1 className="legal-page-title">Despre Noi</h1>
+            <p className="legal-page-subtitle">Povestea și misiunea Maison Outdoor</p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="legal-layout">
                 <LegalSidebar />
 
                 {/* Main Content */}
-                <div className="lg:col-span-3">
-                    <section className="bg-card p-8 border border-gray-300 rounded-none space-y-6">
-                        <div className="flex items-center gap-3 mb-6">
-                            <HelpCircle className="w-8 h-8 text-primary" />
-                            <h2 className="text-2xl font-bold text-foreground">Cine suntem?</h2>
+                <div className="legal-main">
+                    <section className="legal-content-card">
+                        <div className="legal-section-heading">
+                            <HelpCircle />
+                            <h2>Cine suntem?</h2>
                         </div>
 
-                        <div className="prose max-w-none text-muted-foreground space-y-4">
+                        <div className="legal-copy">
                             <p>
                                 Maison Outdoor este mai mult decât un magazin online. Suntem o echipă pasionată de calitate și aventură, dedicată să aducă cel mai bun echipament tehnic de camping și hiking direct la tine.
                             </p>

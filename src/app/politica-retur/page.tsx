@@ -6,22 +6,22 @@ import { LegalSidebar } from '@/components/LegalSidebar'
 
 export default function ReturnPolicyPage() {
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Politica de Retur</h1>
-            <p className="text-lg text-muted-foreground mb-8">Informații despre returnarea produselor</p>
+        <div className="legal-page-shell">
+            <h1 className="legal-page-title">Politica de Retur</h1>
+            <p className="legal-page-subtitle">Informații despre returnarea produselor</p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="legal-layout">
                 <LegalSidebar />
 
                 {/* Main Content */}
-                <div className="lg:col-span-3">
-                    <section className="bg-card p-8 border border-gray-300 rounded-none space-y-6">
-                        <div className="flex items-center gap-3 mb-6">
-                            <RefreshCcw className="w-8 h-8 text-primary" />
-                            <h2 className="text-2xl font-bold text-foreground">Retur Simplu și Rapid</h2>
+                <div className="legal-main">
+                    <section className="legal-content-card">
+                        <div className="legal-section-heading">
+                            <RefreshCcw />
+                            <h2>Retur Simplu și Rapid</h2>
                         </div>
 
-                        <div className="prose max-w-none text-muted-foreground space-y-4">
+                        <div className="legal-copy">
                             <p>
                                 Înțelegem că uneori produsele comandate nu sunt exact ceea ce îți doreai. De aceea, la Maison Outdoor, îți oferim posibilitatea de a returna produsele în termen de <strong>14 zile calendaristice</strong> de la primirea coletului.
                             </p>
