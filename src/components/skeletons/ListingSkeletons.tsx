@@ -33,9 +33,15 @@ export function ProductCardSkeleton() {
   )
 }
 
-export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
+export function ProductGridSkeleton({
+  count = 8,
+  className = 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+}: {
+  count?: number
+  className?: string
+}) {
   return (
-    <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12" aria-hidden="true">
+    <ul className={`grid ${className} gap-x-6 gap-y-12`} aria-hidden="true">
       {Array.from({ length: count }).map((_, index) => (
         <li key={index} className="w-full">
           <ProductCardSkeleton />

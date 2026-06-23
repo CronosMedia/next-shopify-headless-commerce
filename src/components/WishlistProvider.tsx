@@ -25,6 +25,14 @@ export type WishlistItem = {
             currencyCode: string
         }
     }
+    variants?: {
+        edges: Array<{
+            node: {
+                id: string
+                availableForSale?: boolean
+            }
+        }>
+    }
 }
 
 type WishlistContextType = {
@@ -34,6 +42,7 @@ type WishlistContextType = {
     isInWishlist: (id: string) => boolean
     toggleItem: (item: WishlistItem) => void
     count: number
+    ready: boolean
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
@@ -121,8 +130,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             isInWishlist,
             toggleItem,
             count: items.length,
+            ready: isInitialized,
         }),
-        [items, addItem, removeItem, isInWishlist, toggleItem]
+        [items, addItem, removeItem, isInWishlist, toggleItem, isInitialized]
     )
 
     return (

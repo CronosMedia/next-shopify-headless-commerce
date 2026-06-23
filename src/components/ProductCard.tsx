@@ -25,7 +25,7 @@ type ProductNode = {
     edges: {
       node: {
         id: string
-        availableForSale: boolean
+        availableForSale?: boolean
       }
     }[]
   }
@@ -37,7 +37,8 @@ type ProductCardProps = {
 }
 
 export default function ProductCard({ product, isLCP }: ProductCardProps) {
-  const isAvailable = product.variants?.edges?.[0]?.node?.availableForSale ?? false
+  const firstVariantAvailability = product.variants?.edges?.[0]?.node?.availableForSale
+  const isUnavailable = firstVariantAvailability === false
   const { openQuickView } = useUI()
   const { isInWishlist, toggleItem } = useWishlist()
   const isSaved = isInWishlist(product.id)
@@ -54,7 +55,8 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
       url: product.featuredImage.url,
       altText: product.featuredImage.altText || undefined
     } : null,
-    priceRange: product.priceRange
+    priceRange: product.priceRange,
+    variants: product.variants
   }
 
   return (
@@ -102,7 +104,7 @@ export default function ProductCard({ product, isLCP }: ProductCardProps) {
         </button>
 
         {/* Out of Stock Label */}
-        {!isAvailable && (
+        {isUnavailable && (
           <div className="absolute top-4 left-4 pointer-events-none">
             <span className="text-[9px] font-semibold tracking-[0.25em] uppercase text-[#1a1a1a] bg-white/90 px-3 py-1.5 backdrop-blur-sm">
               Stoc Epuizat

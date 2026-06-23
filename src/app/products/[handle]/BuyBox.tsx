@@ -52,6 +52,21 @@ export default function BuyBox({
     return initial
   })
 
+  const selectableOptions = useMemo(
+    () =>
+      options.filter((option) => {
+        const normalizedName = option.name.trim().toLowerCase()
+        const values = option.values.filter(Boolean)
+        const isDefaultTitle =
+          normalizedName === 'title' &&
+          values.length === 1 &&
+          values[0]?.trim().toLowerCase() === 'default title'
+
+        return normalizedName !== 'title' && !isDefaultTitle && values.length > 1
+      }),
+    [options]
+  )
+
   const selectedVariant = useMemo(() => {
     return (
       variants.find((v) =>
@@ -72,6 +87,8 @@ export default function BuyBox({
   const { addToCart, loading } = useCart()
 
   const handleAddToCart = async () => {
+    if (!selectedVariant) return
+
     try {
       await addToCart(selectedVariant.id, quantity)
       onAddToCartSuccess?.()
@@ -115,15 +132,13 @@ export default function BuyBox({
       )}
 
       {/* Variant Selection */}
-      {variants.length > 1 ? (
+      {variants.length > 1 && selectableOptions.length > 0 ? (
         <div className="space-y-8 pt-2">
-          {options.map((opt) => (
+          {selectableOptions.map((opt) => (
             <div key={opt.name} className="space-y-3.5">
-              {opt.name !== 'Title' && (
-                <div className="text-[11px] md:text-xs font-semibold tracking-[0.25em] uppercase text-neutral-400">
-                  Alege {opt.name}
-                </div>
-              )}
+              <div className="text-[11px] md:text-xs font-semibold tracking-[0.25em] uppercase text-neutral-400">
+                Alege {opt.name}
+              </div>
               <div className="flex flex-wrap gap-4">
                 {opt.values.map((val) => {
                   const variantForSwatch = variants.find(v =>
@@ -200,20 +215,32 @@ export default function BuyBox({
             </button>
 
             {/* Wishlist Button - eMAG style but luxury brand aesthetics */}
-            <WishlistButton
-              item={{
-                id: selectedVariant?.id,
-                handle: handle,
-                title: title,
-                featuredImage: selectedVariant?.image ? {
-                  url: selectedVariant.image.url,
-                  altText: selectedVariant.image.altText || undefined
-                } : null,
-                priceRange: {
-                  minVariantPrice: selectedVariant?.price
-                }
-              }}
-            />
+            {selectedVariant ? (
+              <WishlistButton
+                item={{
+                  id: selectedVariant.id,
+                  handle: handle,
+                  title: title,
+                  featuredImage: selectedVariant.image ? {
+                    url: selectedVariant.image.url,
+                    altText: selectedVariant.image.altText || undefined
+                  } : null,
+                  priceRange: {
+                    minVariantPrice: selectedVariant.price
+                  },
+                  variants: {
+                    edges: [
+                      {
+                        node: {
+                          id: selectedVariant.id,
+                          availableForSale: selectedVariant.availableForSale,
+                        },
+                      },
+                    ],
+                  },
+                }}
+              />
+            ) : null}
 
 
           </div>
