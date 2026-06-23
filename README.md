@@ -20,6 +20,35 @@ npm run dev
 
 The storefront is available at [http://localhost:3000](http://localhost:3000).
 
+## Shopify Shipping Setup
+
+For the demo checkout, make sure the Shopify shipping zone includes Romania,
+the products are assigned to the correct shipping profile, products are marked
+as physical products, and variants have a weight set.
+
+For free shipping over 500 lei, use two separate shipping rates instead of only
+enabling `Offer free shipping` on the standard rate:
+
+```text
+Shipping zone: Romania
+
+Rate 1:
+Name: Standard
+Condition: Order amount 0 - 499.99 lei
+Price: 25 lei
+
+Rate 2:
+Name: Livrare gratuită
+Condition: Order amount minimum 500 lei
+Maximum: none
+Price: 0 lei
+```
+
+If Shopify Checkout shows `Items in the cart do not meet price or weight
+requirements to qualify for shipping`, first check the shipping profile,
+shipping zone, location fulfillment, physical product setting, variant weights,
+and whether the rates are configured as separate rates.
+
 ## Quality Checks
 
 ```bash
