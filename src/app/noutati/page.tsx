@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import ProductCard from '@/components/ProductCard'
+import { ProductGridSkeleton } from '@/components/skeletons/ListingSkeletons'
 
 type Product = {
   id: string
@@ -55,7 +56,7 @@ export default function NewArrivalsPage() {
   }, [])
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-12 pb-12 md:pt-24 md:pb-24">
+    <main className="w-full px-4 md:px-8 lg:px-12 py-10">
       {/* Elegant Header */}
       <div className="text-center mb-16 md:mb-24">
         <span className="text-xs md:text-sm font-medium tracking-[0.4em] uppercase text-[#8a8a8a] mb-4 block">
@@ -67,30 +68,27 @@ export default function NewArrivalsPage() {
         <div className="h-[1px] w-12 bg-[#1a1a1a]/20 mx-auto mt-6" />
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col h-full bg-white animate-pulse">
-              <div className="w-full aspect-[3/4] bg-[#F9F8F6]" />
-              <div className="mt-4 h-4 bg-gray-200 w-1/3" />
-              <div className="mt-2 h-4 bg-gray-200 w-3/4" />
-              <div className="mt-3 h-4 bg-gray-200 w-1/4" />
+      <div className="relative min-h-screen bg-[var(--background)]">
+        <div className="w-full px-4 md:px-8 lg:px-12 py-10 pb-24">
+          {loading ? (
+            <ProductGridSkeleton />
+          ) : products.length > 0 ? (
+            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {products.map((product) => (
+                <li key={product.id} className="w-full">
+                  <ProductCard product={product} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center py-20 border border-[var(--border)] bg-gray-50/50">
+              <p className="text-sm font-light text-[var(--muted-foreground)] tracking-wide">
+                Nu am găsit produse noi în acest moment. Te rugăm să revii mai târziu.
+              </p>
             </div>
-          ))}
+          )}
         </div>
-      ) : products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 border border-[var(--border)] bg-gray-50/50">
-          <p className="text-sm font-light text-[var(--muted-foreground)] tracking-wide">
-            Nu am găsit produse noi în acest moment. Te rugăm să revii mai târziu.
-          </p>
-        </div>
-      )}
-    </div>
+      </div>
+    </main>
   )
 }

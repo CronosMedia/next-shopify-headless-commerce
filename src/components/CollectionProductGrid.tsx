@@ -6,6 +6,7 @@ import { SlidersHorizontal, X, ArrowUpDown } from 'lucide-react'
 import { cn, formatMoney } from '@/lib/utils'
 import ProductCard from './ProductCard'
 import DualRangeSlider from './DualRangeSlider'
+import { ProductGridSkeleton } from './skeletons/ListingSkeletons'
 
 type Product = {
     id: string
@@ -512,14 +513,13 @@ export default function CollectionProductGrid({
 
             {/* ─── PRODUCT GRID ─── */}
             <div className="w-full px-4 md:px-8 lg:px-12 py-10 pb-24">
-                <div className={cn("relative transition-opacity duration-300", loading && "opacity-40 pointer-events-none")}>
-                    {loading && (
-                        <div className="absolute inset-0 flex h-64 items-center justify-center z-10">
-                            <div className="w-6 h-6 border border-[var(--muted)] border-t-[var(--foreground)] rounded-full animate-spin" />
-                        </div>
-                    )}
-
-                    {filteredProducts.length === 0 ? (
+                <div className="relative transition-opacity duration-300">
+                    {loading ? (
+                        <>
+                            <div className="md:hidden h-3 w-20 mb-6 animate-pulse bg-gradient-to-r from-neutral-100 via-neutral-50 to-neutral-100 bg-[length:200%_100%]" />
+                            <ProductGridSkeleton count={Math.max(filteredProducts.length, 8)} />
+                        </>
+                    ) : filteredProducts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-32">
                             <p className="text-lg font-light text-[var(--foreground)] mb-1">Nu s-au găsit produse</p>
                             <p className="text-sm font-light text-[var(--muted-foreground)] mb-8 tracking-wide">Încearcă să modifici filtrele</p>
