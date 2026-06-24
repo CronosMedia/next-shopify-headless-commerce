@@ -24,10 +24,15 @@ export type ProductViewProduct = {
   id: string
   handle: string
   title: string
+  vendor?: string
+  description?: string
   descriptionHtml: string
   featuredImage: GalleryImage | null
   images: {
     edges: Array<{node: GalleryImage}>
+  }
+  collections?: {
+    edges: Array<{node: {title: string; handle: string}}>
   }
   options: Array<{name: string; values: string[]}>
   variants: {
@@ -106,7 +111,7 @@ export default function ProductView({
 
   return (
     <>
-      <main className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 pt-16 pb-24">
+      <main className="max-w-360 mx-auto px-6 md:px-12 lg:px-16 pt-16 pb-24">
         {/* Top Section: Gallery + BuyBox (Non-Sticky Grid) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 lg:items-start pb-16 md:pb-24">
           {/* Left Column: Gallery */}

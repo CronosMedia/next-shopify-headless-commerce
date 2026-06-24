@@ -58,7 +58,15 @@ export const COLLECTION_PRODUCT_QUERY = `#graphql
   query CollectionProductQuery($handle: String!, $first: Int = 12, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $filters: [ProductFilter!]) {
     collection(handle: $handle) {
       id
+      handle
       title
+      description
+      image {
+        url
+        altText
+        width
+        height
+      }
       products(first: $first, sortKey: $sortKey, reverse: $reverse, filters: $filters) {
         edges {
           node {
@@ -108,6 +116,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `#graphql
       handle
       title
       vendor
+      description
       descriptionHtml
       featuredImage { url altText width height }
       images(first: 12) { edges { node { url altText width height } } }
@@ -117,6 +126,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `#graphql
         edges {
           node {
             id
+            sku
             title
             availableForSale
             price { amount currencyCode }

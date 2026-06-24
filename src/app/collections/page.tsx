@@ -2,6 +2,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { shopifyClient } from '@/lib/shopify'
 import { COLLECTIONS_QUERY } from '@/lib/queries'
+import {defaultMetadata, itemListJsonLd, safeJsonLd} from '@/lib/seo'
+
+export const metadata = defaultMetadata(
+    'Colecții',
+    'Explorează colecțiile Maison Outdoor.',
+    '/collections'
+)
 
 // Add revalidation to ensure we don't serve stale data forever
 export const revalidate = 3600 // Revalidate every hour
@@ -53,6 +60,20 @@ export default async function CollectionsPage() {
 
     return (
         <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-12 pb-0 md:pt-24 md:pb-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: safeJsonLd(
+                        itemListJsonLd(
+                            collections.map((collection) => ({
+                                name: collection.title,
+                                path: `/collections/${collection.handle}`,
+                            })),
+                            'CollectionPage'
+                        )
+                    ),
+                }}
+            />
             {/* Elegant Header */}
             <div className="text-center mb-16 md:mb-24">
                 <span className="text-xs md:text-sm font-medium tracking-[0.4em] uppercase text-[#8a8a8a] mb-4 block">

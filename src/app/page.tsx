@@ -6,6 +6,9 @@ import {ArrowRight} from 'lucide-react'
 import HeroSection from '@/components/HeroSection'
 import TrendingCarousel from '@/components/TrendingCarousel'
 import NewsletterSection from '@/components/NewsletterSection'
+import {defaultMetadata, itemListJsonLd, safeJsonLd} from '@/lib/seo'
+
+export const metadata = defaultMetadata('Maison Outdoor')
 
 type ProductNode = {
   id: string
@@ -51,6 +54,19 @@ export default async function Home() {
 
   return (
     <main className="bg-[var(--background)] -mt-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            itemListJsonLd(
+              trendingProducts.map((product) => ({
+                name: product.title,
+                path: `/products/${product.handle}`,
+              }))
+            )
+          ),
+        }}
+      />
 
       {/* ════════════════════════════════════════════════════════════
           § 1 — HERO
