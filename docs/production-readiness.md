@@ -2,6 +2,8 @@
 
 This document describes what is implemented in the current codebase, what depends on Shopify configuration, and what still needs provider or production setup before launch.
 
+Current status: production-ready candidate for storefront, customer account, cart, checkout, billing profile, and wishlist flows. Invoice/AWB remain demo/provider-dependent. Contact form/email requires real-environment verification before production use.
+
 ## 1. Implemented / Real
 
 - Shopify Storefront products, collections, cart, and checkout handoff are implemented through Storefront API flows.
@@ -15,8 +17,8 @@ This document describes what is implemented in the current codebase, what depend
 - Cart attributes carry billing and order context into Shopify checkout/order data.
 - Admin orders list is implemented against Shopify Admin API.
 - Admin order detail is implemented and shows billing, invoice, and AWB context.
-- Invoice controls exist in admin. Demo invoice generation is available; real provider support depends on provider env/config.
-- AWB controls exist in admin. Demo AWB generation is available; real logistics provider integration is not completed in this batch.
+- Invoice controls exist in admin as demo/provider-ready flows. There is no fully validated real billing provider integration in this moment.
+- AWB controls exist in admin as demo/provider-ready flows. There is no real courier/logistics provider integration in this moment.
 - CUI lookup is connected to ANAF public API v9 with a fallback request to `lista-firme.info`.
 
 ## 2. Shopify Configuration Required
@@ -95,20 +97,29 @@ Notes:
 - `SHOPIFY_ADMIN_API_VERSION` defaults in code if missing, but production should set it explicitly.
 - The Admin API token must be regenerated or the app reinstalled after scope changes.
 - Do not commit real tokens, passwords, invoice credentials, or provider secrets.
+- The contact form currently has no email-provider env variables because the endpoint is not connected to a real email provider.
 
 ## 4. Demo / Provider-Dependent Areas
 
 - Invoice provider:
+  - Invoice flows are currently implemented as demo/provider-ready administrative flows.
+  - A real production deployment requires integration with billing provider APIs such as SmartBill, FGO, Oblio, an e-Factura provider, or another approved fiscal provider.
   - `INVOICING_PROVIDER=demo` uses a demo invoice response and local invoice download route.
   - `oblio` and `smartbill` services exist, but require real credentials and provider-side validation before production use.
+  - The admin interface/structure is prepared, but the real API connection and end-to-end fiscal validation are a future production step.
 
 - AWB/logistics provider:
+  - AWB flows are currently implemented as demo/provider-ready administrative flows.
+  - A real production deployment requires integration with logistics provider APIs such as Sameday, FAN Courier, DPD, Cargus, or another courier provider.
   - `AWB_PROVIDER=demo` generates simulated AWB data on Shopify order metafields.
   - Any non-demo provider currently returns a not-configured response in the AWB endpoint.
+  - The admin interface/structure is prepared, but the real API connection and courier-side fulfillment behavior are a future production step.
 
 - Transactional emails:
   - Shopify checkout/customer transactional emails are handled by Shopify.
   - The custom contact form endpoint is currently not configured to send email and returns a 503 response after validation.
+  - No SMTP/Resend/Nodemailer/Postmark/Mailgun/SendGrid provider is currently wired in the app.
+  - Before production use, connect a real email provider and test valid submit, received email, failure messaging, required-field validation, and sensitive-data handling in the real environment.
 
 - ANAF/CUI check:
   - The CUI endpoint calls ANAF public API v9 and falls back to `lista-firme.info`.
@@ -129,6 +140,7 @@ Notes:
 - After login, Shopify customer metafield is the source of truth for wishlist.
 - For production performance, wishlist can later be optimized to store only `productId`, `productHandle`, `variantId`, and `addedAt`, then hydrate product details from Shopify.
 - Cart billing attributes are used for the current order/checkout context. Saving to account is separate and only happens when the user chooses to save billing data.
+- Contact form UI posts to `/api/contact`, but the current endpoint validates input and returns a "not configured" error. It does not send, simulate, or log a real email.
 
 ## 6. Production Checklist
 
@@ -150,9 +162,16 @@ Notes:
 - [ ] Local wishlist to account wishlist merge is tested after login.
 - [ ] Account order list is tested.
 - [ ] Order detail page is tested.
-- [ ] Invoice status is clearly marked as real or demo.
-- [ ] AWB status is clearly marked as real or demo.
+- [ ] Invoice status is clearly marked as demo/provider-dependent unless a real billing provider is connected.
+- [ ] Real billing provider is selected and validated, for example SmartBill, FGO, Oblio, e-Factura provider, or another approved provider.
+- [ ] AWB status is clearly marked as demo/provider-dependent unless a real courier provider is connected.
+- [ ] Real courier provider is selected and validated, for example Sameday, FAN Courier, DPD, Cargus, or another approved provider.
 - [ ] Contact form status is decided: connected to a provider or intentionally disabled.
+- [ ] Contact form valid submit is tested in the real environment.
+- [ ] Contact email is received by the configured destination inbox.
+- [ ] Contact form failure state is tested by disabling or misconfiguring the email provider in a safe non-production environment.
+- [ ] Contact form required-field validation is tested.
+- [ ] Contact form does not expose provider secrets or sensitive internals to the client.
 - [ ] No `console.*` debug output remains.
 - [ ] API responses do not expose tokens or internal customer IDs unnecessarily.
 - [ ] `npm run lint` passes.

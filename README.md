@@ -20,13 +20,16 @@ npm run dev
 
 The storefront is available at [http://localhost:3000](http://localhost:3000).
 
-
 ## Production setup
 
 Before using this project as a real production storefront, review:
 
 - `docs/production-readiness.md`
 - `docs/qa-checklist.md`
+
+Invoice and AWB flows are currently implemented as demo/provider-ready
+administrative flows. A real production deployment requires integration with
+billing and logistics provider APIs.
 
 ## Shopify Shipping Setup
 
