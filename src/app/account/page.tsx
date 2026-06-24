@@ -1523,7 +1523,7 @@ function AddressForm({
                   zip: '',
                 }))
               }}
-              className={accountInputClass}
+              className={`${accountInputClass} h-12 rounded-none leading-6`}
             >
               <option value="" disabled>
                 Selectează un județ

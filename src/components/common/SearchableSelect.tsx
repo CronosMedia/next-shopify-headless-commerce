@@ -101,7 +101,7 @@ export function SearchableSelect({
   }, [isOpen, safeHighlightedIndex])
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="relative w-full">
       <input
         className={`w-full outline-none transition ${
           disabled
